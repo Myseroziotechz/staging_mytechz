@@ -1,5 +1,5 @@
 # MytechZ.in - Premier Technology Solutions & Job Portal
-## CEO: Ravi Kumara H S R
+## CEO: Ravi Kumara H S
 
 ### 🚀 PROJECT OVERVIEW
 
@@ -295,5 +295,5 @@ This project is proprietary software owned by MytechZ.in and CEO Ravi Kumara H S
 
 ---
 
-**Developed with ❤️ by  Ravi Kumara H S R - MytechZ.in**
+**Developed with ❤️ by  Ravi Kumara H S - MytechZ.in**
 **Premier Technology Solutions & Job Portal**
