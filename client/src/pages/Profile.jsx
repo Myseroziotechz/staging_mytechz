@@ -6,7 +6,7 @@ import ResumeManager from '../components/Resume/ResumeManager';
 function Profile() {
   const [profile, setProfile] = useState({
     firstName: '', lastName: '', email: '', phone: '', gender: '', dateOfBirth: '',
-    address: '', city: '', state: '', pincode: '', profilePhoto: '', bio: '',
+    address: '', city: '', state: '', pincode: '', bio: '',
     skills: [], experience: '', education: '', linkedin: '', github: '', portfolio: ''
   });
   
@@ -40,7 +40,7 @@ function Profile() {
       
       const defaultProfile = {
         firstName: '', lastName: '', email: '', phone: '', gender: '', dateOfBirth: '',
-        address: '', city: '', state: '', pincode: '', profilePhoto: '', bio: '',
+        address: '', city: '', state: '', pincode: '', bio: '',
         skills: [], experience: '', education: '', linkedin: '', github: '', portfolio: ''
       };
       
@@ -91,34 +91,6 @@ function Profile() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handlePhotoUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('profilePhoto', file);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/upload-photo`, formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-      });
-      setProfile(prev => ({ ...prev, profilePhoto: response.data.photoUrl }));
-      
-      const user = JSON.parse(localStorage.getItem('user'));
-      user.profilePhoto = response.data.photoUrl;
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      if (window.showPopup) {
-        window.showPopup('Profile photo updated successfully!', 'success');
-      }
-    } catch (error) {
-      if (window.showPopup) {
-        window.showPopup('Error uploading photo', 'error');
-      }
-    }
   };
 
   const addSkill = () => {
@@ -203,18 +175,10 @@ function Profile() {
                   />
                 </svg>
                 <div className="naukri-photo">
-                  {profile.profilePhoto ? (
-                    <img src={profile.profilePhoto} alt="Profile" />
-                  ) : (
-                    <div className="naukri-photo-placeholder">
-                      <i className="ri-user-line"></i>
-                    </div>
-                  )}
+                  <div className="naukri-photo-placeholder">
+                    <i className="ri-user-line"></i>
+                  </div>
                 </div>
-                <label className="naukri-photo-upload" htmlFor="photo-upload">
-                  <i className="ri-camera-line"></i>
-                  <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                </label>
               </div>
             </div>
 
