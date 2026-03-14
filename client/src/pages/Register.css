@@ -3,9 +3,9 @@
   gap: 1rem;
 }
 .register-form{
-    margin-top: -15px;
+    margin-top: -25px;
     width: 100%;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
     overflow: visible;
     word-wrap: break-word;
     box-sizing: border-box;
@@ -13,15 +13,15 @@
 }
 .inputR-group {
   position: relative;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.7rem;
   width: 100%;
 }
 .inputR-group input {
   width: 100%;
-  padding: 0.65rem;
+  padding: 0.6rem;
   border: 2px solid #ccc;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   background: var(--bg-page);
   outline: none;
   transition: border 0.3s;
@@ -29,12 +29,12 @@
 }
 .inputR-group label {
   position: absolute;
-  left: 0.65rem;
+  left: 0.6rem;
   top: 50%;
   transform: translateY(-50%);
   background: var(--bg-page);
   color: #888;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   pointer-events: none;
   transition: 0.2s;
   padding: 0 0.3rem;
@@ -46,10 +46,10 @@
 .inputR-group.focused label,
 .inputR-group input:focus + label,
 .inputR-group input:not(:placeholder-shown) + label {
-  top: -0.5rem;
-  left: 0.65rem;
+  top: -0.4rem;
+  left: 0.6rem;
   transform: none;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #a020f0;
   background: var(--bg-page);
   padding: 0 0.3rem;
@@ -70,36 +70,36 @@
 .gender-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
   margin-top: -5px;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.7rem;
   flex-wrap: wrap;
 }
 
 .gender-row > label:first-child {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: #555;
-  margin-right: 0.3rem;
+  margin-right: 0.2rem;
 }
 
 .gender-row label:not(:first-child) {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.85rem;
+  gap: 0.2rem;
+  font-size: 0.8rem;
   cursor: pointer;
 }
 .checkbox-row {
     margin-top: -5px;
-    margin-bottom: 0.8rem;
-    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: flex-start;
-    line-height: 1.3;
+    line-height: 1.2;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    min-height: 40px;
+    min-height: 35px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -117,11 +117,11 @@
 
 .checkbox-row input[type="checkbox"] {
     margin: 0;
-    margin-top: 0.2rem;
+    margin-top: 0.15rem;
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    min-width: 16px;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
 }
 
 .checkbox-row a {
@@ -145,21 +145,21 @@
     word-break: break-word;
     overflow-wrap: break-word;
     width: 100%;
-    line-height: 1.3;
+    line-height: 1.2;
     min-width: 0;
     white-space: normal;
 }
 .loginR-btn {
   width: 100%;
-  padding: 0.6rem 0;
+  padding: 0.5rem 0;
   background: linear-gradient(90deg, #a020f0, #ff69b4);
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
   transition: background 0.2s;
 }
 .loginR-btn:hover {
@@ -167,9 +167,9 @@
 }
 .signup-text {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #555;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
   word-wrap: break-word;
 }
 
