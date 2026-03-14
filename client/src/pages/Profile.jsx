@@ -122,13 +122,33 @@ function Profile() {
       
       const cleanProfile = { ...profile };
       
+      // Clean up phone number - remove any formatting
+      if (cleanProfile.phone) {
+        cleanProfile.phone = cleanProfile.phone.replace(/[^\d+]/g, '');
+        // If it's just digits and reasonable length, keep it
+        if (cleanProfile.phone && !/^\+/.test(cleanProfile.phone) && cleanProfile.phone.length >= 9 && cleanProfile.phone.length <= 15) {
+          // Valid phone number
+        } else if (cleanProfile.phone && cleanProfile.phone.length < 9) {
+          throw new Error('Phone number must be at least 9 digits long.');
+        }
+      }
+      
       const optionalFields = ['bio', 'address', 'city', 'state', 'pincode', 'experience', 'education', 'linkedin', 'github', 'portfolio'];
       optionalFields.forEach(field => {
         if (cleanProfile[field] === '') cleanProfile[field] = null;
       });
       
       if (!Array.isArray(cleanProfile.skills)) cleanProfile.skills = [];
-      if (cleanProfile.phone) cleanProfile.phone = cleanProfile.phone.trim();
+      
+      // Validate social links format
+      const socialFields = ['linkedin', 'github', 'portfolio'];
+      socialFields.forEach(field => {
+        if (cleanProfile[field] && cleanProfile[field] !== null) {
+          if (!cleanProfile[field].startsWith('http://') && !cleanProfile[field].startsWith('https://')) {
+            cleanProfile[field] = `https://${cleanProfile[field]}`;
+          }
+        }
+      });
       
       console.log('Updating profile with data:', cleanProfile);
       console.log('API URL:', `${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`);
@@ -137,7 +157,8 @@ function Profile() {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 10000 // 10 second timeout
       });
       
       console.log('Profile update response:', response.data);
@@ -176,7 +197,11 @@ function Profile() {
       } else if (error.request) {
         // Network error
         console.error('Network error:', error.request);
-        errorMessage = 'Network error. Please check your connection and try again.';
+        if (error.code === 'ECONNABORTED') {
+          errorMessage = 'Request timeout. Please check your connection and try again.';
+        } else {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        }
       } else {
         // Other error
         console.error('Error:', error.message);
