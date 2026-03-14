@@ -111,6 +111,9 @@ function Profile() {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
+      console.log('Token exists:', !!token);
+      console.log('Token preview:', token ? token.substring(0, 20) + '...' : 'No token');
+      
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
       }
@@ -151,9 +154,15 @@ function Profile() {
       });
       
       console.log('Updating profile with data:', cleanProfile);
-      console.log('API URL:', `${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`);
+      console.log('Environment:', import.meta.env.MODE);
+      console.log('VITE_API_BASE_URL from env:', import.meta.env.VITE_API_BASE_URL);
       
-      const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`, cleanProfile, {
+      // Force local development URL for now
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5010';
+      const profileUrl = `${apiUrl}/api/auth/profile`;
+      console.log('Using API URL:', profileUrl);
+      
+      const response = await axios.put(profileUrl, cleanProfile, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
