@@ -21,7 +21,7 @@
   padding: 0.6rem;
   border: 2px solid #ccc;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   background: var(--bg-page);
   outline: none;
   transition: border 0.3s;
@@ -34,7 +34,7 @@
   transform: translateY(-50%);
   background: var(--bg-page);
   color: #888;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   pointer-events: none;
   transition: 0.2s;
   padding: 0 0.3rem;
@@ -49,7 +49,7 @@
   top: -0.4rem;
   left: 0.6rem;
   transform: none;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #a020f0;
   background: var(--bg-page);
   padding: 0 0.3rem;
