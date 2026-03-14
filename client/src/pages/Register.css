@@ -18,7 +18,7 @@
 }
 .inputR-group input {
   width: 100%;
-  padding: 0.8rem 0.75rem;
+  padding: 0.75rem;
   border: 2px solid #ccc;
   border-radius: 10px;
   font-size: 0.95rem;
@@ -29,7 +29,7 @@
 }
 .inputR-group label {
   position: absolute;
-  left: 1rem;
+  left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   background: var(--bg-page);
@@ -46,13 +46,14 @@
 .inputR-group.focused label,
 .inputR-group input:focus + label,
 .inputR-group input:not(:placeholder-shown) + label {
-  top: -0.8rem;
-  left: 0.8rem;
-  font-size: 0.8rem;
+  top: -0.6rem;
+  left: 0.75rem;
+  transform: none;
+  font-size: 0.75rem;
   color: #a020f0;
   background: var(--bg-page);
   padding: 0 0.4rem;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 .eyeR-btn {
   position: absolute;
