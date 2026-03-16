@@ -80,7 +80,7 @@
 
 .trust-badge i {
   font-size: 40px;
-  color: #10b981;
+  color: #4A90E2;
   flex-shrink: 0;
 }
 
@@ -188,7 +188,7 @@
 }
 
 .free-card {
-  border: 2px solid #10b981;
+  border: 2px solid #4A90E2;
 }
 
 .plan-header h3 {
@@ -199,7 +199,7 @@
 }
 
 .free-title {
-  color: #10b981 !important;
+  color: #4A90E2 !important;
   font-size: 32px !important;
 }
 
@@ -315,7 +315,7 @@
 
 .btn-free {
   width: 100%;
-  background: #10b981;
+  background: #4A90E2;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -327,7 +327,7 @@
 }
 
 .btn-free:hover {
-  background: #059669;
+  background: #357ABD;
   transform: translateY(-2px);
 }
 
@@ -537,5 +537,50 @@
   .pricing-section h2,
   .assisted-header h2 {
     font-size: 32px;
+  }
+}
+/* Hero Image Styles */
+.hero-image-container {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-main-image {
+  width: 600px;
+  height: auto;
+  max-width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  padding: 30px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.hero-main-image:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments for hero image */
+@media (max-width: 768px) {
+  .hero-image-container {
+    margin-bottom: 20px;
+  }
+  
+  .hero-main-image {
+    width: 500px;
+    padding: 25px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-main-image {
+    width: 400px;
+    padding: 20px;
+    border-radius: 6px;
   }
 }

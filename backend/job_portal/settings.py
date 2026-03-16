@@ -2,6 +2,7 @@
 Django settings for job_portal project.
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -10,13 +11,18 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-your-secret-key-here-change-in-production')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-localhost-development-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# Production-ready allowed hosts
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+# Localhost development hosts
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '*'  # Allow all for local development
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -36,6 +42,7 @@ INSTALLED_APPS = [
     'authentication',
     'recruiter',
     'admissions',
+    'admin_management',
 ]
 
 MIDDLEWARE = [
@@ -70,22 +77,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'job_portal.wsgi.application'
 
-# Database
-# Use PostgreSQL in production, SQLite in development
-if config('DATABASE_URL', default=None):
-    # Production database (PostgreSQL on Render)
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.parse(config('DATABASE_URL'))
+# Database - Use SQLite for localhost development
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    # Development database (SQLite)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 # Password validation
 # Relaxed for development/testing - only enforce minimum length
@@ -179,22 +177,35 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-# CORS Settings - Production ready
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
+# CORS Settings - Localhost development (more permissive for debugging)
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all for localhost development
 CORS_ALLOW_CREDENTIALS = True
-
-# Specify exact origins for production
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS', 
-    default='http://localhost:5173,http://127.0.0.1:5173',
-    cast=lambda v: [s.strip() for s in v.split(',')]
-)
-
-# Allow Render and Netlify domains
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.onrender\.com$",
-    r"^https://.*\.netlify\.app$",
-    r"^https://.*\.ngrok-free\.app$",
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+]
+
+# Localhost origins
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5176',
+    'http://127.0.0.1:5176',
+]
+
+# Allow all headers for debugging
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 # Ngrok settings for demo
@@ -203,3 +214,29 @@ SECURE_REFERRER_POLICY = None
 
 # Fix trailing slash issue for API endpoints
 APPEND_SLASH = False
+
+# Email Configuration
+EMAIL_BACKEND_TYPE = config('EMAIL_BACKEND', default='console')
+
+if EMAIL_BACKEND_TYPE == 'smtp':
+    # Production Gmail SMTP Configuration
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='MytechZ <noreply@mytechz.com>')
+    
+    # Additional Gmail settings
+    EMAIL_USE_SSL = False  # Use TLS instead
+    EMAIL_TIMEOUT = 30
+    
+    # Fallback to console if credentials missing
+    if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+        print("⚠️  WARNING: Email credentials not configured. Using console backend.")
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # Development - Console Backend (shows emails in terminal)
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'MytechZ <noreply@mytechz.com>'

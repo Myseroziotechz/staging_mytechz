@@ -159,20 +159,6 @@ function ProfileDropdown({ userInfo, onLogout }) {
                 >
                   Dashboard
                 </Link>
-                <Link 
-                  to="/admin/jobs" 
-                  className="dropdown-menu-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Manage Jobs
-                </Link>
-                <Link 
-                  to="/admin/users" 
-                  className="dropdown-menu-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Manage Users
-                </Link>
               </>
             )}
 

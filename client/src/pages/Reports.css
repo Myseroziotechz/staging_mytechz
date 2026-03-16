@@ -1,8 +1,34 @@
-/* ===== Reports Page - Professional Design ===== */
+/* ===== Reports Page - Professional Design - Transparent Theme 20241217-1450 ===== */
+
+/* REMOVE ALL BACKGROUND COLORS - TRANSPARENT THEME */
+.action-btn.shortlist,
+.action-btn.contact,
+.action-btn.view,
+.metric-card.green,
+.metric-card.blue,
+.action-icon-wrapper.green,
+.action-icon-wrapper.blue,
+*[style*="background: #10b981"],
+*[style*="background-color: #10b981"],
+*[style*="background: #4A90E2"],
+*[style*="background-color: #4A90E2"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+}
+
+.action-btn.shortlist:hover,
+.action-btn.contact:hover,
+.action-btn.view:hover {
+  background: #f9fafb !important;
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+}
 
 .reports-container {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: transparent;
   padding-bottom: 40px;
 }
 
@@ -35,7 +61,7 @@
 
 /* Page Header */
 .reports-header {
-  background: white;
+  background: transparent;
   border-bottom: 1px solid #e9ecef;
   padding: 32px 40px;
   margin-bottom: 32px;
@@ -72,7 +98,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: white;
+  background: transparent;
   border: 2px solid #667eea;
   color: #667eea;
   border-radius: 8px;
@@ -98,11 +124,11 @@
 
 /* Empty State */
 .empty-state {
-  background: white;
+  background: transparent;
   border-radius: 16px;
   padding: 80px 40px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
 }
 
 .empty-icon {
@@ -166,13 +192,13 @@
 }
 
 .metric-card {
-  background: white;
+  background: transparent;
   border-radius: 16px;
   padding: 28px;
   display: flex;
   align-items: center;
   gap: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
   border: 1px solid #f0f0f0;
   transition: all 0.3s ease;
 }
@@ -194,23 +220,31 @@
 
 .metric-icon i {
   font-size: 32px;
-  color: white;
+  color: #6b7280;
 }
 
 .metric-card.purple .metric-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
 }
 
 .metric-card.blue .metric-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
 }
 
 .metric-card.green .metric-icon {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
 }
 
 .metric-card.orange .metric-icon {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
 }
 
 .metric-content {
@@ -233,11 +267,11 @@
 
 /* Report Sections */
 .report-section {
-  background: white;
+  background: transparent;
   border-radius: 16px;
   padding: 32px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
   border: 1px solid #f0f0f0;
 }
 
@@ -312,7 +346,7 @@
 }
 
 .status-dot.hired {
-  background: #4caf50;
+  background: #2196f3;
 }
 
 .status-name {
@@ -354,7 +388,7 @@
 }
 
 .status-fill.hired {
-  background: #4caf50;
+  background: #2196f3;
 }
 
 .status-count {
@@ -373,7 +407,7 @@
 }
 
 .job-performance-card {
-  background: #f8f9fa;
+  background: transparent;
   border-radius: 12px;
   padding: 24px;
   position: relative;
@@ -441,14 +475,14 @@
   display: flex;
   gap: 16px;
   padding: 20px;
-  background: #f8f9fa;
+  background: transparent;
   border-radius: 12px;
   border-left: 4px solid #667eea;
   transition: all 0.2s ease;
 }
 
 .activity-item:hover {
-  background: #f0f2f5;
+  background: transparent;
   transform: translateX(4px);
 }
 
@@ -498,7 +532,7 @@
 }
 
 .action-card {
-  background: white;
+  background: transparent;
   border: 2px solid #e9ecef;
   border-radius: 12px;
   padding: 28px;
@@ -533,7 +567,7 @@
 }
 
 .action-icon-wrapper.green {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 .action-icon-wrapper.orange {
@@ -619,5 +653,249 @@
 
   .empty-state h2 {
     font-size: 24px;
+  }
+}
+
+/* Applications Section */
+.applications-section {
+  background: transparent;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: none;
+  border: 1px solid #f0f0f0;
+}
+
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.application-card {
+  background: transparent;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.application-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+}
+
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.candidate-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.candidate-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.candidate-details h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.candidate-email {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.application-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.status-badge.shortlisted {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.status-badge.rejected {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.application-date {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.job-info {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.job-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.job-location {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.cover-letter {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.cover-letter h5 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.cover-letter p {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.application-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn.shortlist {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.action-btn.shortlist:hover {
+  background: #0c5460;
+  color: white;
+}
+
+.action-btn.reject {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.action-btn.reject:hover {
+  background: #721c24;
+  color: white;
+}
+
+.action-btn.contact {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.action-btn.contact:hover {
+  background: #0c5460;
+  color: white;
+}
+
+.action-btn.view {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.action-btn.view:hover {
+  background: #383d41;
+  color: white;
+}
+
+/* Transparent metric card */
+.metric-card.red .metric-icon {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+/* Responsive adjustments for applications */
+@media (max-width: 768px) {
+  .application-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .application-meta {
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .application-actions {
+    justify-content: flex-start;
+  }
+  
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
   }
 }

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import ShareModal from '../ShareModal/ShareModal';
+import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 
 function WebinarCard({ webinar, onClick }) {
   const [showShareModal, setShowShareModal] = useState(false);
-  const handleRegister = async (e) => {
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  
+  const handleRegisterClick = (e) => {
     e.stopPropagation();
     
     const token = localStorage.getItem('token');
@@ -12,23 +15,45 @@ function WebinarCard({ webinar, onClick }) {
       return;
     }
 
+    // Show confirmation modal
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmRegistration = async () => {
+    const token = localStorage.getItem('token');
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/webinars/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/admin/register-webinar/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ webinar }),
+        body: JSON.stringify({ webinar_id: webinar.id }),
       });
 
-      if (response.ok) {
-        alert('Registration successful!');
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        if (window.showPopup) {
+          window.showPopup('Registration successful! You will receive confirmation details soon.', 'success');
+        } else {
+          alert('Registration successful! You will receive confirmation details soon.');
+        }
       } else {
-        alert('Failed to register');
+        if (window.showPopup) {
+          window.showPopup(data.message || 'Failed to register', 'error');
+        } else {
+          alert(data.message || 'Failed to register');
+        }
       }
     } catch (error) {
-      alert('Error registering for webinar');
+      console.error('Registration error:', error);
+      if (window.showPopup) {
+        window.showPopup('Error registering for webinar. Please try again.', 'error');
+      } else {
+        alert('Error registering for webinar. Please try again.');
+      }
     }
   };
 
@@ -64,7 +89,7 @@ function WebinarCard({ webinar, onClick }) {
             <span>{webinar.mode === 'Online' ? webinar.platform : webinar.venue}</span>
           </div>
           <div className="detail-item">
-            <i className="ri-money-rupee-circle-line"></i>
+            <i className="ri-money-dollar-line"></i>
             <span className={webinar.price === 'Free' ? 'free-price' : 'paid-price'}>
               {webinar.price}
             </span>
@@ -93,7 +118,7 @@ function WebinarCard({ webinar, onClick }) {
           </button>
           <button 
             className="register-btn" 
-            onClick={handleRegister}
+            onClick={handleRegisterClick}
             disabled={new Date(webinar.date) < new Date()}
           >
             <i className="ri-calendar-check-line"></i>
@@ -109,6 +134,17 @@ function WebinarCard({ webinar, onClick }) {
       shareUrl={`${window.location.origin}/webinar/${webinar.id}`}
       title={webinar.title}
       type="Webinar"
+    />
+    
+    <ConfirmationModal
+      isOpen={showConfirmationModal}
+      onClose={() => setShowConfirmationModal(false)}
+      onConfirm={handleConfirmRegistration}
+      title="Confirm Webinar Registration"
+      message={`Are you sure you want to register for "${webinar.title}"? You will receive confirmation details and joining instructions after registration.`}
+      confirmText="Yes, Register"
+      cancelText="Cancel"
+      type="webinar"
     />
     </>
   );

@@ -2,6 +2,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Resume Database endpoint
+    path('resume-database/', views.resume_database_view, name='resume_database'),
+    
+    # Individual candidate profile endpoint
+    path('candidate/<int:candidate_id>/', views.candidate_profile_view, name='candidate_profile'),
+    
     # Recruiter Company Profile endpoints
     path('company-profile', views.company_profile_view, name='company_profile'),
     path('update-company-profile', views.company_profile_view, name='update_company_profile'),  # Alias for frontend

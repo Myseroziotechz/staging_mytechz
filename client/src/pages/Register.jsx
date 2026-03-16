@@ -254,10 +254,6 @@ function Register() {
               <div className="signup-text">
                 Already have an account? <a href="/login">Login</a>
               </div>
-              
-              <div className="signup-text">
-                Are you a recruiter? <a href="/recruiter/register">Register as Recruiter</a>
-              </div>
             </form>
           </div>
         </div>

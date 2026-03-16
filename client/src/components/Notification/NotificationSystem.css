@@ -20,7 +20,7 @@
 }
 
 .notification.success {
-  border-left-color: #10b981;
+  border-left-color: #4A90E2;
 }
 
 .notification.error {
@@ -48,7 +48,7 @@
 }
 
 .notification.success .notification-icon {
-  color: #10b981;
+  color: #4A90E2;
 }
 
 .notification.error .notification-icon {
@@ -87,12 +87,12 @@
 }
 
 .confirm-btn {
-  background: #10b981;
+  background: #4A90E2;
   color: white;
 }
 
 .confirm-btn:hover {
-  background: #059669;
+  background: #357ABD;
 }
 
 .cancel-btn {

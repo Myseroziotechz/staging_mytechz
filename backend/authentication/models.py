@@ -46,8 +46,10 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     phone = models.CharField(
-        max_length=15,
-        validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")]
+        max_length=20,  # Increased to accommodate + and country codes
+        blank=True,
+        null=True,
+        help_text="Phone number in international format (e.g., +1234567890)"
     )
     
     # Personal Info
@@ -82,6 +84,10 @@ class User(AbstractUser):
     resume_file_name = models.CharField(max_length=255, null=True, blank=True)
     resume_file_path = models.FileField(upload_to='resumes/', null=True, blank=True)
     resume_uploaded_at = models.DateTimeField(null=True, blank=True)
+    
+    # Password Reset OTP
+    reset_otp = models.CharField(max_length=4, null=True, blank=True)
+    reset_otp_created = models.DateTimeField(null=True, blank=True)
     
     # Profile and Approval Status (for recruiters)
     profile_completed = models.BooleanField(default=False, help_text="Whether recruiter has completed their profile")

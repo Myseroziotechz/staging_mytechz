@@ -1,14 +1,28 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import './BuyFeatures.css';
 
 function BuyFeatures() {
+  const location = useLocation();
+  const isMainRecruiterPage = location.pathname === '/recruiter';
+
   return (
     <div className="buy-features-page">
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>Find, attract, and hire talent with MytechZ</h1>
+            {isMainRecruiterPage ? (
+              <div className="hero-image-container">
+                <img 
+                  src="/assets/photo.webp" 
+                  alt="Find, attract, and hire talent with MytechZ" 
+                  className="hero-main-image"
+                />
+              </div>
+            ) : (
+              <h1>Find, attract, and hire talent with MytechZ</h1>
+            )}
             <div className="hero-buttons">
               <button className="btn-primary">Post a free job</button>
               <button className="btn-secondary">Explore plans</button>

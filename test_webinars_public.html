@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Public Webinars API</title>
+</head>
+<body>
+    <h1>Public Webinars API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5010';
+        
+        async function testWebinarsAPI() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                // Test admin webinars endpoint (public access)
+                const response = await fetch(`${API_BASE}/api/admin/webinars/`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML = `
+                        <h2>✅ Admin Webinars API Success</h2>
+                        <h3>Count: ${data.webinars?.length || 0}</h3>
+                        <h3>Sample Webinar:</h3>
+                        <pre>${JSON.stringify(data.webinars?.[0] || {}, null, 2)}</pre>
+                        <h3>All Webinars:</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <h2>❌ API Failed</h2>
+                        <p>Status: ${response.status}</p>
+                        <p>Response: ${await response.text()}</p>
+                    `;
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run test on page load
+        testWebinarsAPI();
+    </script>
+</body>
+</html>

@@ -89,12 +89,17 @@ function WebinarListing() {
 
   const fetchWebinars = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/applications/webinars`);
+      // Use public webinars endpoint
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/webinars/public`);
       if (response.ok) {
         const data = await response.json();
-        setWebinars(data);
-        setFilteredWebinars(data);
+        // Use webinars from API response
+        const webinars = data.webinars || [];
+        setWebinars(webinars);
+        setFilteredWebinars(webinars);
       } else {
+        // Fallback to sample data if API fails
+        console.warn('Public webinars API failed, using sample data');
         setWebinars(sampleWebinars);
         setFilteredWebinars(sampleWebinars);
       }
@@ -174,13 +179,13 @@ function WebinarListing() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/webinars/${webinarId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/webinars/${webinarId}/`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.ok) {
-        setWebinars(webinars.filter(webinar => webinar._id !== webinarId));
+        setWebinars(webinars.filter(webinar => (webinar.id || webinar._id) !== webinarId));
         window.showNotification('Webinar deleted successfully!', 'success');
       }
     } catch (error) {

@@ -139,19 +139,108 @@ function ProfileNaukri() {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
+      console.log('Token exists:', !!token);
+      
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
+      }
+      
+      // Validate required fields
+      if (!profile.firstName || !profile.lastName || !profile.email) {
+        throw new Error('First name, last name, and email are required fields.');
+      }
+      
       const cleanProfile = { ...profile };
       
-      const optionalFields = ['bio', 'address', 'city', 'state', 'pincode', 'experience', 'education', 'linkedin', 'github', 'portfolio'];
+      // Convert frontend field names to backend field names
+      const backendProfile = {
+        first_name: cleanProfile.firstName,
+        last_name: cleanProfile.lastName,
+        phone: cleanProfile.phone,
+        gender: cleanProfile.gender,
+        address: cleanProfile.address,
+        city: cleanProfile.city,
+        state: cleanProfile.state,
+        pincode: cleanProfile.pincode,
+        bio: cleanProfile.bio,
+        experience: cleanProfile.experience,
+        education: cleanProfile.education,
+        linkedin_url: cleanProfile.linkedin,
+        github_url: cleanProfile.github,
+        portfolio_url: cleanProfile.portfolio,
+        skills: Array.isArray(cleanProfile.skills) ? cleanProfile.skills.join(', ') : cleanProfile.skills || ''
+      };
+      
+      // Clean up phone number - remove any formatting
+      if (backendProfile.phone) {
+        backendProfile.phone = backendProfile.phone.replace(/[^\d+]/g, '');
+        // If it's just digits and reasonable length, keep it
+        if (backendProfile.phone && !/^\+/.test(backendProfile.phone) && backendProfile.phone.length >= 9 && backendProfile.phone.length <= 15) {
+          // Valid phone number
+        } else if (backendProfile.phone && backendProfile.phone.length < 9) {
+          throw new Error('Phone number must be at least 9 digits long.');
+        }
+      }
+      
+      // Convert empty strings to null for optional fields
+      const optionalFields = ['bio', 'address', 'city', 'state', 'pincode', 'experience', 'education', 'linkedin_url', 'github_url', 'portfolio_url', 'phone', 'gender'];
       optionalFields.forEach(field => {
-        if (cleanProfile[field] === '') cleanProfile[field] = null;
+        if (backendProfile[field] === '' || backendProfile[field] === undefined) {
+          backendProfile[field] = null;
+        }
       });
       
-      if (!Array.isArray(cleanProfile.skills)) cleanProfile.skills = [];
-      if (cleanProfile.phone) cleanProfile.phone = cleanProfile.phone.trim();
-      
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`, cleanProfile, {
-        headers: { Authorization: `Bearer ${token}` }
+      // Validate social links format
+      const socialFields = ['linkedin_url', 'github_url', 'portfolio_url'];
+      socialFields.forEach(field => {
+        if (backendProfile[field] && backendProfile[field] !== null) {
+          if (!backendProfile[field].startsWith('http://') && !backendProfile[field].startsWith('https://')) {
+            backendProfile[field] = `https://${backendProfile[field]}`;
+          }
+        }
       });
+      
+      // Remove any undefined fields
+      Object.keys(backendProfile).forEach(key => {
+        if (backendProfile[key] === undefined) {
+          delete backendProfile[key];
+        }
+      });
+      
+      console.log('Updating profile with data:', backendProfile);
+      console.log('API URL:', `${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`);
+      console.log('Headers:', { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      });
+      
+      // Test if the API endpoint is reachable
+      try {
+        const testResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`, {
+          method: 'GET',
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log('Test GET request status:', testResponse.status);
+        if (!testResponse.ok) {
+          const testError = await testResponse.text();
+          console.log('Test GET request error:', testError);
+        }
+      } catch (testError) {
+        console.log('Test GET request failed:', testError);
+      }
+      
+      const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/auth/profile`, backendProfile, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000 // 10 second timeout
+      });
+      
+      console.log('Profile update response:', response.data);
       
       const user = JSON.parse(localStorage.getItem('user'));
       user.name = `${profile.firstName} ${profile.lastName}`;
@@ -163,8 +252,43 @@ function ProfileNaukri() {
       setEditingSection(null);
     } catch (error) {
       console.error('Profile update error:', error);
+      
+      // More detailed error handling
+      let errorMessage = 'Error updating profile';
+      if (error.response) {
+        // Server responded with error status
+        console.error('Server error response:', error.response.data);
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data && error.response.data.errors) {
+          // Handle validation errors
+          const errors = error.response.data.errors;
+          const errorMessages = [];
+          Object.keys(errors).forEach(field => {
+            if (Array.isArray(errors[field])) {
+              errorMessages.push(...errors[field]);
+            } else {
+              errorMessages.push(errors[field]);
+            }
+          });
+          errorMessage = errorMessages.join('. ');
+        }
+      } else if (error.request) {
+        // Network error
+        console.error('Network error:', error.request);
+        if (error.code === 'ECONNABORTED') {
+          errorMessage = 'Request timeout. Please check your connection and try again.';
+        } else {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        }
+      } else {
+        // Other error
+        console.error('Error:', error.message);
+        errorMessage = error.message || 'An unexpected error occurred';
+      }
+      
       if (window.showPopup) {
-        window.showPopup('Error updating profile', 'error');
+        window.showPopup(errorMessage, 'error');
       }
     } finally {
       setSaving(false);

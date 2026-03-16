@@ -8,35 +8,33 @@ function WebinarSearch({ onSearch }) {
     onSearch(searchTerm);
   };
 
-  const handleClear = () => {
-    setSearchTerm('');
-    onSearch('');
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    onSearch(value); // Real-time search like in Home
   };
 
   return (
-    <div className="search-section">
-      <div className="search-header">
+    <div className="webinar-search-section">
+      <div className="webinar-search-header">
         <h1>Discover Amazing Webinars</h1>
         <p>Learn from industry experts and expand your knowledge</p>
       </div>
       
-      <form className="search-form" onSubmit={handleSubmit}>
-        <div className="search-input-group">
-          <i className="ri-search-line search-icon"></i>
+      <div className="webinar-search-container">
+        <div className="webinar-search-wrapper">
           <input
             type="text"
+            className="webinar-search-input"
             placeholder="Search webinars by title, speaker, or category..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            onChange={handleInputChange}
           />
-          {searchTerm && (
-            <button type="button" onClick={handleClear} className="clear-btn">
-              <i className="ri-close-line"></i>
-            </button>
-          )}
+          <button className="webinar-search-btn" onClick={handleSubmit}>
+            <i className="ri-search-line"></i>
+          </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

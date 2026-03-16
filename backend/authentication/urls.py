@@ -8,6 +8,10 @@ urlpatterns = [
     path('login', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
     
+    # Password reset endpoints
+    path('forgot-password', views.forgot_password_view, name='forgot_password'),
+    path('reset-password', views.reset_password_view, name='reset_password'),
+    
     # Profile endpoints
     path('profile', views.profile_view, name='profile'),
     path('profile/update', views.profile_update_view, name='profile_update'),
@@ -16,6 +20,9 @@ urlpatterns = [
     
     # Recruiter endpoints
     path('candidates', views.candidates_list_view, name='candidates_list'),
+    
+    # Admin endpoints
+    path('users', views.users_list_view, name='users_list'),
     
     # Additional endpoints for frontend compatibility
     path('my-applications', views.my_applications_view, name='my_applications'),

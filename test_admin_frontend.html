@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Admin API Frontend</title>
+</head>
+<body>
+    <h1>Admin API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5010';
+        
+        async function testAdminAPI() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                // Login as admin
+                const loginResponse = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin2@test.com',
+                        password: 'admin123',
+                        role: 'admin'
+                    })
+                });
+                
+                const loginData = await loginResponse.json();
+                if (!loginData.token) {
+                    resultsDiv.innerHTML = '<p style="color: red;">Login failed</p>';
+                    return;
+                }
+                
+                const token = loginData.token;
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                };
+                
+                // Test webinars endpoint
+                const webinarsResponse = await fetch(`${API_BASE}/api/admin/webinars/`, { headers });
+                const webinarsData = await webinarsResponse.json();
+                
+                // Test admissions endpoint
+                const admissionsResponse = await fetch(`${API_BASE}/api/admin/admissions/`, { headers });
+                const admissionsData = await admissionsResponse.json();
+                
+                resultsDiv.innerHTML = `
+                    <h2>Login: ✅ Success</h2>
+                    <h2>Webinars: ${webinarsData.webinars?.length || 0} found</h2>
+                    <h2>Admissions: ${admissionsData.admissions?.length || 0} found</h2>
+                    <h3>Sample Webinar:</h3>
+                    <pre>${JSON.stringify(webinarsData.webinars?.[0] || {}, null, 2)}</pre>
+                    <h3>Sample Admission:</h3>
+                    <pre>${JSON.stringify(admissionsData.admissions?.[0] || {}, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run test on page load
+        testAdminAPI();
+    </script>
+</body>
+</html>

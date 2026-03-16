@@ -286,3 +286,125 @@ a:hover {
     border-radius: 8px;
   }
 }
+
+/* ===== BROWSER VALIDATION TOOLTIP STYLING ===== */
+/* Custom styling for HTML5 validation tooltips */
+input:invalid {
+  box-shadow: none; /* Remove default browser styling */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+input::-webkit-validation-bubble {
+  display: none; /* Hide default bubble */
+}
+
+input::-webkit-validation-bubble-message {
+  background: #e3f2fd !important; /* Light blue background */
+  color: #0d47a1 !important; /* Very dark blue text for maximum contrast */
+  border: 1px solid #90caf9 !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important; /* Bold text for better visibility */
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3) !important;
+  text-shadow: none !important;
+}
+
+input::-webkit-validation-bubble-arrow {
+  background: #e3f2fd !important;
+  border-color: #90caf9 !important;
+}
+
+/* Firefox validation styling */
+input::-moz-validation-bubble {
+  background: #e3f2fd !important;
+  color: #0d47a1 !important;
+  border: 1px solid #90caf9 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3) !important;
+}
+
+input::-moz-validation-bubble-message {
+  background: #e3f2fd !important;
+  color: #0d47a1 !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+}
+
+/* Alternative approach using CSS custom validation */
+.form-validation-tooltip {
+  position: absolute;
+  background: #e3f2fd !important;
+  color: #0d47a1 !important;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  z-index: 1000;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+.form-validation-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #90caf9;
+}
+
+.form-validation-tooltip::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #e3f2fd;
+}
+
+/* Dark mode validation tooltips */
+:root.dark .form-validation-tooltip {
+  background: #1e3a8a !important;
+  color: #ffffff !important; /* Pure white text for dark mode */
+  border-color: #3b82f6;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+:root.dark .form-validation-tooltip::before {
+  border-bottom-color: #3b82f6;
+}
+
+:root.dark .form-validation-tooltip::after {
+  border-bottom-color: #1e3a8a;
+}
+
+/* Additional global validation styling to ensure visibility */
+input:invalid:focus {
+  outline: 2px solid #0d47a1 !important;
+  outline-offset: 2px;
+}
+
+/* Force text visibility in validation messages */
+*[data-validation-message],
+*[title*="fill"],
+*[title*="required"],
+*[title*="Please"] {
+  color: #0d47a1 !important;
+  background: #e3f2fd !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+}

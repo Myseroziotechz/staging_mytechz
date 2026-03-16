@@ -49,6 +49,31 @@ function Profile() {
       console.error('Error fetching profile:', error);
       if (window.showPopup) {
         window.showPopup('Error loading profile data', 'error');
+      } else {
+        // Fallback notification
+        console.error('ERROR: Error loading profile data');
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #dc3545;
+          color: white;
+          padding: 16px 24px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 10000;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+        `;
+        notification.textContent = 'Error loading profile data';
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 6000);
       }
     } finally {
       setLoading(false);
@@ -90,6 +115,24 @@ function Profile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Handle phone number - only allow numbers, +, -, (, ), and spaces
+    if (name === 'phone') {
+      const phoneValue = value.replace(/[^0-9+\-\(\)\s]/g, '');
+      setProfile(prev => ({ ...prev, [name]: phoneValue }));
+      return;
+    }
+    
+    // Handle pincode - only allow numbers
+    if (name === 'pincode') {
+      const pincodeValue = value.replace(/[^0-9]/g, '');
+      // Limit to 6 digits for Indian pincodes
+      if (pincodeValue.length <= 6) {
+        setProfile(prev => ({ ...prev, [name]: pincodeValue }));
+      }
+      return;
+    }
+    
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
@@ -144,15 +187,23 @@ function Profile() {
         skills: Array.isArray(cleanProfile.skills) ? cleanProfile.skills.join(', ') : cleanProfile.skills || ''
       };
       
-      // Clean up phone number - remove any formatting
+      // Clean up phone number - remove any formatting and validate
       if (backendProfile.phone) {
-        backendProfile.phone = backendProfile.phone.replace(/[^\d+]/g, '');
-        // If it's just digits and reasonable length, keep it
-        if (backendProfile.phone && !/^\+/.test(backendProfile.phone) && backendProfile.phone.length >= 9 && backendProfile.phone.length <= 15) {
-          // Valid phone number
-        } else if (backendProfile.phone && backendProfile.phone.length < 9) {
-          throw new Error('Phone number must be at least 9 digits long.');
+        // Remove all non-digit characters except +
+        let cleanPhone = backendProfile.phone.replace(/[^\d+]/g, '');
+        
+        // If it doesn't start with +, and it's a valid length, add + prefix
+        if (!cleanPhone.startsWith('+') && cleanPhone.length >= 9 && cleanPhone.length <= 15) {
+          cleanPhone = `+${cleanPhone}`;
         }
+        
+        // Validate final format
+        if (cleanPhone.length < 10 || cleanPhone.length > 16) { // +1234567890 = 11 chars minimum
+          throw new Error('Phone number must be between 9-15 digits long.');
+        }
+        
+        backendProfile.phone = cleanPhone;
+        console.log('Cleaned phone number:', cleanPhone);
       }
       
       // Convert empty strings to null for optional fields
@@ -185,34 +236,101 @@ function Profile() {
       console.log('VITE_API_BASE_URL from env:', import.meta.env.VITE_API_BASE_URL);
       
       // Force local development URL for now
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5010';
+      const apiUrl = 'http://127.0.0.1:5010';  // Hardcode for debugging
       const profileUrl = `${apiUrl}/api/auth/profile`;
       console.log('Using API URL:', profileUrl);
-      
-      const response = await axios.put(profileUrl, backendProfile, {
+      console.log('Full request details:', {
+        url: profileUrl,
+        method: 'PUT',
         headers: { 
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token?.substring(0, 20)}...`,
           'Content-Type': 'application/json'
         },
-        timeout: 10000 // 10 second timeout
+        data: backendProfile
       });
       
-      console.log('Profile update response:', response.data);
+      // Use fetch instead of axios for better debugging
+      const response = await fetch(profileUrl, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(backendProfile)
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Error response text:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('Profile update response:', responseData);
       
       const user = JSON.parse(localStorage.getItem('user'));
       user.name = `${profile.firstName} ${profile.lastName}`;
       localStorage.setItem('user', JSON.stringify(user));
       
-      if (window.showPopup) {
-        window.showPopup('Profile updated successfully!', 'success');
-      }
+      // Force a small delay to ensure popup system is ready
+      setTimeout(() => {
+        if (window.showPopup) {
+          window.showPopup('Profile updated successfully!', 'success');
+        } else {
+          // Fallback notification system
+          console.log('SUCCESS: Profile updated successfully!');
+          // Create a temporary notification element
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            z-index: 99999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 280px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideInRight 0.3s ease-out;
+          `;
+          notification.innerHTML = `
+            <i class="ri-check-circle-line" style="font-size: 18px;"></i>
+            <span>Profile updated successfully!</span>
+          `;
+          document.body.appendChild(notification);
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.style.animation = 'slideOutRight 0.3s ease-in';
+              setTimeout(() => {
+                if (notification.parentNode) {
+                  notification.parentNode.removeChild(notification);
+                }
+              }, 300);
+            }
+          }, 4000);
+        }
+      }, 100);
       setEditingSection(null);
     } catch (error) {
       console.error('Profile update error:', error);
       
       // More detailed error handling
       let errorMessage = 'Error updating profile';
-      if (error.response) {
+      
+      if (error.message && error.message.includes('HTTP')) {
+        // HTTP error from our fetch
+        errorMessage = error.message;
+      } else if (error.response) {
         // Server responded with error status
         console.error('Server error response:', error.response.data);
         if (error.response.data && error.response.data.message) {
@@ -244,9 +362,53 @@ function Profile() {
         errorMessage = error.message || 'An unexpected error occurred';
       }
       
-      if (window.showPopup) {
-        window.showPopup(errorMessage, 'error');
-      }
+      // Force a small delay to ensure popup system is ready
+      setTimeout(() => {
+        if (window.showPopup) {
+          window.showPopup(errorMessage, 'error');
+        } else {
+          // Fallback notification system
+          console.error('ERROR:', errorMessage);
+          // Create a temporary notification element
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            z-index: 99999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 400px;
+            word-wrap: break-word;
+            min-width: 280px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            animation: slideInRight 0.3s ease-out;
+          `;
+          notification.innerHTML = `
+            <i class="ri-error-warning-line" style="font-size: 18px; margin-top: 1px; flex-shrink: 0;"></i>
+            <span style="flex: 1; line-height: 1.4;">Error: ${errorMessage}</span>
+          `;
+          document.body.appendChild(notification);
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.style.animation = 'slideOutRight 0.3s ease-in';
+              setTimeout(() => {
+                if (notification.parentNode) {
+                  notification.parentNode.removeChild(notification);
+                }
+              }, 300);
+            }
+          }, 8000);
+        }
+      }, 100);
     } finally {
       setSaving(false);
     }
@@ -389,7 +551,7 @@ function Profile() {
               }}
               style={{
                 padding: '0.5rem 1.25rem',
-                backgroundColor: editingSection ? '#22c55e' : '#4A90E2',
+                backgroundColor: editingSection ? '#4A90E2' : '#4A90E2',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
@@ -802,6 +964,9 @@ function Profile() {
                               value={profile.phone}
                               onChange={handleInputChange}
                               className="naukri-form-input"
+                              placeholder="Enter phone number"
+                              pattern="[0-9+\-\(\)\s]*"
+                              maxLength="15"
                             />
                           </div>
                           <div className="naukri-form-group">
@@ -856,6 +1021,10 @@ function Profile() {
                               value={profile.pincode}
                               onChange={handleInputChange}
                               className="naukri-form-input"
+                              placeholder="Enter 6-digit pincode"
+                              pattern="[0-9]*"
+                              maxLength="6"
+                              inputMode="numeric"
                             />
                           </div>
                           <div className="naukri-form-group" style={{ gridColumn: '1 / -1' }}>

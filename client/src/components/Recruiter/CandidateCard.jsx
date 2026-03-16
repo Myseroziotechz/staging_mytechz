@@ -9,104 +9,75 @@ function CandidateCard({ candidate, onSave, onView }) {
     onSave(candidate.id);
   };
 
-  const getExperienceColor = (experience) => {
-    const years = parseInt(experience);
-    if (years <= 1) return '#22c55e'; // Green for fresher
-    if (years <= 3) return '#3b82f6'; // Blue for junior
-    if (years <= 5) return '#f59e0b'; // Orange for mid-level
-    return '#ef4444'; // Red for senior
+  const getInitials = (name) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  const getProfileCompletionColor = (completion) => {
-    if (completion >= 90) return '#22c55e';
-    if (completion >= 70) return '#f59e0b';
-    return '#ef4444';
+  const getAvatarColor = (name) => {
+    const colors = [
+      '#6366f1', '#8b5cf6', '#06b6d4', '#4A90E2', 
+      '#f59e0b', '#ef4444', '#ec4899', '#84cc16'
+    ];
+    const index = name.length % colors.length;
+    return colors[index];
   };
 
   return (
-    <div className="candidate-card" onClick={() => onView(candidate)}>
+    <div className="candidate-card">
       <div className="candidate-card-header">
-        <div className="candidate-avatar">
+        <div className="candidate-avatar" style={{ backgroundColor: getAvatarColor(candidate.name) }}>
           {candidate.profilePhoto ? (
             <img src={candidate.profilePhoto} alt={candidate.name} />
           ) : (
-            <div className="default-avatar">
-              <i className="ri-user-line"></i>
-            </div>
+            <span className="avatar-initials">{getInitials(candidate.name)}</span>
           )}
         </div>
         
-        <div className="candidate-info">
-          <h3 className="candidate-name">{candidate.name}</h3>
-          <p className="candidate-role">{candidate.jobRole}</p>
-          <div className="candidate-experience">
-            <span 
-              className="experience-badge"
-              style={{ backgroundColor: getExperienceColor(candidate.experience) }}
-            >
-              {candidate.experience} exp
-            </span>
+        <div className="candidate-basic-info">
+          <div className="candidate-role-badge">Professional</div>
+          <div className="candidate-salary">
+            <i className="ri-money-dollar-circle-line"></i>
           </div>
-        </div>
-
-        <div className="candidate-actions">
           <button
-            className={`save-btn ${isSaved ? 'saved' : ''}`}
+            className={`bookmark-btn ${isSaved ? 'saved' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
               handleSave();
             }}
             title={isSaved ? 'Remove from saved' : 'Save profile'}
           >
-            <i className={isSaved ? 'ri-bookmark-fill' : 'ri-bookmark-line'}></i>
+            <i className="ri-bookmark-line"></i>
           </button>
         </div>
       </div>
 
-      <div className="candidate-skills">
-        <div className="skills-container">
-          {candidate.skills.slice(0, 4).map((skill, index) => (
-            <span key={index} className="skill-tag">
-              {skill}
-            </span>
-          ))}
-          {candidate.skills.length > 4 && (
-            <span className="skill-tag more">
-              +{candidate.skills.length - 4} more
-            </span>
-          )}
+      <div className="candidate-details-section">
+        <div className="candidate-name-section">
+          <h3 className="candidate-name">{candidate.name}</h3>
+          <p className="candidate-job-role">{candidate.jobRole}</p>
         </div>
-      </div>
-
-      <div className="candidate-details">
-        <div className="detail-item">
+        
+        <div className="detail-row">
           <i className="ri-map-pin-line"></i>
-          <span>{candidate.location}</span>
+          <span className="detail-text">{candidate.location || 'Location not specified'}</span>
         </div>
-        <div className="detail-item">
-          <i className="ri-money-dollar-circle-line"></i>
-          <span>{candidate.expectedSalary}</span>
+        <div className="detail-row">
+          <i className="ri-briefcase-line"></i>
+          <span className="detail-text">{candidate.experience} years experience</span>
         </div>
-        <div className="detail-item">
+        <div className="detail-row">
           <i className="ri-graduation-cap-line"></i>
-          <span>{candidate.education}</span>
+          <span className="detail-text">{candidate.education || 'Education not specified'}</span>
         </div>
       </div>
 
       <div className="candidate-footer">
-        <div className="profile-completion">
-          <div className="completion-bar">
-            <div 
-              className="completion-fill"
-              style={{ 
-                width: `${candidate.profileCompletion}%`,
-                backgroundColor: getProfileCompletionColor(candidate.profileCompletion)
-              }}
-            ></div>
-          </div>
-          <span className="completion-text">
-            {candidate.profileCompletion}% complete
-          </span>
+        <div className="completion-section">
+          <div className="completion-indicator" style={{ 
+            backgroundColor: candidate.profileCompletion >= 70 ? '#4A90E2' : 
+                           candidate.profileCompletion >= 40 ? '#f59e0b' : '#ef4444' 
+          }}></div>
+          <span className="completion-text">{candidate.profileCompletion}% complete</span>
         </div>
         
         <div className="last-active">
@@ -117,7 +88,7 @@ function CandidateCard({ candidate, onSave, onView }) {
 
       <div className="candidate-card-actions">
         <button 
-          className="view-profile-btn"
+          className="view-profile-btn full-width"
           onClick={(e) => {
             e.stopPropagation();
             onView(candidate);
@@ -125,17 +96,6 @@ function CandidateCard({ candidate, onSave, onView }) {
         >
           <i className="ri-eye-line"></i>
           View Profile
-        </button>
-        <button 
-          className="contact-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Handle contact functionality
-            window.location.href = `/recruiter/contact/${candidate.id}`;
-          }}
-        >
-          <i className="ri-message-line"></i>
-          Contact
         </button>
       </div>
     </div>

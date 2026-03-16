@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Public Webinars Frontend</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .webinar { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Public Webinars Test</h1>
+    <div id="status"></div>
+    <div id="webinars"></div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5010';
+        
+        async function loadWebinars() {
+            const statusDiv = document.getElementById('status');
+            const webinarsDiv = document.getElementById('webinars');
+            
+            try {
+                statusDiv.innerHTML = '<p>Loading webinars...</p>';
+                
+                const response = await fetch(`${API_BASE}/api/webinars/public`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    statusDiv.innerHTML = `
+                        <p class="success">✅ API Success</p>
+                        <p>Total webinars: ${data.total}</p>
+                        <p>Webinars loaded: ${data.webinars?.length || 0}</p>
+                    `;
+                    
+                    if (data.webinars && data.webinars.length > 0) {
+                        webinarsDiv.innerHTML = data.webinars.map(webinar => `
+                            <div class="webinar">
+                                <h3>${webinar.title}</h3>
+                                <p><strong>Speaker:</strong> ${webinar.speaker}</p>
+                                <p><strong>Organization:</strong> ${webinar.organization}</p>
+                                <p><strong>Date:</strong> ${webinar.date}</p>
+                                <p><strong>Time:</strong> ${webinar.time}</p>
+                                <p><strong>Mode:</strong> ${webinar.mode}</p>
+                                <p><strong>Price:</strong> ₹${webinar.price}</p>
+                                <p><strong>Category:</strong> ${webinar.category}</p>
+                                <p><strong>Active:</strong> ${webinar.is_active ? 'Yes' : 'No'}</p>
+                            </div>
+                        `).join('');
+                    } else {
+                        webinarsDiv.innerHTML = '<p>No webinars found</p>';
+                    }
+                } else {
+                    statusDiv.innerHTML = `
+                        <p class="error">❌ API Failed</p>
+                        <p>Status: ${response.status}</p>
+                        <p>Response: ${await response.text()}</p>
+                    `;
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Load webinars on page load
+        loadWebinars();
+    </script>
+</body>
+</html>

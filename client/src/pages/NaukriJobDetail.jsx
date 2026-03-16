@@ -20,6 +20,15 @@ function NaukriJobDetail() {
     window.scrollTo(0, 0);
   }, [jobId]);
 
+  // Load saved state from localStorage
+  useEffect(() => {
+    if (jobId) {
+      const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+      const isJobSaved = savedJobs.includes(parseInt(jobId));
+      setIsSaved(isJobSaved);
+    }
+  }, [jobId]);
+
   const fetchJobDetails = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -148,10 +157,29 @@ function NaukriJobDetail() {
   };
 
   const handleSave = () => {
-    setIsSaved(!isSaved);
-    // TODO: Implement save job API call
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+    
+    // Update localStorage
+    const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    const jobIdNum = parseInt(jobId);
+    
+    if (newSavedState) {
+      // Add to saved jobs
+      if (!savedJobs.includes(jobIdNum)) {
+        savedJobs.push(jobIdNum);
+      }
+    } else {
+      // Remove from saved jobs
+      const index = savedJobs.indexOf(jobIdNum);
+      if (index > -1) {
+        savedJobs.splice(index, 1);
+      }
+    }
+    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+    
     if (window.showPopup) {
-      window.showPopup(isSaved ? 'Job removed from saved' : 'Job saved successfully', 'success');
+      window.showPopup(newSavedState ? 'Job saved successfully' : 'Job removed from saved', 'success');
     }
   };
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Profile Update</title>
+</head>
+<body>
+    <h1>Debug Profile Update</h1>
+    <button onclick="testProfileUpdate()">Test Profile Update</button>
+    <div id="output"></div>
+
+    <script>
+        async function testProfileUpdate() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Testing profile update...</p>';
+            
+            try {
+                // Get token from localStorage (you need to be logged in)
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    output.innerHTML += '<p style="color: red;">No token found. Please log in first.</p>';
+                    return;
+                }
+                
+                const apiUrl = 'http://127.0.0.1:5010';
+                const profileUrl = `${apiUrl}/api/auth/profile`;
+                
+                output.innerHTML += `<p>API URL: ${profileUrl}</p>`;
+                output.innerHTML += `<p>Token: ${token.substring(0, 20)}...</p>`;
+                
+                // Test data
+                const testData = {
+                    first_name: 'Test',
+                    last_name: 'User',
+                    bio: 'This is a test update'
+                };
+                
+                output.innerHTML += `<p>Sending data: ${JSON.stringify(testData)}</p>`;
+                
+                const response = await fetch(profileUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                output.innerHTML += `<p>Response status: ${response.status}</p>`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    output.innerHTML += `<p style="color: green;">Success: ${JSON.stringify(data)}</p>`;
+                } else {
+                    const errorText = await response.text();
+                    output.innerHTML += `<p style="color: red;">Error: ${errorText}</p>`;
+                }
+                
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">Exception: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

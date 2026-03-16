@@ -909,3 +909,161 @@ def update_application_status_view(request, application_id):
             'success': False,
             'message': 'Application not found'
         }, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([IsRecruiter])
+def candidate_profile_view(request, candidate_id):
+    """
+    Individual Candidate Profile API - Get detailed candidate information
+    """
+    
+    try:
+        # Get the specific candidate
+        candidate = get_object_or_404(User, id=candidate_id, role='candidate', is_active=True)
+        
+        # Calculate experience years (simplified)
+        experience_years = 0
+        if candidate.experience:
+            # Try to extract years from experience text
+            import re
+            years_match = re.search(r'(\d+)\s*(?:year|yr)', candidate.experience.lower())
+            if years_match:
+                experience_years = int(years_match.group(1))
+        
+        # Format skills
+        skills = candidate.get_skills_list() if candidate.skills else []
+        
+        # Create detailed candidate profile data
+        candidate_profile = {
+            'id': candidate.id,
+            'name': candidate.full_name,
+            'email': candidate.email,
+            'phone': candidate.phone or '',
+            'location': f"{candidate.city or ''}, {candidate.state or ''}".strip(', '),
+            'skills': skills,
+            'experience': str(experience_years),
+            'jobRole': skills[0] if skills else 'Professional',  # Use first skill as job role
+            'currentCompany': 'Available',  # Default since we don't have current company field
+            'availability': 'Available',  # Default availability
+            'lastActive': candidate.updated_at.strftime('%Y-%m-%d') if candidate.updated_at else '',
+            'bio': candidate.bio or '',
+            'education': candidate.education or '',
+            'linkedin': candidate.linkedin_url or '',
+            'github': candidate.github_url or '',
+            'portfolio': candidate.portfolio_url or '',
+            'resumeFile': candidate.resume_file_name or '',
+            'profileCompletion': calculate_profile_completion(candidate),
+            'joinedDate': candidate.created_at.strftime('%Y-%m-%d') if candidate.created_at else '',
+            'profilePhoto': None,  # Add profile photo URL if available
+        }
+        
+        return Response({
+            'success': True,
+            'message': 'Candidate profile retrieved successfully',
+            'candidate': candidate_profile
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Error in candidate_profile_view: {str(e)}")
+        return Response({
+            'success': False,
+            'message': 'Failed to load candidate profile',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsRecruiter])
+def resume_database_view(request):
+    """
+    Resume Database API - Get all candidate profiles for recruiters
+    Returns candidate data for the resume database search functionality
+    """
+    
+    try:
+        # Get all candidates (users with role='candidate')
+        candidates = User.objects.filter(role='candidate', is_active=True)
+        
+        # Format candidate data for frontend
+        candidate_data = []
+        for candidate in candidates:
+            # Calculate experience years (simplified)
+            experience_years = 0
+            if candidate.experience:
+                # Try to extract years from experience text
+                import re
+                years_match = re.search(r'(\d+)\s*(?:year|yr)', candidate.experience.lower())
+                if years_match:
+                    experience_years = int(years_match.group(1))
+            
+            # Format skills
+            skills = candidate.get_skills_list() if candidate.skills else []
+            
+            # Create candidate profile data
+            candidate_profile = {
+                'id': candidate.id,
+                'name': candidate.full_name,
+                'email': candidate.email,
+                'phone': candidate.phone or '',
+                'location': f"{candidate.city or ''}, {candidate.state or ''}".strip(', '),
+                'skills': skills,
+                'experience': str(experience_years),
+                'jobRole': skills[0] if skills else 'Professional',  # Use first skill as job role
+                'currentCompany': 'Available',  # Default since we don't have current company field
+                'availability': 'Available',  # Default availability
+                'lastActive': candidate.updated_at.strftime('%Y-%m-%d') if candidate.updated_at else '',
+                'bio': candidate.bio or '',
+                'education': candidate.education or '',
+                'linkedin': candidate.linkedin_url or '',
+                'github': candidate.github_url or '',
+                'portfolio': candidate.portfolio_url or '',
+                'resumeFile': candidate.resume_file_name or '',
+                'profileCompletion': calculate_profile_completion(candidate),
+                'joinedDate': candidate.created_at.strftime('%Y-%m-%d') if candidate.created_at else '',
+            }
+            
+            candidate_data.append(candidate_profile)
+        
+        return Response({
+            'success': True,
+            'message': f'Found {len(candidate_data)} candidates',
+            'candidates': candidate_data,
+            'total': len(candidate_data)
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Error in resume_database_view: {str(e)}")
+        return Response({
+            'success': False,
+            'message': 'Failed to load candidates',
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def calculate_profile_completion(user):
+    """Calculate profile completion percentage for a candidate"""
+    fields_to_check = [
+        'first_name', 'last_name', 'email', 'phone', 'city', 'state',
+        'bio', 'skills', 'experience', 'education'
+    ]
+    
+    completed_fields = 0
+    total_fields = len(fields_to_check)
+    
+    for field in fields_to_check:
+        value = getattr(user, field, None)
+        if value and str(value).strip():
+            completed_fields += 1
+    
+    # Add bonus for social links
+    social_links = [user.linkedin_url, user.github_url, user.portfolio_url]
+    if any(link for link in social_links if link):
+        completed_fields += 1
+        total_fields += 1
+    
+    # Add bonus for resume
+    if user.resume_file_name or user.resume_file_path:
+        completed_fields += 1
+        total_fields += 1
+    
+    return int((completed_fields / total_fields) * 100) if total_fields > 0 else 0

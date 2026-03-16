@@ -27,6 +27,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
 import RecruiterHome from './components/RecruiterHome';
 import CandidateSearch from './pages/CandidateSearch';
+import CandidateProfile from './pages/CandidateProfile';
 import SavedProfiles from './pages/SavedProfiles';
 import PostedJobs from './pages/PostedJobs';
 import RecruiterSubscription from './pages/RecruiterSubscription';
@@ -56,8 +57,15 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Global popup function
     window.showPopup = (message, type = 'success') => {
+      console.log(`Popup triggered: ${type.toUpperCase()} - ${message}`);
       setNotification({ message, type, isVisible: true });
+    };
+
+    // Cleanup function
+    return () => {
+      delete window.showPopup;
     };
   }, []);
 
@@ -133,6 +141,11 @@ function App() {
         <Route path="/recruiter/resume-database" element={
           <ProtectedRoute requiredRole="recruiter">
             <CandidateSearch />
+          </ProtectedRoute>
+        } />
+        <Route path="/recruiter/candidate/:candidateId" element={
+          <ProtectedRoute requiredRole="recruiter">
+            <CandidateProfile />
           </ProtectedRoute>
         } />
         <Route path="/recruiter/post-internship" element={

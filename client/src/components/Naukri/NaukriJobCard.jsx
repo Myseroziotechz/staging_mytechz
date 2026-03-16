@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './NaukriJobCard.css';
 
 const NaukriJobCard = ({ job, onApply, onSave, isSaved = false }) => {
   const [saved, setSaved] = useState(isSaved);
 
+  // Load saved state from localStorage on component mount
+  useEffect(() => {
+    const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    const isJobSaved = savedJobs.includes(job.id);
+    setSaved(isJobSaved);
+  }, [job.id]);
+
   const handleSave = (e) => {
     e.stopPropagation();
-    setSaved(!saved);
+    const newSavedState = !saved;
+    setSaved(newSavedState);
+    
+    // Update localStorage
+    const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    if (newSavedState) {
+      // Add to saved jobs
+      if (!savedJobs.includes(job.id)) {
+        savedJobs.push(job.id);
+      }
+    } else {
+      // Remove from saved jobs
+      const index = savedJobs.indexOf(job.id);
+      if (index > -1) {
+        savedJobs.splice(index, 1);
+      }
+    }
+    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+    
     if (onSave) {
-      onSave(job.id, !saved);
+      onSave(job.id, newSavedState);
     }
   };
 

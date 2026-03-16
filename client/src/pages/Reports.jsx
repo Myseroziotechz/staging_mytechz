@@ -3,27 +3,19 @@ import './Reports.css';
 
 function Reports() {
   const [loading, setLoading] = useState(true);
+  const [applications, setApplications] = useState([]);
   const [stats, setStats] = useState({
-    totalJobs: 0,
-    activeJobs: 0,
     totalApplications: 0,
-    totalViews: 0,
-    avgApplicationsPerJob: 0,
-    topPerformingJobs: [],
-    applicationsByStatus: {
-      pending: 0,
-      shortlisted: 0,
-      rejected: 0,
-      hired: 0
-    },
-    recentActivity: []
+    pendingApplications: 0,
+    shortlistedApplications: 0,
+    rejectedApplications: 0
   });
 
   useEffect(() => {
-    fetchReportsData();
+    fetchApplicationsData();
   }, []);
 
-  const fetchReportsData = async () => {
+  const fetchApplicationsData = async () => {
     try {
       const token = localStorage.getItem('token');
       
@@ -32,56 +24,64 @@ function Reports() {
         return;
       }
 
-      // Demo mode
-      if (token === 'demo-recruiter-token') {
-        const demoStats = {
-          totalJobs: 12,
-          activeJobs: 8,
-          totalApplications: 156,
-          totalViews: 2340,
-          avgApplicationsPerJob: 13,
-          topPerformingJobs: [
-            { title: 'Senior React Developer', applications: 45, views: 320 },
-            { title: 'Full Stack Engineer', applications: 38, views: 280 },
-            { title: 'UI/UX Designer', applications: 32, views: 245 }
-          ],
-          applicationsByStatus: {
-            pending: 89,
-            shortlisted: 42,
-            rejected: 18,
-            hired: 7
-          },
-          recentActivity: [
-            { action: 'New Application', job: 'Senior React Developer', time: '2 hours ago' },
-            { action: 'Job Published', job: 'DevOps Engineer', time: '5 hours ago' },
-            { action: 'Candidate Shortlisted', job: 'Full Stack Engineer', time: '1 day ago' }
-          ]
-        };
-        setStats(demoStats);
-        setLoading(false);
-        return;
-      }
-
-      // Real API call would go here
-      setStats({
-        totalJobs: 0,
-        activeJobs: 0,
-        totalApplications: 0,
-        totalViews: 0,
-        avgApplicationsPerJob: 0,
-        topPerformingJobs: [],
-        applicationsByStatus: {
-          pending: 0,
-          shortlisted: 0,
-          rejected: 0,
-          hired: 0
-        },
-        recentActivity: []
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/recruiter/applications/recruiter`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+
+      if (response.ok) {
+        const data = await response.json();
+        setApplications(data.applications || []);
+        
+        // Calculate stats
+        const total = data.applications?.length || 0;
+        const pending = data.applications?.filter(app => app.status === 'pending').length || 0;
+        const shortlisted = data.applications?.filter(app => app.status === 'shortlisted').length || 0;
+        const rejected = data.applications?.filter(app => app.status === 'rejected').length || 0;
+        
+        setStats({
+          totalApplications: total,
+          pendingApplications: pending,
+          shortlistedApplications: shortlisted,
+          rejectedApplications: rejected
+        });
+      } else {
+        console.error('Failed to fetch applications');
+      }
     } catch (error) {
-      console.error('Error fetching reports:', error);
+      console.error('Error fetching applications:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateApplicationStatus = async (applicationId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/recruiter/applications/${applicationId}/update-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (response.ok) {
+        // Refresh the applications data
+        fetchApplicationsData();
+        if (window.showPopup) {
+          window.showPopup('Application status updated successfully!', 'success');
+        }
+      } else {
+        if (window.showPopup) {
+          window.showPopup('Failed to update application status', 'error');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating application status:', error);
+      if (window.showPopup) {
+        window.showPopup('Error updating application status', 'error');
+      }
     }
   };
 
@@ -90,39 +90,31 @@ function Reports() {
       <div className="reports-container">
         <div className="reports-loading">
           <i className="ri-loader-4-line"></i>
-          <p>Loading analytics...</p>
+          <p>Loading applications...</p>
         </div>
       </div>
     );
   }
-
-  const hasData = stats.totalJobs > 0 || stats.totalApplications > 0;
 
   return (
     <div className="reports-container">
       <div className="reports-header">
         <div className="header-content">
           <div className="header-text">
-            <h1>Reports & Analytics</h1>
-            <p>Track your recruitment performance and insights</p>
-          </div>
-          <div className="header-actions">
-            <button className="export-btn">
-              <i className="ri-download-line"></i>
-              Export Report
-            </button>
+            <h1>Job Applications</h1>
+            <p>Manage candidates who have applied to your jobs</p>
           </div>
         </div>
       </div>
 
       <div className="reports-main">
-        {!hasData ? (
+        {applications.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">
-              <i className="ri-bar-chart-box-line"></i>
+              <i className="ri-file-list-3-line"></i>
             </div>
-            <h2>No Analytics Data Yet</h2>
-            <p>Start posting jobs and receiving applications to see your performance metrics</p>
+            <h2>No Applications Yet</h2>
+            <p>Start posting jobs to receive applications from candidates</p>
             <button 
               className="primary-action-btn"
               onClick={() => window.location.href = '/recruiter/post-job'}
@@ -134,27 +126,7 @@ function Reports() {
         ) : (
           <>
             <div className="metrics-grid">
-              <div className="metric-card purple">
-                <div className="metric-icon">
-                  <i className="ri-briefcase-4-line"></i>
-                </div>
-                <div className="metric-content">
-                  <div className="metric-value">{stats.totalJobs}</div>
-                  <div className="metric-label">Total Jobs Posted</div>
-                </div>
-              </div>
-
               <div className="metric-card blue">
-                <div className="metric-icon">
-                  <i className="ri-checkbox-circle-line"></i>
-                </div>
-                <div className="metric-content">
-                  <div className="metric-value">{stats.activeJobs}</div>
-                  <div className="metric-label">Active Jobs</div>
-                </div>
-              </div>
-
-              <div className="metric-card green">
                 <div className="metric-icon">
                   <i className="ri-file-list-3-line"></i>
                 </div>
@@ -166,176 +138,116 @@ function Reports() {
 
               <div className="metric-card orange">
                 <div className="metric-icon">
-                  <i className="ri-eye-line"></i>
+                  <i className="ri-time-line"></i>
                 </div>
                 <div className="metric-content">
-                  <div className="metric-value">{stats.totalViews.toLocaleString()}</div>
-                  <div className="metric-label">Total Job Views</div>
+                  <div className="metric-value">{stats.pendingApplications}</div>
+                  <div className="metric-label">Pending Review</div>
+                </div>
+              </div>
+
+              <div className="metric-card blue">
+                <div className="metric-icon">
+                  <i className="ri-checkbox-circle-line"></i>
+                </div>
+                <div className="metric-content">
+                  <div className="metric-value">{stats.shortlistedApplications}</div>
+                  <div className="metric-label">Shortlisted</div>
+                </div>
+              </div>
+
+              <div className="metric-card red">
+                <div className="metric-icon">
+                  <i className="ri-close-circle-line"></i>
+                </div>
+                <div className="metric-content">
+                  <div className="metric-value">{stats.rejectedApplications}</div>
+                  <div className="metric-label">Rejected</div>
                 </div>
               </div>
             </div>
 
-            <div className="report-section">
+            <div className="applications-section">
               <div className="section-header">
-                <h2>Application Status Overview</h2>
+                <h2>Recent Applications</h2>
               </div>
-              <div className="status-breakdown">
-                <div className="status-item">
-                  <div className="status-info">
-                    <div className="status-dot pending"></div>
-                    <span className="status-name">Pending Review</span>
-                  </div>
-                  <div className="status-bar-wrapper">
-                    <div className="status-bar">
-                      <div 
-                        className="status-fill pending" 
-                        style={{ width: `${(stats.applicationsByStatus.pending / stats.totalApplications) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="status-count">{stats.applicationsByStatus.pending}</span>
-                  </div>
-                </div>
-
-                <div className="status-item">
-                  <div className="status-info">
-                    <div className="status-dot shortlisted"></div>
-                    <span className="status-name">Shortlisted</span>
-                  </div>
-                  <div className="status-bar-wrapper">
-                    <div className="status-bar">
-                      <div 
-                        className="status-fill shortlisted" 
-                        style={{ width: `${(stats.applicationsByStatus.shortlisted / stats.totalApplications) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="status-count">{stats.applicationsByStatus.shortlisted}</span>
-                  </div>
-                </div>
-
-                <div className="status-item">
-                  <div className="status-info">
-                    <div className="status-dot rejected"></div>
-                    <span className="status-name">Rejected</span>
-                  </div>
-                  <div className="status-bar-wrapper">
-                    <div className="status-bar">
-                      <div 
-                        className="status-fill rejected" 
-                        style={{ width: `${(stats.applicationsByStatus.rejected / stats.totalApplications) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="status-count">{stats.applicationsByStatus.rejected}</span>
-                  </div>
-                </div>
-
-                <div className="status-item">
-                  <div className="status-info">
-                    <div className="status-dot hired"></div>
-                    <span className="status-name">Hired</span>
-                  </div>
-                  <div className="status-bar-wrapper">
-                    <div className="status-bar">
-                      <div 
-                        className="status-fill hired" 
-                        style={{ width: `${(stats.applicationsByStatus.hired / stats.totalApplications) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="status-count">{stats.applicationsByStatus.hired}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {stats.topPerformingJobs.length > 0 && (
-              <div className="report-section">
-                <div className="section-header">
-                  <h2>Top Performing Jobs</h2>
-                  <button className="view-all-link">View All <i className="ri-arrow-right-line"></i></button>
-                </div>
-                <div className="jobs-grid">
-                  {stats.topPerformingJobs.map((job, index) => (
-                    <div key={index} className="job-performance-card">
-                      <div className="job-rank">#{index + 1}</div>
-                      <h3>{job.title}</h3>
-                      <div className="job-metrics">
-                        <div className="job-metric">
-                          <i className="ri-file-list-line"></i>
-                          <span>{job.applications} Applications</span>
+              
+              <div className="applications-list">
+                {applications.map((application) => (
+                  <div key={application.id} className="application-card">
+                    <div className="application-header">
+                      <div className="candidate-info">
+                        <div className="candidate-avatar">
+                          <span>{application.candidate_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
                         </div>
-                        <div className="job-metric">
-                          <i className="ri-eye-line"></i>
-                          <span>{job.views} Views</span>
+                        <div className="candidate-details">
+                          <h3 className="candidate-name">{application.candidate_name}</h3>
+                          <p className="candidate-email">{application.candidate_email}</p>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {stats.recentActivity.length > 0 && (
-              <div className="report-section">
-                <div className="section-header">
-                  <h2>Recent Activity</h2>
-                </div>
-                <div className="activity-timeline">
-                  {stats.recentActivity.map((activity, index) => (
-                    <div key={index} className="activity-item">
-                      <div className="activity-icon">
-                        <i className={
-                          activity.action.includes('Application') ? 'ri-file-list-line' :
-                          activity.action.includes('Published') ? 'ri-checkbox-circle-line' :
-                          'ri-user-star-line'
-                        }></i>
-                      </div>
-                      <div className="activity-details">
-                        <p className="activity-action">{activity.action}</p>
-                        <p className="activity-job">{activity.job}</p>
-                        <span className="activity-time">{activity.time}</span>
+                      
+                      <div className="application-meta">
+                        <span className={`status-badge ${application.status}`}>
+                          {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                        </span>
+                        <span className="application-date">
+                          {new Date(application.applied_at).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            <div className="report-section">
-              <div className="section-header">
-                <h2>Quick Actions</h2>
-              </div>
-              <div className="quick-actions-grid">
-                <div 
-                  className="action-card"
-                  onClick={() => window.location.href = '/recruiter/posted-jobs'}
-                >
-                  <div className="action-icon-wrapper blue">
-                    <i className="ri-briefcase-line"></i>
-                  </div>
-                  <h3>Manage Jobs</h3>
-                  <p>View and edit your job postings</p>
-                </div>
+                    <div className="job-info">
+                      <h4 className="job-title">{application.job_title}</h4>
+                      <p className="job-location">{application.job_location}</p>
+                    </div>
 
-                <div 
-                  className="action-card"
-                  onClick={() => window.location.href = '/recruiter/resume-database'}
-                >
-                  <div className="action-icon-wrapper green">
-                    <i className="ri-user-search-line"></i>
-                  </div>
-                  <h3>Search Candidates</h3>
-                  <p>Browse resume database</p>
-                </div>
+                    {application.cover_letter && (
+                      <div className="cover-letter">
+                        <h5>Cover Letter:</h5>
+                        <p>{application.cover_letter}</p>
+                      </div>
+                    )}
 
-                <div 
-                  className="action-card"
-                  onClick={() => window.location.href = '/recruiter/post-job'}
-                >
-                  <div className="action-icon-wrapper orange">
-                    <i className="ri-add-circle-line"></i>
+                    <div className="application-actions">
+                      {application.status === 'pending' && (
+                        <>
+                          <button 
+                            className="action-btn shortlist"
+                            onClick={() => updateApplicationStatus(application.id, 'shortlisted')}
+                          >
+                            <i className="ri-checkbox-circle-line"></i>
+                            Shortlist
+                          </button>
+                          <button 
+                            className="action-btn reject"
+                            onClick={() => updateApplicationStatus(application.id, 'rejected')}
+                          >
+                            <i className="ri-close-circle-line"></i>
+                            Reject
+                          </button>
+                        </>
+                      )}
+                      
+                      {application.status === 'shortlisted' && (
+                        <button 
+                          className="action-btn contact"
+                          onClick={() => window.location.href = `mailto:${application.candidate_email}`}
+                        >
+                          <i className="ri-mail-line"></i>
+                          Contact Candidate
+                        </button>
+                      )}
+                      
+                      <button 
+                        className="action-btn view"
+                        onClick={() => window.location.href = `/recruiter/candidate/${application.candidate_id}`}
+                      >
+                        <i className="ri-eye-line"></i>
+                        View Profile
+                      </button>
+                    </div>
                   </div>
-                  <h3>Post New Job</h3>
-                  <p>Create a new job listing</p>
-                </div>
+                ))}
               </div>
             </div>
           </>

@@ -4,6 +4,7 @@ import collegeData from './data/college_admission_data/collegesData.json';
 import { useNavigate } from 'react-router-dom';
 import DreamCollegeForm from './DreamCollegeForm';
 import CollegeApplicationForm from './CollegeApplicationForm';
+import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 
 function FilterAndCards({ searchQuery, filters, setFilters }) {
   const [colleges, setColleges] = useState([]);
@@ -17,6 +18,7 @@ function FilterAndCards({ searchQuery, filters, setFilters }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isApplicationFormOpen, setIsApplicationFormOpen] = useState(false);
   const [collegeToApply, setCollegeToApply] = useState(null);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   
   // Track applied colleges
   const [appliedColleges, setAppliedColleges] = useState(new Set());
@@ -130,10 +132,92 @@ function FilterAndCards({ searchQuery, filters, setFilters }) {
       return;
     }
 
-    // Open application form
+    // Set college and show confirmation modal
     setCollegeToApply(college);
-    setIsApplicationFormOpen(true);
+    setShowConfirmationModal(true);
     setIsPopupOpen(false); // Close detail popup if open
+  };
+
+  // Handle confirmed application
+  const handleConfirmApplication = async () => {
+    const token = localStorage.getItem('token');
+    
+    try {
+      console.log('Submitting application for:', collegeToApply.name);
+      
+      // First, find the admission post in our system
+      const admissionResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/admin/admissions/public/`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      let admissionId = null;
+      if (admissionResponse.ok) {
+        const admissionData = await admissionResponse.json();
+        const existingAdmission = admissionData.admissions.find(
+          admission => admission.college_name === collegeToApply.name
+        );
+        
+        if (existingAdmission) {
+          admissionId = existingAdmission.id;
+        }
+      }
+
+      // If no existing admission found, show error
+      if (!admissionId) {
+        console.log('No matching admission post found for:', collegeToApply.name);
+        if (window.showPopup) {
+          window.showPopup('This college is not currently accepting applications through our system.', 'error');
+        } else {
+          alert('This college is not currently accepting applications through our system.');
+        }
+        return;
+      }
+      
+      // Submit application using the new registration system
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/admin/apply-admission/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          admission_id: admissionId
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Response:', data);
+      
+      if (response.ok && data.success) {
+        // Add college to applied set
+        setAppliedColleges(prev => new Set([...prev, collegeToApply.name]));
+        
+        if (window.showPopup) {
+          window.showPopup('Application submitted successfully! Admin will review your application and contact you soon.', 'success');
+        } else {
+          alert('Application submitted successfully! Admin will review your application and contact you soon.');
+        }
+        setCollegeToApply(null);
+      } else {
+        console.error('Application failed:', data);
+        const errorMessage = data.message || 'Failed to submit application';
+        
+        if (window.showPopup) {
+          window.showPopup(errorMessage, 'error');
+        } else {
+          alert(errorMessage);
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      if (window.showPopup) {
+        window.showPopup('Network error. Please check your connection and try again.', 'error');
+      } else {
+        alert('Network error. Please check your connection and try again.');
+      }
+    }
   };
 
   // Handle form submission
@@ -144,22 +228,52 @@ function FilterAndCards({ searchQuery, filters, setFilters }) {
       console.log('Submitting application for:', collegeToApply.name);
       console.log('Form data:', formData);
       
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/admissions/apply`, {
+      // First, find or create the admission post in our system
+      const admissionResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/admin/admissions/public/`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      let admissionId = null;
+      if (admissionResponse.ok) {
+        const admissionData = await admissionResponse.json();
+        const existingAdmission = admissionData.admissions.find(
+          admission => admission.college_name === collegeToApply.name
+        );
+        
+        if (existingAdmission) {
+          admissionId = existingAdmission.id;
+        }
+      }
+
+      // If no existing admission found, we'll need to create one or use a default
+      if (!admissionId) {
+        console.log('No matching admission post found for:', collegeToApply.name);
+        if (window.showPopup) {
+          window.showPopup('This college is not currently accepting applications through our system.', 'error');
+        } else {
+          alert('This college is not currently accepting applications through our system.');
+        }
+        return;
+      }
+      
+      // Submit application using the new registration system
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/admin/apply-admission/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          college: collegeToApply,
-          applicationData: formData
+          admission_id: admissionId
         }),
       });
 
       const data = await response.json();
       console.log('Response:', data);
       
-      if (response.ok) {
+      if (response.ok && data.success) {
         // Add college to applied set
         setAppliedColleges(prev => new Set([...prev, collegeToApply.name]));
         
@@ -172,16 +286,7 @@ function FilterAndCards({ searchQuery, filters, setFilters }) {
         setCollegeToApply(null);
       } else {
         console.error('Application failed:', data);
-        // Show detailed error message
-        let errorMessage = 'Failed to submit application';
-        if (data.errors) {
-          const errorDetails = Object.entries(data.errors)
-            .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
-            .join('\n');
-          errorMessage = `Validation errors:\n${errorDetails}`;
-        } else if (data.message) {
-          errorMessage = data.message;
-        }
+        const errorMessage = data.message || 'Failed to submit application';
         
         if (window.showPopup) {
           window.showPopup(errorMessage, 'error');
@@ -364,6 +469,21 @@ function FilterAndCards({ searchQuery, filters, setFilters }) {
           onSubmit={handleFormSubmit}
         />
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => {
+          setShowConfirmationModal(false);
+          setCollegeToApply(null);
+        }}
+        onConfirm={handleConfirmApplication}
+        title="Confirm College Application"
+        message={collegeToApply ? `Are you sure you want to apply to "${collegeToApply.name}"? Your application will be submitted for admin review and you will be contacted regarding the admission process.` : ''}
+        confirmText="Yes, Apply"
+        cancelText="Cancel"
+        type="admission"
+      />
     </section>
   );
 }

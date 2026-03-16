@@ -5,6 +5,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import authenticate
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+import random
+import string
 from .models import User
 from .serializers import (
     UserRegistrationSerializer,
@@ -487,3 +493,172 @@ def upload_photo_view(request):
         'message': 'Photo upload feature coming soon',
         'photo_url': None
     }, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def users_list_view(request):
+    """
+    Simple users list for admin dashboard fallback
+    """
+    if request.user.role != 'admin':
+        return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+    
+    users = User.objects.all().order_by('-created_at')
+    users_data = []
+    
+    for user in users:
+        users_data.append({
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'phone': user.phone,
+            'role': user.role,
+            'created_at': user.created_at,
+            'is_active': user.is_active
+        })
+    
+    return Response({
+        'success': True,
+        'users': users_data,
+        'total': len(users_data)
+    })
+
+# Forgot Password functionality
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password_view(request):
+    """
+    Send OTP for password reset
+    """
+    email = request.data.get('email')
+    
+    if not email:
+        return Response({
+            'success': False,
+            'message': 'Email is required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'No account found with this email address'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    # Generate 4-digit OTP
+    otp = ''.join(random.choices(string.digits, k=4))
+    
+    # Store OTP in user model
+    user.reset_otp = otp
+    user.reset_otp_created = timezone.now()
+    user.save()
+    
+    # Prepare email content
+    subject = 'Password Reset OTP - MytechZ'
+    message = f"""
+Hello {user.first_name},
+
+You have requested to reset your password for your MytechZ account.
+
+Your One-Time Password (OTP) is: {otp}
+
+This OTP will expire in 10 minutes for security reasons.
+
+If you did not request this password reset, please ignore this email.
+
+Best regards,
+MytechZ Team
+    """.strip()
+    
+    # Try to send email
+    try:
+        from django.conf import settings
+        
+        # Check if we're using SMTP backend
+        if hasattr(settings, 'EMAIL_BACKEND') and 'smtp' in settings.EMAIL_BACKEND:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            response_message = 'OTP sent to your email address. Please check your inbox.'
+        else:
+            # Console backend - show OTP in response for development
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            response_message = f'Development mode: OTP is {otp}. Check console for email content.'
+            
+    except Exception as e:
+        print(f"Email sending failed: {str(e)}")
+        # Still return success but with fallback message
+        response_message = f'OTP generated. For development: {otp}'
+    
+    return Response({
+        'success': True,
+        'message': response_message
+    })
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password_view(request):
+    """
+    Reset password using OTP
+    """
+    email = request.data.get('email')
+    otp = request.data.get('otp')
+    new_password = request.data.get('newPassword')
+    
+    if not all([email, otp, new_password]):
+        return Response({
+            'success': False,
+            'message': 'Email, OTP, and new password are required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Invalid email address'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    # Check if OTP exists and is valid
+    if not hasattr(user, 'reset_otp') or not user.reset_otp:
+        return Response({
+            'success': False,
+            'message': 'No OTP found. Please request a new OTP.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if user.reset_otp != otp:
+        return Response({
+            'success': False,
+            'message': 'Invalid OTP'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Check if OTP is expired (10 minutes)
+    if hasattr(user, 'reset_otp_created') and user.reset_otp_created:
+        if timezone.now() - user.reset_otp_created > timedelta(minutes=10):
+            return Response({
+                'success': False,
+                'message': 'OTP has expired. Please request a new one.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Reset password
+    user.set_password(new_password)
+    user.reset_otp = None
+    user.reset_otp_created = None
+    user.save()
+    
+    return Response({
+        'success': True,
+        'message': 'Password reset successfully'
+    })

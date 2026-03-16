@@ -148,16 +148,28 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         }
     
     def validate_phone(self, value):
-        """Simple phone validation"""
+        """Flexible phone validation"""
         if not value:
             return value
         
-        # Remove spaces, dashes, parentheses
-        cleaned = value.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+        # Remove spaces, dashes, parentheses, dots
+        cleaned = value.replace(' ', '').replace('-', '').replace('(', '').replace(')', '').replace('.', '')
         
-        # Basic validation - just check length
-        if len(cleaned) < 9 or len(cleaned) > 15:
-            raise serializers.ValidationError("Phone number must be between 9-15 characters.")
+        # If it doesn't start with +, add it (assuming it's a valid number)
+        if not cleaned.startswith('+') and cleaned.isdigit() and len(cleaned) >= 9:
+            cleaned = f'+{cleaned}'
+        
+        # Basic validation - check if it starts with + and has 10-16 total characters
+        if not cleaned.startswith('+'):
+            raise serializers.ValidationError("Phone number must start with '+' followed by country code and number.")
+        
+        # Remove + for length check
+        digits_only = cleaned[1:]
+        if not digits_only.isdigit():
+            raise serializers.ValidationError("Phone number must contain only digits after the '+' sign.")
+        
+        if len(digits_only) < 9 or len(digits_only) > 15:
+            raise serializers.ValidationError("Phone number must be between 9-15 digits long (excluding '+').")
         
         return cleaned
     

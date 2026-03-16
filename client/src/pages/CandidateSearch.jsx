@@ -36,7 +36,7 @@ function ResumeDatabase() {
   const fetchCandidates = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/recruiter/resume-database`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5010'}/api/recruiter/resume-database/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -197,10 +197,6 @@ function ResumeDatabase() {
     window.location.href = `/recruiter/candidate/${candidate.id}`;
   };
 
-  const handleContactCandidate = (candidate) => {
-    window.location.href = `/recruiter/contact/${candidate.id}`;
-  };
-
   const indexOfLastCandidate = currentPage * candidatesPerPage;
   const indexOfFirstCandidate = indexOfLastCandidate - candidatesPerPage;
   const currentCandidates = filteredCandidates.slice(indexOfFirstCandidate, indexOfLastCandidate);
@@ -323,7 +319,6 @@ function ResumeDatabase() {
                       candidate={candidate}
                       onSave={() => handleSaveProfile(candidate.id)}
                       onView={() => handleViewProfile(candidate)}
-                      onContact={() => handleContactCandidate(candidate)}
                       viewMode={viewMode}
                     />
                   ))}

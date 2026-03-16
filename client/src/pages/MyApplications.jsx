@@ -55,7 +55,7 @@ function MyApplications() {
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'pending': return '#f59e0b';
-      case 'approved': return '#10b981';
+      case 'approved': return '#4A90E2';
       case 'rejected': return '#ef4444';
       case 'interview': return '#3b82f6';
       default: return '#6b7280';

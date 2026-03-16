@@ -1,43 +1,44 @@
-/* Candidate Card Styles - Enhanced Design */
+/* Candidate Card Styles - Updated Design with Small Avatar and Better Spacing */
 .candidate-card {
   background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 20px;
-  height: 440px;
+  height: 360px;
   display: flex;
   flex-direction: column;
   width: 100%;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .candidate-card:hover {
-  transform: translateY(-4px);
-  border-color: #667eea;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+  border-color: #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
 /* ===== Header ===== */
 .candidate-card-header {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .candidate-avatar {
-  width: 50px;
-  height: 50px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .candidate-avatar img {
@@ -46,118 +47,119 @@
   object-fit: cover;
 }
 
-.default-avatar {
+.avatar-initials {
   color: white;
-  font-size: 1.5rem;
-}
-
-.candidate-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.candidate-name {
-  margin: 0 0 4px 0;
-  font-size: 1.05rem;
   font-weight: 600;
-  color: var(--text-main);
-  line-height: 1.35;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  font-size: 12px;
 }
 
-.candidate-role {
-  margin: 0 0 6px 0;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--accent);
-}
-
-.experience-badge {
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 12px;
-  color: white;
-  font-weight: 500;
-}
-
-.candidate-actions {
+.candidate-basic-info {
   display: flex;
+  align-items: flex-start;
   gap: 8px;
 }
 
-.save-btn {
-  width: 32px;
-  height: 32px;
+.candidate-role-badge {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.candidate-salary {
+  color: #6366f1;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.bookmark-btn {
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
-  color: var(--text-muted);
-  border-radius: 6px;
+  color: #9ca3af;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  font-size: 16px;
 }
 
-.save-btn:hover {
-  background: var(--bg-elevated);
-  color: var(--accent);
+.bookmark-btn:hover {
+  color: #6366f1;
 }
 
-.save-btn.saved {
-  color: var(--accent);
-}
-
-/* ===== Skills Section ===== */
-.candidate-skills {
-  margin-bottom: 12px;
-}
-
-.skills-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.skill-tag {
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  background: var(--bg-elevated, #f1f5f9);
-  color: var(--text-main);
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle);
-}
-
-.skill-tag.more {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
+.bookmark-btn.saved {
+  color: #6366f1;
 }
 
 /* ===== Details Section ===== */
-.candidate-details {
+.candidate-details-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 20px;
   flex: 1;
+  min-height: 0;
 }
 
-.detail-item {
+.candidate-name-section {
+  margin-bottom: 12px;
+}
+
+.candidate-name {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.3;
+  text-align: justify;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.candidate-job-role {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  text-align: justify;
+}
+
+.detail-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  gap: 12px;
 }
 
-.detail-item i {
-  color: var(--accent);
-  font-size: 0.9rem;
+.detail-row i {
+  color: #6366f1;
+  font-size: 16px;
   width: 16px;
+  flex-shrink: 0;
+}
+
+.detail-text {
+  font-size: 13px;
+  color: #6b7280;
+  flex: 1;
+  text-align: justify;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-placeholder {
+  height: 12px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  flex: 1;
 }
 
 /* ===== Footer ===== */
@@ -165,35 +167,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
 }
 
-.profile-completion {
+.completion-section {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
 }
 
-.completion-bar {
-  width: 60px;
-  height: 4px;
-  background: var(--bg-elevated, #f1f5f9);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.completion-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.3s ease;
+.completion-indicator {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
 }
 
 .completion-text {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: #6b7280;
   font-weight: 500;
 }
 
@@ -201,80 +195,83 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .last-active i {
-  font-size: 0.8rem;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 /* ===== Action Buttons ===== */
 .candidate-card-actions {
   display: flex;
   gap: 8px;
+  margin-top: auto;
+  padding-top: 20px;
+  margin-bottom: 0;
 }
 
 .view-profile-btn,
 .contact-btn {
   flex: 1;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: none;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+}
+
+.view-profile-btn.full-width {
+  width: 100%;
 }
 
 .view-profile-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #6366f1;
   color: white;
 }
 
 .view-profile-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  background: #5856eb;
 }
 
 .contact-btn {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: #6366f1;
   color: white;
 }
 
 .contact-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+  background: #5856eb;
 }
 
 .view-profile-btn i,
 .contact-btn i {
-  font-size: 0.9rem;
+  font-size: 14px;
 }
 
 /* ===== Responsive Design ===== */
 @media (max-width: 768px) {
   .candidate-card {
     height: auto;
-    min-height: 380px;
+    min-height: 280px;
   }
   
   .candidate-card-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
   
-  .candidate-actions {
-    align-self: flex-end;
-    margin-top: -40px;
-  }
-  
-  .skills-container {
-    justify-content: flex-start;
+  .candidate-basic-info {
+    width: 100%;
+    justify-content: space-between;
   }
   
   .candidate-footer {
@@ -282,32 +279,40 @@
     gap: 8px;
     align-items: flex-start;
   }
-  
-  .profile-completion {
-    width: 100%;
-  }
-  
-  .completion-bar {
-    width: 80px;
-  }
 }
 
 /* ===== Dark Mode Adjustments ===== */
-:root.dark .skill-tag {
-  background: var(--bg-elevated);
-  border-color: var(--border-subtle);
-}
-
 :root.dark .candidate-card {
-  background: var(--bg-surface);
+  background: #1f2937;
+  border-color: #374151;
 }
 
-:root.dark .view-profile-btn,
-:root.dark .contact-btn {
-  background: var(--bg-elevated);
-  border-color: var(--border-subtle);
+:root.dark .candidate-role-badge {
+  background: #374151;
+  color: #d1d5db;
 }
 
-:root.dark .completion-bar {
-  background: var(--bg-elevated);
+:root.dark .candidate-name {
+  color: #f9fafb;
+}
+
+:root.dark .candidate-job-role {
+  color: #9ca3af;
+}
+
+:root.dark .detail-text {
+  color: #9ca3af;
+}
+
+:root.dark .detail-placeholder {
+  background: #374151;
+}
+
+:root.dark .candidate-footer {
+  border-color: #374151;
+}
+
+:root.dark .completion-text,
+:root.dark .last-active {
+  color: #9ca3af;
 }

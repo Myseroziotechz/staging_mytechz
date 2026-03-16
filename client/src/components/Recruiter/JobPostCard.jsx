@@ -6,7 +6,7 @@ function JobPostCard({ job, onStatusChange, onDelete, onViewApplications, onEdit
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return '#22c55e';
+      case 'active': return '#4A90E2';
       case 'closed': return '#ef4444';
       case 'draft': return '#f59e0b';
       default: return '#6b7280';
