@@ -1,31 +1,18 @@
-//./components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
-import Popup from './Popup';
-import './Navbar.css'; 
+import './Navbar.css';
 
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Jobs dropdown state
   const [jobsDropdownOpen, setJobsDropdownOpen] = useState(false);
-  
-  // Employers dropdown state
-  const [employersDropdownOpen, setEmployersDropdownOpen] = useState(false);
-  
-  // Popup state
-  const [popupOpen, setPopupOpen] = useState(false);
-  
-  // Auth state - reactive to localStorage changes
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
 
-  // Check auth status on mount and listen for storage changes
   useEffect(() => {
     const checkAuthStatus = () => {
       const token = localStorage.getItem('token');
@@ -43,13 +30,8 @@ function Navbar() {
       }
     };
 
-    // Initial check
     checkAuthStatus();
-
-    // Listen for storage changes (for multi-tab sync)
     window.addEventListener('storage', checkAuthStatus);
-    
-    // Custom event for same-tab auth changes
     window.addEventListener('authChange', checkAuthStatus);
 
     return () => {
@@ -57,263 +39,163 @@ function Navbar() {
       window.removeEventListener('authChange', checkAuthStatus);
     };
   }, []);
-  
-  const handleMobileMenuToggle = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-  
-  const handleMobileMenuClose = () => {
-    setMobileMenuOpen(false);
-  };
 
-  const handleJobsDropdownToggle = () => {
-    setJobsDropdownOpen(!jobsDropdownOpen);
-  };
-
-  // Handle link click - close menu immediately and navigate
-  const handleLinkClick = (e, path) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Close menu immediately
-    setMobileMenuOpen(false);
-    
-    // Navigate without delay
-    navigate(path);
-  };
-
-  // Close mobile menu by clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (mobileMenuOpen && !event.target.closest('.menu') && !event.target.closest('.dropdown-content')) {
-        handleMobileMenuClose();
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [mobileMenuOpen]);
-
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUserInfo(null);
-    
-    // Dispatch custom event for auth change
     window.dispatchEvent(new Event('authChange'));
-    
     navigate('/login');
   };
 
-  // Handle Resume click
-  const handleResumeClick = (e) => {
-    e.preventDefault();
-    setPopupOpen(true);
-  };
-
   return (
-    <nav>
-      <div className="logo">
-        {/* Mobile menu toggle */}
-        <div className={`menu dropdown ${mobileMenuOpen ? 'open' : ''}`}>
-          <div className="menu-icondiv color-nav-box" onClick={handleMobileMenuToggle}>
-            <i className="ri-menu-2-line"></i>
-          </div>
-          
-          {/* Mobile dropdown menu */}
-          <ul className={`dropdown-content ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            <li className='color-subnav-box hamburger-item home-nav-h'>
-              <button 
-                onClick={(e) => handleLinkClick(e, isLoggedIn && userInfo?.role === 'recruiter' ? '/recruiter' : isLoggedIn && userInfo?.role === 'user' ? '/candidate/home' : '/')} 
-                className="nav-link-btn"
-              >
-                Home
-              </button>
-            </li>
-            
-            {/* Show different menu items based on user role */}
-            {isLoggedIn && userInfo?.role === 'recruiter' ? (
-              <>
-                {/* Recruiter Mobile Menu */}
-                <li className='color-subnav-box hamburger-item'>
-                  <button onClick={(e) => handleLinkClick(e, '/recruiter/post-job')} className="nav-link-btn">Job Post</button>
-                </li>
-                <li className='color-subnav-box hamburger-item'>
-                  <button onClick={(e) => handleLinkClick(e, '/recruiter/resume-database')} className="nav-link-btn">Resume Database</button>
-                </li>
-                <li className='color-subnav-box hamburger-item'>
-                  <button onClick={(e) => handleLinkClick(e, '/recruiter/post-internship')} className="nav-link-btn">Internship Post</button>
-                </li>
-                <li className='color-subnav-box hamburger-item'>
-                  <button onClick={(e) => handleLinkClick(e, '/recruiter/reports')} className="nav-link-btn">Get Report</button>
-                </li>
-                <li className='color-subnav-box hamburger-item'>
-                  <button onClick={(e) => handleLinkClick(e, '/recruiter/buy-features')} className="nav-link-btn">Buy Features</button>
-                </li>
-                <li className='color-subnav-box hamburger-item'>
-                  <button onClick={(e) => handleLinkClick(e, '/recruiter/talent-candidates')} className="nav-link-btn">Talent Candidates</button>
-                </li>
-              </>
-            ) : (
-              <>
-                {/* Regular User Mobile Menu */}
-                {/* Jobs with submenu */}
-                <li className={`color-subnav-box hamburger-item job-nav-h dropdown-hidden ${jobsDropdownOpen ? 'jobs-open' : ''}`}>
-                  <span onClick={handleJobsDropdownToggle} className="nav-link-btn dropbtn-hidden">
-                    Jobs
-                    <i className={`ri-arrow-${jobsDropdownOpen ? 'up' : 'down'}-s-line`}></i>
-                  </span>
-                  <ul className={`dropdown-content-hidden ${jobsDropdownOpen ? 'show' : ''}`}>
-                    <li className='color-subnav-box'>
-                      <button onClick={(e) => handleLinkClick(e, '/jobs/private')} className="nav-link-btn">Private Jobs</button>
-                    </li>
-                    <li className='color-subnav-box'>
-                      <button onClick={(e) => handleLinkClick(e, '/jobs/government')} className="nav-link-btn">Government Jobs</button>
-                    </li>
-                  </ul>
-                </li>
-                
-                <li className='color-subnav-box hamburger-item document-nav-h'>
-                  <button 
-                    onClick={handleResumeClick}
-                    className="nav-link-btn"
-                  >
-                    Resume
-                  </button>
-                </li>
-                <li className='color-subnav-box hamburger-item admission-nav-h'>
-                  <button onClick={(e) => handleLinkClick(e, '/admissions')} className="nav-link-btn">Admissions</button>
-                </li>
-                <li className='color-subnav-box hamburger-item webinar-nav-h'>
-                  <button onClick={(e) => handleLinkClick(e, '/webinars')} className="nav-link-btn">Webinars</button>
-                </li>
-              </>
-            )}
-            
-            {/* Show login only when NOT logged in */}
-            {!isLoggedIn && (
-              <li className="color-subnav-box hamburger-item login-nav-h">
-                <button onClick={(e) => handleLinkClick(e, '/login')} className="nav-link-btn">Login</button>
-              </li>
-            )}
-          </ul>
-        </div>
-        
+    <nav className="navbar">
+      <div className="navbar-container">
         {/* Logo */}
-        <div className="logo-img-div-nav">
-          <img 
-            src="../assets/logo2.png" 
-            alt="MytechZ Logo" 
-            className="logo-img"
-          />
-        </div>
-      </div>
+        <Link to="/" className="navbar-logo">
+          <img src="../assets/logo2.png" alt="MytechZ Logo" className="logo-img" />
+        </Link>
 
-      {/* Desktop navigation */}
-      <ul className="sector2">
-        <li className={`color-nav-box home-nav ${(location.pathname === '/' || (isLoggedIn && userInfo?.role === 'recruiter' && location.pathname === '/recruiter') || (isLoggedIn && userInfo?.role === 'user' && location.pathname === '/candidate/home')) ? 'active' : ''}`}>
-          <Link to={isLoggedIn && userInfo?.role === 'recruiter' ? '/recruiter' : isLoggedIn && userInfo?.role === 'user' ? '/candidate/home' : '/'}>Home</Link>
-        </li>
-        
-        {/* Show different nav items based on user role */}
-        {isLoggedIn && userInfo?.role === 'recruiter' ? (
-          <>
-            {/* Recruiter Navigation */}
-            <li className={`color-nav-box ${location.pathname === '/recruiter/post-job' ? 'active' : ''}`}>
-              <Link to="/recruiter/post-job">Job Post</Link>
-            </li>
-            <li className={`color-nav-box ${location.pathname === '/recruiter/resume-database' ? 'active' : ''}`}>
-              <Link to="/recruiter/resume-database">Resume Database</Link>
-            </li>
-            <li className={`color-nav-box ${location.pathname === '/recruiter/post-internship' ? 'active' : ''}`}>
-              <Link to="/recruiter/post-internship">Internship Post</Link>
-            </li>
-            <li className={`color-nav-box ${location.pathname === '/recruiter/reports' ? 'active' : ''}`}>
-              <Link to="/recruiter/reports">Get Report</Link>
-            </li>
-            
-            {/* Employers dropdown */}
-            <li className={`color-nav-box employer-nav dropdown ${location.pathname.startsWith('/recruiter/employers') ? 'active' : ''}`}>
-              <span className="employer-link">
-                Employers <i className="ri-arrow-down-s-line"></i>
-              </span>
-              <ul className="employer-dropdown">
-                <li>
-                  <Link to="/recruiter/buy-features">Buy Features</Link>
-                </li>
-                <li>
-                  <Link to="/recruiter/talent-candidates">Talent Candidates</Link>
-                </li>
-              </ul>
-            </li>
-          </>
-        ) : (
-          <>
-            {/* Regular User Navigation */}
-            {/* Jobs with dropdown */}
-            <li className={`color-nav-box job-nav dropdown ${location.pathname.startsWith('/jobs') ? 'active' : ''}`}>
-              <Link to="/jobs">Jobs</Link>
-              <ul className="dropdown-content jobs-dropdown">
-                <li>
-                  <Link to="/jobs/private">Private Jobs</Link>
-                </li>
-                <li>
-                  <Link to="/jobs/government">Government Jobs</Link>
-                </li>
-              </ul>
-            </li>
-            
-            <li className={`color-nav-box document-nav ${location.pathname === '/documents' ? 'active' : ''}`}>
-              <span 
-                onClick={handleResumeClick}
-                style={{ cursor: 'pointer' }}
-              >
-                Resume
-              </span>
-            </li>
-            <li className={`color-nav-box admission-nav ${location.pathname.startsWith('/admissions') ? 'active' : ''}`}>
-              <Link to="/admissions">Admissions</Link>
-            </li>
-            <li className={`color-nav-box webinar-nav ${location.pathname === '/webinars' ? 'active' : ''}`}>
-              <Link to="/webinars">Webinars</Link>
-            </li>
-          </>
-        )}
-      </ul>
-      
-      {/* Right side - Profile icon only */}
-      <div className="log-div">
-        {/* Profile icon/dropdown */}
-        <div className="log-icon-div">
-          {isLoggedIn ? (
-            <ProfileDropdown 
-              userInfo={userInfo}
-              onLogout={handleLogout}
-            />
+        {/* Desktop Menu */}
+        <ul className="navbar-menu">
+          <li className={location.pathname === '/' ? 'active' : ''}>
+            <Link to="/">Home</Link>
+          </li>
+
+          {isLoggedIn && userInfo?.role === 'recruiter' ? (
+            <>
+              <li className={location.pathname === '/recruiter/post-job' ? 'active' : ''}>
+                <Link to="/recruiter/post-job">Job Post</Link>
+              </li>
+              <li className={location.pathname === '/recruiter/resume-database' ? 'active' : ''}>
+                <Link to="/recruiter/resume-database">Resume Database</Link>
+              </li>
+              <li className={location.pathname === '/recruiter/post-internship' ? 'active' : ''}>
+                <Link to="/recruiter/post-internship">Internship Post</Link>
+              </li>
+              <li className={location.pathname === '/recruiter/reports' ? 'active' : ''}>
+                <Link to="/recruiter/reports">Get Report</Link>
+              </li>
+            </>
           ) : (
-            <Link to="/login" className="login-img">
-              <i className="ri-user-line login-icon"></i>
+            <>
+              {/* Jobs Dropdown */}
+              <li 
+                className={`dropdown ${location.pathname.startsWith('/jobs') ? 'active' : ''}`}
+                onMouseEnter={() => setJobsDropdownOpen(true)}
+                onMouseLeave={() => setJobsDropdownOpen(false)}
+              >
+                <button className="dropdown-trigger">
+                  Jobs <i className="ri-arrow-down-s-line"></i>
+                </button>
+                {jobsDropdownOpen && (
+                  <ul className="dropdown-menu">
+                    <li><Link to="/jobs/private">Private Jobs</Link></li>
+                    <li><Link to="/jobs/government">Government Jobs</Link></li>
+                    <li><Link to="/jobs/internships">Internships</Link></li>
+                  </ul>
+                )}
+              </li>
+
+              {/* Resources Dropdown */}
+              <li 
+                className={`dropdown ${location.pathname.startsWith('/webinars') || location.pathname.startsWith('/interview-prep') || location.pathname.startsWith('/career-guidance') ? 'active' : ''}`}
+                onMouseEnter={() => setResourcesDropdownOpen(true)}
+                onMouseLeave={() => setResourcesDropdownOpen(false)}
+              >
+                <button className="dropdown-trigger">
+                  Resources <i className="ri-arrow-down-s-line"></i>
+                </button>
+                {resourcesDropdownOpen && (
+                  <ul className="dropdown-menu">
+                    <li><Link to="/webinars">Webinars</Link></li>
+                    <li><Link to="/interview-prep">Interview Prep</Link></li>
+                    <li><Link to="/career-guidance">Career Guidance</Link></li>
+                  </ul>
+                )}
+              </li>
+
+              <li className={location.pathname === '/documents' ? 'active' : ''}>
+                <Link to="/documents">Resume</Link>
+              </li>
+              <li className={location.pathname.startsWith('/admissions') ? 'active' : ''}>
+                <Link to="/admissions">Admissions</Link>
+              </li>
+            </>
+          )}
+        </ul>
+
+        {/* Profile Icon */}
+        <div className="navbar-profile">
+          {isLoggedIn ? (
+            <ProfileDropdown userInfo={userInfo} onLogout={handleLogout} />
+          ) : (
+            <Link to="/login" className="login-icon">
+              <i className="ri-user-line"></i>
             </Link>
           )}
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="mobile-menu-toggle"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          <i className="ri-menu-line"></i>
+        </button>
       </div>
-      
-      {/* Resume Feature Popup */}
-      <Popup
-        isOpen={popupOpen}
-        onClose={() => setPopupOpen(false)}
-        title="Resume AI Analyzer"
-        message="Our advanced Resume AI Analyzer feature is coming soon! Get ready for ATS score analysis, keyword optimization, and industry-specific tips to make your resume stand out. 🚀"
-        type="info"
-      />
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu">
+          <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+          
+          {isLoggedIn && userInfo?.role === 'recruiter' ? (
+            <>
+              <Link to="/recruiter/post-job" onClick={() => setMobileMenuOpen(false)}>Job Post</Link>
+              <Link to="/recruiter/resume-database" onClick={() => setMobileMenuOpen(false)}>Resume Database</Link>
+              <Link to="/recruiter/post-internship" onClick={() => setMobileMenuOpen(false)}>Internship Post</Link>
+              <Link to="/recruiter/reports" onClick={() => setMobileMenuOpen(false)}>Get Report</Link>
+            </>
+          ) : (
+            <>
+              <div className="mobile-dropdown">
+                <button onClick={() => setJobsDropdownOpen(!jobsDropdownOpen)}>
+                  Jobs <i className={`ri-arrow-${jobsDropdownOpen ? 'up' : 'down'}-s-line`}></i>
+                </button>
+                {jobsDropdownOpen && (
+                  <div className="mobile-submenu">
+                    <Link to="/jobs/private" onClick={() => setMobileMenuOpen(false)}>Private Jobs</Link>
+                    <Link to="/jobs/government" onClick={() => setMobileMenuOpen(false)}>Government Jobs</Link>
+                    <Link to="/jobs/internships" onClick={() => setMobileMenuOpen(false)}>Internships</Link>
+                  </div>
+                )}
+              </div>
+
+              <div className="mobile-dropdown">
+                <button onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}>
+                  Resources <i className={`ri-arrow-${resourcesDropdownOpen ? 'up' : 'down'}-s-line`}></i>
+                </button>
+                {resourcesDropdownOpen && (
+                  <div className="mobile-submenu">
+                    <Link to="/webinars" onClick={() => setMobileMenuOpen(false)}>Webinars</Link>
+                    <Link to="/interview-prep" onClick={() => setMobileMenuOpen(false)}>Interview Prep</Link>
+                    <Link to="/career-guidance" onClick={() => setMobileMenuOpen(false)}>Career Guidance</Link>
+                  </div>
+                )}
+              </div>
+
+              <Link to="/documents" onClick={() => setMobileMenuOpen(false)}>Resume</Link>
+              <Link to="/admissions" onClick={() => setMobileMenuOpen(false)}>Admissions</Link>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

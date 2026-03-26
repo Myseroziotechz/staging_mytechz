@@ -16,13 +16,11 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-localhost-development
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# Localhost development hosts
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    '*'  # Allow all for local development
-]
+# Allowed hosts - supports both localhost and production
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,0.0.0.0').split(',')
+# Add wildcard for local development if DEBUG is True
+if DEBUG:
+    ALLOWED_HOSTS.append('*')
 
 # Application definition
 INSTALLED_APPS = [
@@ -177,22 +175,22 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-# CORS Settings - Localhost development (more permissive for debugging)
-CORS_ALLOW_ALL_ORIGINS = True  # Allow all for localhost development
+# CORS Settings
+if DEBUG:
+    # Development - Allow all origins
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # Production - Specific origins only
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',')
+    if not CORS_ALLOWED_ORIGINS or CORS_ALLOWED_ORIGINS == ['']:
+        # Fallback for production if not configured
+        CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://localhost:\d+$",
     r"^http://127\.0\.0\.1:\d+$",
-]
-
-# Localhost origins
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:5176',
-    'http://127.0.0.1:5176',
 ]
 
 # Allow all headers for debugging

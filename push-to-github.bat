@@ -1,35 +1,21 @@
 @echo off
+echo.
 echo ========================================
-echo PUSHING TO GITHUB - siva-dataworker
+echo   PUSHING TO GITHUB
 echo ========================================
 echo.
-echo This will open your browser for authentication.
-echo Please login with: sivabalan.dataworker@gmail.com
-echo.
-pause
 
 cd /d "%~dp0"
 
-echo.
-echo Checking git status...
-git status
-
-echo.
-echo Pushing to GitHub...
+git add .
+git commit -m "Configure for Hostinger VPS deployment with SQLite"
 git push origin main
 
 echo.
 echo ========================================
-if %ERRORLEVEL% EQU 0 (
-    echo SUCCESS! Code pushed to GitHub.
-) else (
-    echo FAILED! Please check the error above.
-    echo.
-    echo ALTERNATIVE METHOD:
-    echo 1. Open GitHub Desktop
-    echo 2. Click "Push origin" button
-    echo 3. Login with sivabalan.dataworker@gmail.com if prompted
-)
+echo   PUSH COMPLETE!
 echo ========================================
+echo.
+echo Now go to your SSH terminal and run the deployment commands.
 echo.
 pause

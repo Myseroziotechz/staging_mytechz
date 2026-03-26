@@ -118,6 +118,28 @@ export default function Home() {
 
   return (
     <div>
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="hero-text" ref={useScrollAnimation('move-in-left')}>
+          <h1>Find the Right Job. Build Your Career with <span> MytechZ</span>.</h1>
+          <p className="hero-subtext">
+            Government & Private Jobs • Admit Cards • Results • Internships — All in One Place
+          </p>
+          <div className="hero-buttons">
+            <button 
+              className="resume-btn" 
+              onClick={handleResumeClick}
+            >
+              <i className="ri-mail-line"></i> Post Your Resume
+            </button>
+            <button className="explore-btn" onClick={handleScrollToSearch}><i className="ri-search-line"></i> Explore Jobs</button>
+          </div>
+        </div>
+        <div className="hero-image" ref={useScrollAnimation('move-in-right')}>
+          <img src={heroImage} alt="Job Search" />
+        </div>
+      </div>
+
       {/* Global Search Bar */}
       <div className="global-search-section">
         <div className="global-search-container">
@@ -155,28 +177,6 @@ export default function Home() {
               </div>
             )}
           </div>
-        </div>
-      </div>
-      
-      {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-text" ref={useScrollAnimation('move-in-left')}>
-          <h1>Find the Right Job. Build Your Career with <span> MytechZ</span>.</h1>
-          <p className="hero-subtext">
-            Government & Private Jobs • Admit Cards • Results • Internships — All in One Place
-          </p>
-          <div className="hero-buttons">
-            <button 
-              className="resume-btn" 
-              onClick={handleResumeClick}
-            >
-              <i className="ri-mail-line"></i> Post Your Resume
-            </button>
-            <button className="explore-btn" onClick={handleScrollToSearch}><i className="ri-search-line"></i> Explore Jobs</button>
-          </div>
-        </div>
-        <div className="hero-image" ref={useScrollAnimation('move-in-right')}>
-          <img src={heroImage} alt="Job Search" />
         </div>
       </div>
 
@@ -306,6 +306,212 @@ export default function Home() {
           </div>
           <div className="service-card" onClick={() => window.location.href = '/webinars'}>
             <i className="ri-global-line"></i><span>Webinars & Workshops</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Why Choose MytechZ Section */}
+      <div className="why-choose-section">
+        <h2 className="why-choose-title">Why Choose MytechZ?</h2>
+        <p className="why-choose-subtitle">Your complete career companion for every step of your professional journey</p>
+        <div className="why-choose-grid" ref={useScrollAnimation('move-in-bottom')}>
+          <div className="why-choose-card">
+            <div className="why-icon">
+              <i className="ri-shield-check-line"></i>
+            </div>
+            <h3>Verified Opportunities</h3>
+            <p>Every job listing is verified to ensure authenticity. No fake postings, only genuine career opportunities from trusted employers.</p>
+          </div>
+          <div className="why-choose-card">
+            <div className="why-icon">
+              <i className="ri-time-line"></i>
+            </div>
+            <h3>Real-Time Updates</h3>
+            <p>Get instant notifications for new job postings, exam results, and admit cards. Never miss an important deadline again.</p>
+          </div>
+          <div className="why-choose-card">
+            <div className="why-icon">
+              <i className="ri-user-star-line"></i>
+            </div>
+            <h3>Personalized Matches</h3>
+            <p>Our smart algorithm matches your skills and preferences with the right opportunities, saving you time and effort.</p>
+          </div>
+          <div className="why-choose-card">
+            <div className="why-icon">
+              <i className="ri-graduation-cap-line"></i>
+            </div>
+            <h3>Career Growth Tools</h3>
+            <p>Access free webinars, interview prep resources, and career guidance from industry experts to accelerate your growth.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Trending Skills Section */}
+      <div className="trending-skills-section">
+        <h2 className="trending-skills-title">In-Demand Skills for 2026</h2>
+        <p className="trending-skills-subtitle">Master these skills to stay ahead in the job market</p>
+        <div className="skills-grid" ref={useScrollAnimation('move-in-left')}>
+          <div className="skill-card">
+            <div className="skill-icon">💻</div>
+            <h4>Full Stack Development</h4>
+            <div className="skill-demand">
+              <span className="demand-badge high">High Demand</span>
+              <span className="job-count">2,500+ Jobs</span>
+            </div>
+          </div>
+          <div className="skill-card">
+            <div className="skill-icon">🤖</div>
+            <h4>AI & Machine Learning</h4>
+            <div className="skill-demand">
+              <span className="demand-badge high">High Demand</span>
+              <span className="job-count">1,800+ Jobs</span>
+            </div>
+          </div>
+          <div className="skill-card">
+            <div className="skill-icon">☁️</div>
+            <h4>Cloud Computing</h4>
+            <div className="skill-demand">
+              <span className="demand-badge high">High Demand</span>
+              <span className="job-count">2,200+ Jobs</span>
+            </div>
+          </div>
+          <div className="skill-card">
+            <div className="skill-icon">📊</div>
+            <h4>Data Analytics</h4>
+            <div className="skill-demand">
+              <span className="demand-badge medium">Growing</span>
+              <span className="job-count">1,600+ Jobs</span>
+            </div>
+          </div>
+          <div className="skill-card">
+            <div className="skill-icon">🎨</div>
+            <h4>UI/UX Design</h4>
+            <div className="skill-demand">
+              <span className="demand-badge medium">Growing</span>
+              <span className="job-count">1,400+ Jobs</span>
+            </div>
+          </div>
+          <div className="skill-card">
+            <div className="skill-icon">🔒</div>
+            <h4>Cybersecurity</h4>
+            <div className="skill-demand">
+              <span className="demand-badge high">High Demand</span>
+              <span className="job-count">1,900+ Jobs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Success Stories Section */}
+      <div className="success-stories-section">
+        <h2 className="success-stories-title">Success Stories from Our Community</h2>
+        <p className="success-stories-subtitle">Real people, real career transformations</p>
+        <div className="stories-grid" ref={useScrollAnimation('move-in-right')}>
+          <div className="story-card">
+            <div className="story-header">
+              <div className="story-avatar">
+                <i className="ri-user-smile-line"></i>
+              </div>
+              <div className="story-info">
+                <h4>Priya Sharma</h4>
+                <p>Software Engineer at TCS</p>
+              </div>
+            </div>
+            <div className="story-content">
+              <p>"I found my dream job within 2 weeks of joining MytechZ. The resume builder helped me create a professional CV, and the interview prep resources were invaluable!"</p>
+            </div>
+            <div className="story-stats">
+              <span><i className="ri-briefcase-line"></i> Applied: 12 jobs</span>
+              <span><i className="ri-check-circle-line"></i> Hired in 14 days</span>
+            </div>
+          </div>
+          <div className="story-card">
+            <div className="story-header">
+              <div className="story-avatar">
+                <i className="ri-user-smile-line"></i>
+              </div>
+              <div className="story-info">
+                <h4>Rajesh Kumar</h4>
+                <p>Data Analyst at Infosys</p>
+              </div>
+            </div>
+            <div className="story-content">
+              <p>"The government job alerts feature is amazing! I got notified about SSC CGL exam the moment it was announced. Now I'm preparing with their free webinars."</p>
+            </div>
+            <div className="story-stats">
+              <span><i className="ri-notification-line"></i> 50+ Alerts</span>
+              <span><i className="ri-star-line"></i> 5 Interviews</span>
+            </div>
+          </div>
+          <div className="story-card">
+            <div className="story-header">
+              <div className="story-avatar">
+                <i className="ri-user-smile-line"></i>
+              </div>
+              <div className="story-info">
+                <h4>Ananya Reddy</h4>
+                <p>UI/UX Designer at Wipro</p>
+              </div>
+            </div>
+            <div className="story-content">
+              <p>"MytechZ's career guidance helped me transition from teaching to tech. The personalized job matches saved me hours of searching!"</p>
+            </div>
+            <div className="story-stats">
+              <span><i className="ri-arrow-up-line"></i> Career Switch</span>
+              <span><i className="ri-money-rupee-circle-line"></i> 40% Salary Hike</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Career Resources Hub */}
+      <div className="career-resources-section">
+        <h2 className="career-resources-title">Your Career Growth Hub</h2>
+        <p className="career-resources-subtitle">Free resources to accelerate your professional journey</p>
+        <div className="resources-grid" ref={useScrollAnimation('move-in-bottom')}>
+          <div className="resource-card" onClick={() => window.location.href = '/webinars'}>
+            <div className="resource-icon">
+              <i className="ri-live-line"></i>
+            </div>
+            <h3>Live Webinars</h3>
+            <p>Join expert-led sessions on resume building, interview skills, and industry trends</p>
+            <div className="resource-meta">
+              <span><i className="ri-calendar-line"></i> Weekly Sessions</span>
+              <span className="resource-badge">Free</span>
+            </div>
+          </div>
+          <div className="resource-card" onClick={() => window.showNotification('Interview prep resources coming soon!', 'info')}>
+            <div className="resource-icon">
+              <i className="ri-question-answer-line"></i>
+            </div>
+            <h3>Interview Preparation</h3>
+            <p>Practice with 500+ interview questions and get AI-powered feedback on your answers</p>
+            <div className="resource-meta">
+              <span><i className="ri-file-list-line"></i> 500+ Questions</span>
+              <span className="resource-badge">Free</span>
+            </div>
+          </div>
+          <div className="resource-card" onClick={() => window.showNotification('Career guidance service coming soon!', 'info')}>
+            <div className="resource-icon">
+              <i className="ri-compass-line"></i>
+            </div>
+            <h3>Career Guidance</h3>
+            <p>Get personalized career advice from industry mentors and career counselors</p>
+            <div className="resource-meta">
+              <span><i className="ri-user-line"></i> Expert Mentors</span>
+              <span className="resource-badge">Premium</span>
+            </div>
+          </div>
+          <div className="resource-card" onClick={handleResumeClick}>
+            <div className="resource-icon">
+              <i className="ri-file-text-line"></i>
+            </div>
+            <h3>Resume Builder</h3>
+            <p>Create ATS-friendly resumes with professional templates in minutes</p>
+            <div className="resource-meta">
+              <span><i className="ri-layout-line"></i> 10+ Templates</span>
+              <span className="resource-badge">Free</span>
+            </div>
           </div>
         </div>
       </div>
