@@ -1,2 +1,48 @@
+# Dependency directories
+node_modules/
+venv/
+env/
+lib/
+bin/
+include/
+
+# Build outputs
+dist/
+build/
+staticfiles/
+
+# Python leftovers
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Media files
+media/
+
+# Environment/Secret files
+.env
+.env.local
+.env.*
+!.env.example
+!.env.template
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# MacOS
+.DS_Store
+
 # Local Netlify folder
 .netlify
+
+
+package-lock.json
