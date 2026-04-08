@@ -43,42 +43,47 @@
 
 /* Dropdown Panel */
 .profile-dropdown-panel {
-  position: fixed;
-  top: 64px;
-  right: 20px;
+  position: absolute;
+  top: calc(100% + 15px);
+  right: 0;
   width: 360px;
   max-width: calc(100vw - 40px);
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e0e0e0;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  border-radius: 20px;
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.15),
+    0 5px 15px -5px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   z-index: 99999;
-  animation: dropdownFadeIn 0.2s ease;
-  overflow: visible;
-  max-height: calc(100vh - 80px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
 }
 
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.profile-dropdown-panel.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
 }
+
+
 
 /* Profile Section */
 .dropdown-profile-section {
   padding: 24px !important;
-  border-bottom: 1px solid #e0e0e0 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   gap: 16px !important;
-  background: #ffffff !important;
+  background: rgba(255, 255, 255, 0.2) !important;
   position: relative !important;
   z-index: 1 !important;
 }
@@ -180,8 +185,8 @@
   align-items: center;
   justify-content: space-around;
   padding: 20px 24px;
-  border-bottom: 1px solid #e0e0e0;
-  background: rgba(74, 144, 226, 0.02);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(74, 144, 226, 0.05);
   position: relative;
   z-index: 1;
 }
@@ -224,7 +229,7 @@
 /* Menu List */
 .dropdown-menu-list {
   padding: 8px 0 !important;
-  background: #ffffff !important;
+  background: transparent !important;
   position: relative !important;
   z-index: 1 !important;
 }
@@ -274,9 +279,11 @@
 }
 
 :root.dark .profile-dropdown-panel {
-  background: #1a1f35;
-  border-color: #3a3f55;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background: rgba(20, 24, 40, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 :root.dark .dropdown-profile-section,

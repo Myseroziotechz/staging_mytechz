@@ -17,20 +17,23 @@
 .navbar {
   max-width: 1300px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(25px) saturate(200%);
-  -webkit-backdrop-filter: blur(25px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.04),
-    0 1px 6px rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 10px 30px -5px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   border-radius: 99px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .navbar-wrapper.scrolled .navbar {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .navbar-container {
@@ -105,13 +108,59 @@
 }
 
 /* Dropdown */
+.dropdown {
+  position: relative;
+}
+
 .dropdown-menu {
-  top: calc(100% - 1px);
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-  padding: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: absolute;
+  top: calc(100% + 15px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px) scale(0.95);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 18px;
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  list-style: none;
+  min-width: 180px;
+  display: flex !important;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.dropdown-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.dropdown-menu li a {
+  padding: 0.7rem 1.2rem;
+  display: block;
+  color: #1d1d1f;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-menu li a:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: #6366f1;
+  transform: translateX(4px);
 }
 
 /* Auth / Login Button */
@@ -155,12 +204,16 @@
 
 /* ===== DARK MODE ===== */
 :root.dark .navbar {
-  background: rgba(22, 22, 23, 0.7);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 12, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 20px 40px -10px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 :root.dark .navbar-wrapper.scrolled .navbar {
-  background: rgba(30, 30, 32, 0.95);
+  background: rgba(15, 15, 18, 0.75);
 }
 
 :root.dark .navbar-menu li>a,
@@ -174,8 +227,17 @@
 }
 
 :root.dark .dropdown-menu {
-  background: rgba(40, 40, 42, 0.98);
+  background: rgba(20, 20, 22, 0.8);
   border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root.dark .dropdown-menu li a {
+  color: #f5f5f7;
+}
+
+:root.dark .dropdown-menu li a:hover {
+  background: rgba(99, 102, 241, 0.15);
 }
 
 /* ===== RESPONSIVE ===== */
@@ -202,15 +264,16 @@
   }
 
   .mobile-menu {
-    border-radius: 24px;
+    border-radius: 28px;
     margin: 0.5rem 1.5rem;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 1.2rem;
+    box-shadow: 0 15px 50px -10px rgba(0, 0, 0, 0.15);
   }
 
   .mobile-menu a,
@@ -257,7 +320,9 @@
   }
 
   :root.dark .mobile-menu {
-    background: rgba(30, 30, 32, 0.98);
+    background: rgba(15, 15, 18, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   }
 
   :root.dark .mobile-menu a,

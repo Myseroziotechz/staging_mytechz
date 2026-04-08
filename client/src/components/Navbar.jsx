@@ -104,13 +104,11 @@ function Navbar() {
                   <button className="dropdown-trigger">
                     Jobs <i className="ri-arrow-down-s-line"></i>
                   </button>
-                  {jobsDropdownOpen && (
-                    <ul className="dropdown-menu">
-                      <li><Link to="/jobs/private">Private Jobs</Link></li>
-                      <li><Link to="/jobs/government">Government Jobs</Link></li>
-                      <li><Link to="/jobs/internships">Internships</Link></li>
-                    </ul>
-                  )}
+                  <ul className={`dropdown-menu ${jobsDropdownOpen ? 'active' : ''}`}>
+                    <li><Link to="/jobs/private">Private Jobs</Link></li>
+                    <li><Link to="/jobs/government">Government Jobs</Link></li>
+                    <li><Link to="/jobs/internships">Internships</Link></li>
+                  </ul>
                 </li>
 
                 {/* Resources Dropdown */}
@@ -122,13 +120,11 @@ function Navbar() {
                   <button className="dropdown-trigger">
                     Resources <i className="ri-arrow-down-s-line"></i>
                   </button>
-                  {resourcesDropdownOpen && (
-                    <ul className="dropdown-menu">
-                      <li><Link to="/webinars">Webinars</Link></li>
-                      <li><Link to="/interview-prep">Interview Prep</Link></li>
-                      <li><Link to="/career-guidance">Career Guidance</Link></li>
-                    </ul>
-                  )}
+                  <ul className={`dropdown-menu ${resourcesDropdownOpen ? 'active' : ''}`}>
+                    <li><Link to="/webinars">Webinars</Link></li>
+                    <li><Link to="/interview-prep">Interview Prep</Link></li>
+                    <li><Link to="/career-guidance">Career Guidance</Link></li>
+                  </ul>
                 </li>
 
                 <li className={location.pathname === '/documents' ? 'active' : ''}>
