@@ -13,6 +13,7 @@ The issue was only in your LOCAL environment (missing whitenoise).
 🔧 WHAT WAS FIXED
 ─────────────────────────────────────────────────────────────────
 
+
 LOCAL ENVIRONMENT:
 ✓ Installed whitenoise package (was missing locally)
 ✓ Collected static files successfully (160 files)
