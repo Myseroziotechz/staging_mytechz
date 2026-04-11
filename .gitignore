@@ -2,9 +2,9 @@
 node_modules/
 venv/
 env/
-lib/
-bin/
-include/
+/lib/
+/bin/
+/include/
 
 # Build outputs
 dist/
