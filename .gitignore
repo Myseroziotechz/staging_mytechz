@@ -45,4 +45,4 @@ media/
 .netlify
 
 
-package-lock.json
+# package-lock.json — do NOT ignore, Vercel needs it for correct installs
