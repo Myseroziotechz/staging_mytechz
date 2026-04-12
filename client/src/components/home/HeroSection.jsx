@@ -56,7 +56,9 @@ export default function HeroSection() {
           {/* Left content */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <span className="hero-fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur border border-blue-100 text-xs sm:text-sm font-medium text-blue-700 shadow-sm">
-              <span className="text-amber-500 animate-pulse">★</span>
+              <svg className="w-3.5 h-3.5 text-amber-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1L12 2z" />
+              </svg>
               #1 Career Development Platform
             </span>
 
@@ -120,14 +122,18 @@ export default function HeroSection() {
                 className="group/btn relative inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-700/20 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-700/30"
               >
                 Explore Jobs
-                <span className="transition-transform group-hover/btn:translate-x-1" aria-hidden>→</span>
+                <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+                </svg>
               </Link>
               <button
                 type="button"
                 className="group/demo inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 font-semibold px-6 py-3 rounded-xl border border-slate-200 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
-                <span className="relative w-6 h-6 rounded-full bg-amber-400 text-white flex items-center justify-center text-xs hero-pulse-ring">
-                  <span className="relative">▶</span>
+                <span className="relative w-6 h-6 rounded-full bg-amber-400 text-white flex items-center justify-center hero-pulse-ring">
+                  <svg className="relative w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                 </span>
                 Watch Demo
               </button>

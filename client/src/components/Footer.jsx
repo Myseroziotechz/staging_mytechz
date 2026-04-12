@@ -63,7 +63,9 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex flex-wrap gap-2.5 sm:gap-3 pt-1">
               <a
-                href="#"
+                href={process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/mytechz'}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group w-9 h-9 sm:w-10 sm:h-10 bg-gray-800/80 rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-blue-600 hover:scale-110 transition-all duration-300"
                 aria-label="LinkedIn"
               >
