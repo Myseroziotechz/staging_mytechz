@@ -393,7 +393,13 @@ export default function Navbar() {
 
             {/* Mobile: Profile (left of hamburger) + Hamburger */}
             <div className="lg:hidden flex items-center gap-2">
-              {user && <ProfileDropdown user={user} onSignOut={handleSignOut} />}
+              {user ? (
+                <ProfileDropdown user={user} onSignOut={handleSignOut} />
+              ) : (
+                <Link href="/login">
+                  <Button size="sm">Get Started</Button>
+                </Link>
+              )}
             <button
               className="p-2 rounded-xl hover:bg-white/20 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
@@ -482,15 +488,6 @@ export default function Navbar() {
               </div>
             ))}
 
-            {!user && (
-              <div className="pt-3 border-t border-white/20">
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full" size="sm">
-                    Get Started
-                  </Button>
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </nav>
