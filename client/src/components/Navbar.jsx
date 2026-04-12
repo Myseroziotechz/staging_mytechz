@@ -251,6 +251,7 @@ export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState(null)
   const [mobileExpanded, setMobileExpanded] = useState(null)
   const dropdownTimeout = useRef(null)
+  const navRef = useRef(null)
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
@@ -281,6 +282,23 @@ export default function Navbar() {
     setMobileExpanded(null)
   }, [pathname])
 
+  // Close mobile menu on outside click
+  useEffect(() => {
+    if (!isOpen) return
+    const handleClickOutside = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setIsOpen(false)
+        setMobileExpanded(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [isOpen])
+
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
@@ -302,6 +320,7 @@ export default function Navbar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 lg:px-8 pt-3 pointer-events-none">
       <nav
+        ref={navRef}
         className={`pointer-events-auto w-full max-w-6xl transition-all duration-500 ease-out rounded-2xl ${
           scrolled
             ? 'bg-white/25 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-1px_0_rgba(255,255,255,0.1)] border border-white/40'
@@ -372,9 +391,11 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile Hamburger */}
+            {/* Mobile: Profile (left of hamburger) + Hamburger */}
+            <div className="lg:hidden flex items-center gap-2">
+              {user && <ProfileDropdown user={user} onSignOut={handleSignOut} />}
             <button
-              className="lg:hidden p-2 rounded-xl hover:bg-white/20 transition-colors"
+              className="p-2 rounded-xl hover:bg-white/20 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
@@ -396,6 +417,7 @@ export default function Navbar() {
                 />
               </div>
             </button>
+            </div>
           </div>
         </div>
 
@@ -460,73 +482,15 @@ export default function Navbar() {
               </div>
             ))}
 
-            <div className="pt-3 border-t border-white/20">
-              {user ? (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/40">
-                    <span className="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-semibold flex items-center justify-center shrink-0">
-                      {(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={user.user_metadata.avatar_url || user.user_metadata.picture}
-                          alt={user.user_metadata?.full_name || user.email}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span>
-                          {(user.user_metadata?.full_name || user.email || 'U')
-                            .split(' ')
-                            .map((w) => w[0])
-                            .slice(0, 2)
-                            .join('')
-                            .toUpperCase()}
-                        </span>
-                      )}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold text-gray-900 truncate">
-                        {user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0]}
-                      </div>
-                      <div className="text-xs text-gray-500 truncate">{user.email}</div>
-                    </div>
-                  </div>
-                  {profileMenu.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-white/30 transition-all duration-200"
-                    >
-                      <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                        {item.icon}
-                      </span>
-                      <span className="text-sm font-medium">{item.label}</span>
-                    </Link>
-                  ))}
-                  <button
-                    onClick={() => {
-                      handleSignOut()
-                      setIsOpen(false)
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-rose-600 hover:bg-rose-50/60 transition-all duration-200"
-                  >
-                    <span className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h6a2 2 0 012 2v1" />
-                      </svg>
-                    </span>
-                    <span className="text-sm font-semibold">Log Out</span>
-                  </button>
-                </div>
-              ) : (
+            {!user && (
+              <div className="pt-3 border-t border-white/20">
                 <Link href="/login" onClick={() => setIsOpen(false)}>
                   <Button className="w-full" size="sm">
                     Get Started
                   </Button>
                 </Link>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>
