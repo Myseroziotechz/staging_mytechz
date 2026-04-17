@@ -56,7 +56,7 @@ export default function HeroSection() {
           {/* Left content */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <span className="hero-fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur border border-blue-100 text-xs sm:text-sm font-medium text-blue-700 shadow-sm">
-              <svg className="w-3.5 h-3.5 text-amber-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-3.5 h-3.5 text-blue-600 animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1L12 2z" />
               </svg>
               #1 Career Development Platform
@@ -81,7 +81,7 @@ export default function HeroSection() {
               className="hero-fade-up-d3 group mt-8 bg-white/90 backdrop-blur rounded-2xl shadow-xl shadow-blue-900/5 border border-slate-100 p-2 flex flex-col sm:flex-row gap-2 w-full max-w-xl mx-auto lg:mx-0 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-0.5 focus-within:ring-2 focus-within:ring-amber-400/50"
             >
               <div className="flex-1 flex items-center px-3">
-                <svg className="w-5 h-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input

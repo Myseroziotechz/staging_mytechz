@@ -1,7 +1,17 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 
-const PROTECTED_ROUTES = ['/dashboard', '/profile', '/my-applications']
+// Optimistic auth check only — per Next 16 proxy guidance, role-specific
+// enforcement lives in /admin and /recruiter layouts (which can hit the DB).
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/profile',
+  '/settings',
+  '/my-applications',
+  '/saved-jobs',
+  '/admin',
+  '/recruiter',
+]
 const AUTH_ONLY_ROUTES = ['/login']
 
 export async function proxy(request) {

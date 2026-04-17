@@ -16,21 +16,27 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [error, setError] = useState(null)
+  // 'candidate' | 'recruiter' — admin is never user-selectable
+  const [intendedRole, setIntendedRole] = useState('candidate')
 
   const returnTo = searchParams.get('returnTo') || '/'
   const urlError = searchParams.get('error')
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
-  // Save returnTo cookie before OAuth redirect
-  const saveReturnTo = () => {
+  // Persist returnTo + intended role across the OAuth / magic-link redirect.
+  const saveIntent = () => {
     document.cookie = `return-to=${returnTo}; max-age=600; path=/`
+    document.cookie = `intended_role=${intendedRole}; max-age=600; path=/; samesite=lax`
   }
 
-  // Magic Link (Email OTP)
+  // Magic Link (Email OTP) — intended_role rides in the request body so the
+  // send-otp route can pass it to Supabase options.data, which lands in
+  // raw_user_meta_data and is read by the handle_new_user() trigger.
   const handleMagicLink = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    saveIntent()
 
     try {
       const res = await fetch('/api/auth/send-otp', {
@@ -38,6 +44,7 @@ export default function LoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
+          intendedRole,
           redirectTo: `${origin}/auth/callback`,
         }),
       })
@@ -55,9 +62,10 @@ export default function LoginForm() {
     }
   }
 
-  // Google OAuth
+  // Google OAuth — provider ignores custom user metadata, so the cookie is the
+  // only way intended_role survives the round-trip. The auth callback reads it.
   const handleGoogleLogin = async () => {
-    saveReturnTo()
+    saveIntent()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -72,12 +80,54 @@ export default function LoginForm() {
     )
   }
 
+  const isRecruiter = intendedRole === 'recruiter'
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">Welcome to MyTechZ</h1>
-        <p className="mt-2 text-gray-500">Sign in to access your account</p>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {isRecruiter ? 'Welcome, Recruiter' : 'Welcome to MyTechZ'}
+        </h1>
+        <p className="mt-2 text-gray-500">
+          {isRecruiter
+            ? 'Sign in to post jobs and manage candidates'
+            : 'Sign in to access your account'}
+        </p>
+      </div>
+
+      {/* Role toggle */}
+      <div
+        role="tablist"
+        aria-label="Sign in as"
+        className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-lg"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={!isRecruiter}
+          onClick={() => setIntendedRole('candidate')}
+          className={`py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
+            !isRecruiter
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Job Seeker
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isRecruiter}
+          onClick={() => setIntendedRole('recruiter')}
+          className={`py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
+            isRecruiter
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Recruiter
+        </button>
       </div>
 
       {/* URL Error */}
@@ -106,7 +156,7 @@ export default function LoginForm() {
       <form onSubmit={handleMagicLink} className="space-y-4">
         <Input
           type="email"
-          placeholder="Enter your email"
+          placeholder={isRecruiter ? 'Enter your work email' : 'Enter your email'}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -117,7 +167,11 @@ export default function LoginForm() {
           className="w-full"
           size="lg"
         >
-          {loading ? 'Sending...' : 'Send Magic Link'}
+          {loading
+            ? 'Sending...'
+            : isRecruiter
+              ? 'Send Recruiter Magic Link'
+              : 'Send Magic Link'}
         </Button>
       </form>
 

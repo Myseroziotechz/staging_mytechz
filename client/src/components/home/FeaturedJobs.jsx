@@ -67,7 +67,7 @@ export default function FeaturedJobs() {
                     </p>
                   </div>
                   {job.is_featured && (
-                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                       Featured
                     </span>
                   )}

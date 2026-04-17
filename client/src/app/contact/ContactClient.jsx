@@ -62,7 +62,7 @@ export default function ContactClient({ linkedinUrl }) {
           {/* Left — intro + info cards */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <span className="hero-fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur border border-blue-100 text-xs sm:text-sm font-medium text-blue-700 shadow-sm">
-              <svg className="w-3.5 h-3.5 text-amber-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-3.5 h-3.5 text-blue-600 animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1L12 2z" />
               </svg>
               We&apos;d love to hear from you
@@ -222,7 +222,7 @@ function InfoCard({ title, value, href, external, icon }) {
   const inner = (
     <div className="group relative bg-white/90 backdrop-blur rounded-2xl border border-slate-100 p-4 shadow-sm shadow-blue-900/5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 hover:border-amber-200">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center transition-colors group-hover:bg-amber-100 group-hover:text-amber-600">
+        <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center transition-colors group-hover:bg-amber-100 group-hover:text-blue-700">
           {icon}
         </div>
         <div className="text-left">

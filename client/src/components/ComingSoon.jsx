@@ -14,7 +14,7 @@ export default function ComingSoon({ title, description, icon }) {
           {icon}
         </div>
 
-        <span className="hero-fade-up-d1 mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur border border-amber-100 text-xs sm:text-sm font-medium text-amber-700 shadow-sm">
+        <span className="hero-fade-up-d1 mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur border border-blue-100 text-xs sm:text-sm font-medium text-blue-700 shadow-sm">
           <svg className="w-3.5 h-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1L12 2z" />
           </svg>

@@ -4,11 +4,16 @@ import { NextResponse } from 'next/server'
 import { isDisposableEmail } from '@/lib/disposable-domains'
 
 export async function POST(request) {
-  const { email, redirectTo } = await request.json()
+  const { email, redirectTo, intendedRole } = await request.json()
 
   if (!email) {
     return NextResponse.json({ error: 'Email is required' }, { status: 400 })
   }
+
+  // Only accept the two user-selectable roles. Admin is server-assigned via
+  // admin_whitelist and must never be chosen from the client.
+  const normalizedRole =
+    intendedRole === 'recruiter' ? 'recruiter' : 'candidate'
 
   // Disposable email check
   if (process.env.BLOCK_DISPOSABLE_EMAILS === 'true') {
@@ -50,6 +55,12 @@ export async function POST(request) {
         redirectTo ||
         `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       shouldCreateUser: true,
+      // Lands in auth.users.raw_user_meta_data on first signup. The
+      // handle_new_user() trigger reads it to assign role='recruiter'
+      // (admin_whitelist still takes precedence inside the trigger).
+      data: {
+        intended_role: normalizedRole,
+      },
     },
   })
 
