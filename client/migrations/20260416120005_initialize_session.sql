@@ -1,18 +1,13 @@
 -- ============================================================================
 -- Migration 6: initialize_session() RPC
 -- ============================================================================
--- Called by the Next.js auth callback after exchangeCodeForSession. Does three
--- things inside a single SECURITY DEFINER call so the user's session does not
--- need UPDATE rights on user_profiles.role:
+-- Called by the Next.js /auth/callback server route after exchangeCodeForSession.
+-- Runs as SECURITY DEFINER so the user's session does not need UPDATE rights
+-- on user_profiles.role. Does three things:
 --
---   1. If this is the user's first login (last_login_at IS NULL) AND the login
---      page passed intended_role='recruiter' AND current role is 'candidate',
---      promote them to recruiter. Admin role is never touched — admin_whitelist
---      is the only path to admin.
---   2. Stamp last_login_at = now() so subsequent logins skip the promotion
---      branch (prevents cookie-based role changes on return visits).
---   3. Return the final role + onboarding_completed so the callback can
---      redirect correctly without a second round-trip.
+--   1. Checks admin_whitelist on EVERY login and promotes if found.
+--   2. Promotes candidate→recruiter when intended_role='recruiter' is passed.
+--   3. Stamps last_login_at and returns the final role for redirect.
 -- ============================================================================
 
 create or replace function public.initialize_session(p_intended_role text default null)
@@ -29,13 +24,14 @@ declare
   v_uid          uuid := auth.uid();
   v_current_role public.user_role;
   v_first_login  boolean;
+  v_email        citext;
 begin
   if v_uid is null then
     raise exception 'initialize_session: not authenticated';
   end if;
 
-  select up.role, (up.last_login_at is null)
-    into v_current_role, v_first_login
+  select up.role, (up.last_login_at is null), up.email
+    into v_current_role, v_first_login, v_email
   from public.user_profiles up
   where up.id = v_uid;
 
@@ -43,9 +39,18 @@ begin
     raise exception 'initialize_session: profile row missing for %', v_uid;
   end if;
 
-  -- Promote candidate→recruiter only on the very first login.
-  if v_first_login
-     and v_current_role = 'candidate'
+  -- 1. Admin whitelist check — runs on EVERY login, not just first.
+  if v_current_role != 'admin'
+     and exists (select 1 from public.admin_whitelist where email = v_email)
+  then
+    update public.user_profiles
+       set role = 'admin'
+     where id = v_uid;
+    v_current_role := 'admin';
+  end if;
+
+  -- 2. Recruiter promotion — candidate→recruiter when intended.
+  if v_current_role = 'candidate'
      and p_intended_role = 'recruiter'
   then
     update public.user_profiles
@@ -54,6 +59,7 @@ begin
     v_current_role := 'recruiter';
   end if;
 
+  -- 3. Stamp last_login_at.
   update public.user_profiles
      set last_login_at = now()
    where id = v_uid;

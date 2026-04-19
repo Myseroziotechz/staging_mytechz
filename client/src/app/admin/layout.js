@@ -1,30 +1,31 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
+import { ensureSessionInitialized } from '@/lib/ensure-session'
 
 // Strict admin-only gate + admin chrome (nav + container).
 // Runs on every /admin/* render. Proxy has already ensured a session exists.
 const NAV = [
   { href: '/admin/dashboard', label: 'Overview' },
+  { href: '/admin/recruiters', label: 'Recruiters' },
   { href: '/admin/whitelist', label: 'Admin Emails' },
   { href: '/admin/users', label: 'Users' },
 ]
 
 export default async function AdminLayout({ children }) {
-  const supabase = await createClient()
+  // Ensure the session RPC has run (handles admin whitelist promotion)
+  const session = await ensureSessionInitialized()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!session) {
     redirect('/login?returnTo=/admin/dashboard')
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('role, is_active, full_name, email')
-    .eq('id', user.id)
+    .eq('id', session.user.id)
     .single()
 
   if (!profile || !profile.is_active || profile.role !== 'admin') {

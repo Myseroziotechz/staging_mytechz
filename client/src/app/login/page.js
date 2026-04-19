@@ -19,7 +19,8 @@ export default function LoginPage() {
               alt="MyTechZ"
               width={180}
               height={48}
-              className="h-12 w-auto object-contain"
+              className="h-12 object-contain"
+              style={{ width: 'auto' }}
               priority
             />
           </Link>

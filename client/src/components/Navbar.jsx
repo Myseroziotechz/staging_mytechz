@@ -30,59 +30,83 @@ const navItems = [
   { label: 'Contact', href: '/contact' },
 ]
 
-const profileMenu = [
-  {
-    label: 'Dashboard',
-    href: '/dashboard',
-    description: 'Your personalised overview',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3v-6h6v6h3a1 1 0 001-1V10" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Profile',
-    href: '/profile',
-    description: 'View and edit your details',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16 14a4 4 0 10-8 0m12 7a8 8 0 10-16 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'My Applications',
-    href: '/my-applications',
-    description: 'Track your job applications',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m-8 5h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Saved Jobs',
-    href: '/saved-jobs',
-    description: 'Jobs you have bookmarked',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-4-7 4V5z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Settings',
-    href: '/settings',
-    description: 'Preferences and account',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317a1.724 1.724 0 013.35 0c.138.595.728 1 1.338.923.61-.077 1.218.22 1.472.78.254.56.088 1.227-.41 1.603-.498.377-.67 1.05-.376 1.603.294.553.94.826 1.543.666.604-.16 1.258.13 1.544.69.286.56.127 1.242-.365 1.63-.491.388-.68 1.05-.455 1.615.225.564.853.88 1.47.745.617-.135 1.236.208 1.468.81.232.6-.011 1.268-.578 1.58-.567.312-.812.98-.588 1.56.224.58-.043 1.232-.626 1.52-.583.288-1.266.107-1.63-.428-.365-.535-1.06-.694-1.6-.366-.54.328-.742 1.006-.475 1.58.267.575-.018 1.247-.615 1.524-.597.277-1.298.11-1.644-.39-.346-.5-1.04-.637-1.59-.315-.551.321-.747.996-.466 1.563.28.567.024 1.255-.575 1.548-.6.293-1.32.112-1.662-.417-.343-.53-1.032-.68-1.587-.35-.555.33-.757 1.015-.478 1.594.28.58.002 1.266-.608 1.548-.61.282-1.324.086-1.659-.456-.335-.542-1.022-.708-1.58-.383-.559.325-.77.998-.49 1.582.281.585.014 1.276-.593 1.57" />
-        <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-]
+// ---- Icons reused across role menus ----------------------------------------
+const ico = {
+  dashboard: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3v-6h6v6h3a1 1 0 001-1V10" />
+    </svg>
+  ),
+  profile: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 14a4 4 0 10-8 0m12 7a8 8 0 10-16 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  ),
+  applications: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m-8 5h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    </svg>
+  ),
+  saved: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-4-7 4V5z" />
+    </svg>
+  ),
+  settings: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" />
+    </svg>
+  ),
+  shield: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    </svg>
+  ),
+  users: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2a4 4 0 100-8 4 4 0 000 8z" />
+    </svg>
+  ),
+  company: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+    </svg>
+  ),
+  mail: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  ),
+}
+
+// ---- Role-specific dropdown menus -----------------------------------------
+const ROLE_MENUS = {
+  admin: [
+    { label: 'Admin Dashboard', href: '/admin/dashboard', description: 'Platform overview and stats', icon: ico.dashboard },
+    { label: 'Admin Emails', href: '/admin/whitelist', description: 'Manage admin access list', icon: ico.mail },
+    { label: 'Users', href: '/admin/users', description: 'Browse all platform users', icon: ico.users },
+    { label: 'Settings', href: '/settings', description: 'Preferences and account', icon: ico.settings },
+  ],
+  recruiter: [
+    { label: 'Recruiter Dashboard', href: '/recruiter/dashboard', description: 'Your hiring overview', icon: ico.dashboard },
+    { label: 'Company Profile', href: '/recruiter/onboarding', description: 'Edit your company details', icon: ico.company },
+    { label: 'Settings', href: '/settings', description: 'Preferences and account', icon: ico.settings },
+  ],
+  candidate: [
+    { label: 'Dashboard', href: '/dashboard', description: 'Your personalised overview', icon: ico.dashboard },
+    { label: 'Profile', href: '/profile', description: 'View and edit your details', icon: ico.profile },
+    { label: 'My Applications', href: '/my-applications', description: 'Track your job applications', icon: ico.applications },
+    { label: 'Saved Jobs', href: '/saved-jobs', description: 'Jobs you have bookmarked', icon: ico.saved },
+    { label: 'Settings', href: '/settings', description: 'Preferences and account', icon: ico.settings },
+  ],
+}
+
+const ROLE_BADGE = {
+  admin: { label: 'Admin', cls: 'bg-purple-100 text-purple-700' },
+  recruiter: { label: 'Recruiter', cls: 'bg-blue-100 text-blue-700' },
+  candidate: { label: 'Job Seeker', cls: 'bg-gray-100 text-gray-600' },
+}
 
 function DropdownMenu({ items, isOpen }) {
   return (
@@ -94,7 +118,6 @@ function DropdownMenu({ items, isOpen }) {
       }`}
     >
       <div className="bg-white/90 backdrop-blur-2xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/60 p-2 min-w-[260px]">
-        {/* Glass highlight strip at the top */}
         <div className="absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent rounded-full" />
         {items.map((item, idx) => (
           <Link
@@ -119,7 +142,7 @@ function DropdownMenu({ items, isOpen }) {
   )
 }
 
-function ProfileDropdown({ user, onSignOut }) {
+function ProfileDropdown({ user, userRole, onSignOut }) {
   const [open, setOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
   const ref = useRef(null)
@@ -144,6 +167,9 @@ function ProfileDropdown({ user, onSignOut }) {
     .slice(0, 2)
     .join('')
     .toUpperCase()
+
+  const menuItems = ROLE_MENUS[userRole] || ROLE_MENUS.candidate
+  const badge = ROLE_BADGE[userRole] || ROLE_BADGE.candidate
 
   return (
     <div ref={ref} className="relative">
@@ -187,7 +213,7 @@ function ProfileDropdown({ user, onSignOut }) {
         <div className="relative bg-white/90 backdrop-blur-2xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/60 p-2 min-w-[280px]">
           <div className="absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent rounded-full" />
 
-          {/* User header */}
+          {/* User header with role badge */}
           <div className="flex items-center gap-3 px-3 py-3 mb-1 rounded-xl bg-gradient-to-br from-blue-50/60 to-indigo-50/60">
             <span className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold flex items-center justify-center shrink-0">
               {avatar ? (
@@ -200,10 +226,16 @@ function ProfileDropdown({ user, onSignOut }) {
             <div className="min-w-0">
               <div className="text-sm font-semibold text-gray-900 truncate">{fullName}</div>
               <div className="text-xs text-gray-500 truncate">{user?.email}</div>
+              {userRole !== 'candidate' && (
+                <span className={`mt-1 inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${badge.cls}`}>
+                  {badge.label}
+                </span>
+              )}
             </div>
           </div>
 
-          {profileMenu.map((item) => (
+          {/* Role-specific menu items */}
+          {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -248,6 +280,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState(null)
+  const [userRole, setUserRole] = useState(null)
   const [openDropdown, setOpenDropdown] = useState(null)
   const [mobileExpanded, setMobileExpanded] = useState(null)
   const dropdownTimeout = useRef(null)
@@ -262,18 +295,53 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Fetch role from user_profiles after getting the auth user.
+  const fetchRole = async (authUser) => {
+    if (!authUser) {
+      setUserRole(null)
+      return
+    }
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', authUser.id)
+      .single()
+    setUserRole(data?.role ?? 'candidate')
+  }
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
+    supabase.auth.getUser().then(({ data: { user: u } }) => {
+      setUser(u)
+      fetchRole(u)
     })
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const u = session?.user ?? null
+      setUser(u)
+      fetchRole(u)
     })
 
     return () => subscription.unsubscribe()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Refresh session when a backgrounded tab becomes visible again.
+  useEffect(() => {
+    let lastRefresh = Date.now()
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && Date.now() - lastRefresh > 60_000) {
+        lastRefresh = Date.now()
+        supabase.auth.getUser().then(({ data: { user: u } }) => {
+          setUser(u ?? null)
+          fetchRole(u ?? null)
+        })
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Close mobile menu on route change
@@ -300,8 +368,9 @@ export default function Navbar() {
   }, [isOpen])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
+    await fetch('/auth/sign-out', { method: 'POST', redirect: 'manual' })
     setUser(null)
+    setUserRole(null)
     router.push('/')
     router.refresh()
   }
@@ -329,14 +398,15 @@ export default function Navbar() {
       >
         <div className="px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
-            {/* Logo → Home */}
+            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
               <Image
                 src="/Mytechz_logo.png"
                 alt="MyTechz Logo"
                 width={140}
                 height={40}
-                className="h-9 w-auto object-contain"
+                className="h-9 object-contain"
+                style={{ width: 'auto' }}
                 priority
               />
             </Link>
@@ -383,7 +453,7 @@ export default function Navbar() {
             {/* Desktop Auth */}
             <div className="hidden lg:flex items-center gap-3 shrink-0">
               {user ? (
-                <ProfileDropdown user={user} onSignOut={handleSignOut} />
+                <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
                 <Link href="/login">
                   <Button size="sm">Get Started</Button>
@@ -391,10 +461,10 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile: Profile (left of hamburger) + Hamburger */}
+            {/* Mobile: Profile + Hamburger */}
             <div className="lg:hidden flex items-center gap-2">
               {user ? (
-                <ProfileDropdown user={user} onSignOut={handleSignOut} />
+                <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
                 <Link href="/login">
                   <Button size="sm">Get Started</Button>

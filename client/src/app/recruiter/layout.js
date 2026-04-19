@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
+import { ensureSessionInitialized } from '@/lib/ensure-session'
 
 // Strict recruiter-only gate.
 //
@@ -8,20 +9,19 @@ import { createClient } from '@/lib/supabase-server'
 // /recruiter/onboarding itself is always reachable to fresh signups.
 // Helper: `requireRecruiterOnboarded()` in [client/src/lib/recruiter-auth.js].
 export default async function RecruiterLayout({ children }) {
-  const supabase = await createClient()
+  // Ensure the session RPC has run (handles recruiter promotion)
+  const session = await ensureSessionInitialized()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!session) {
     redirect('/login?returnTo=/recruiter/dashboard')
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('role, is_active')
-    .eq('id', user.id)
+    .eq('id', session.user.id)
     .single()
 
   if (!profile || !profile.is_active || profile.role !== 'recruiter') {

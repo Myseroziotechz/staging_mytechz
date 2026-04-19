@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 
 const ALLOWED_COMPANY_SIZES = [
   '1-10',
@@ -85,10 +86,16 @@ export async function saveCompanyProfile(_prevState, formData) {
     }
   }
 
-  // Upsert company row. RLS allows the recruiter to write their own row;
-  // verification_status column is not grantable so it stays whatever the row
-  // was (default 'pending' for a fresh row).
-  const { error: upsertError } = await supabase
+  // Use admin client to bypass RLS — the anon-key client's session may not
+  // have the recruiter role visible to PostgREST yet.
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+
+  // Upsert company row.
+  const { error: upsertError } = await admin
     .from('recruiter_profiles')
     .upsert(
       {
@@ -109,8 +116,8 @@ export async function saveCompanyProfile(_prevState, formData) {
     return { error: `Could not save company profile: ${upsertError.message}` }
   }
 
-  // Flip onboarding_completed. Idempotent — repeat submissions stay true.
-  const { error: flagError } = await supabase
+  // Flip onboarding_completed.
+  const { error: flagError } = await admin
     .from('user_profiles')
     .update({ onboarding_completed: true })
     .eq('id', user.id)

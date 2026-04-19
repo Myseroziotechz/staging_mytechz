@@ -21,22 +21,49 @@ export default function LoginForm() {
 
   const returnTo = searchParams.get('returnTo') || '/'
   const urlError = searchParams.get('error')
-  const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
-  // Persist returnTo + intended role across the OAuth / magic-link redirect.
-  const saveIntent = () => {
-    document.cookie = `return-to=${returnTo}; max-age=600; path=/`
-    document.cookie = `intended_role=${intendedRole}; max-age=600; path=/; samesite=lax`
+  // Always use the actual browser origin so the OAuth redirect comes back to
+  // wherever the user is (localhost, staging, production). The env var is only
+  // a fallback for SSR where window is unavailable.
+  const siteUrl =
+    (typeof window !== 'undefined' ? window.location.origin : null) ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'http://localhost:3000'
+
+  // Build callback URL with intended_role + returnTo in query params.
+  // URL params are the ONLY reliable way to pass data through the
+  // Google → Supabase → localhost OAuth redirect chain. Cookies get dropped.
+  const buildCallbackUrl = () => {
+    const url = new URL('/auth/callback', siteUrl)
+    if (intendedRole !== 'candidate') url.searchParams.set('intended_role', intendedRole)
+    if (returnTo && returnTo !== '/') url.searchParams.set('returnTo', returnTo)
+    return url.toString()
   }
 
-  // Magic Link (Email OTP) — intended_role rides in the request body so the
-  // send-otp route can pass it to Supabase options.data, which lands in
-  // raw_user_meta_data and is read by the handle_new_user() trigger.
+  // Save intended_role in BOTH localStorage and a cookie so the server-side
+  // /auth/callback route can read it even if URL params get stripped by Supabase.
+  const saveIntentToStorage = () => {
+    try {
+      localStorage.setItem('mytechz_intended_role', intendedRole)
+      localStorage.setItem('mytechz_return_to', returnTo)
+    } catch {
+      // Private browsing or storage full.
+    }
+    // Server-readable cookie — 5 minutes is enough for the OAuth round-trip.
+    try {
+      document.cookie = `mytechz_intended_role=${encodeURIComponent(intendedRole)}; path=/; max-age=300; SameSite=Lax`
+      if (returnTo && returnTo !== '/') {
+        document.cookie = `mytechz_return_to=${encodeURIComponent(returnTo)}; path=/; max-age=300; SameSite=Lax`
+      }
+    } catch { /* ignore */ }
+  }
+
+  // Magic Link (Email OTP)
   const handleMagicLink = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    saveIntent()
+    saveIntentToStorage()
 
     try {
       const res = await fetch('/api/auth/send-otp', {
@@ -45,7 +72,7 @@ export default function LoginForm() {
         body: JSON.stringify({
           email,
           intendedRole,
-          redirectTo: `${origin}/auth/callback`,
+          redirectTo: buildCallbackUrl(),
         }),
       })
 
@@ -62,14 +89,13 @@ export default function LoginForm() {
     }
   }
 
-  // Google OAuth — provider ignores custom user metadata, so the cookie is the
-  // only way intended_role survives the round-trip. The auth callback reads it.
+  // Google OAuth
   const handleGoogleLogin = async () => {
-    saveIntent()
+    saveIntentToStorage()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback`,
+        redirectTo: buildCallbackUrl(),
       },
     })
   }
