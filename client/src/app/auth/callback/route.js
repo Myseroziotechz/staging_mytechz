@@ -48,11 +48,19 @@ export async function GET(request) {
     return NextResponse.redirect(new URL('/auth/error?reason=auth_failed', origin))
   }
 
-  // 3. Read intended_role from URL params OR cookie
+  // 3. Read intended_role — try URL params, cookie, then localStorage-backed
+  //    Supabase state param. Google OAuth strips custom query params from the
+  //    redirect URL, so the cookie is the primary carrier for OAuth flows.
   let intendedRole = searchParams.get('intended_role') || ''
   if (!intendedRole) {
     const roleCookie = cookieStore.get('mytechz_intended_role')
     intendedRole = roleCookie?.value || ''
+  }
+  // Fallback: check raw_user_meta_data.intended_role set by the
+  // handle_new_user trigger (magic-link sets this via signInWithOtp data).
+  if (!intendedRole) {
+    const meta = user.user_metadata || {}
+    intendedRole = meta.intended_role || ''
   }
 
   console.log('[auth/callback]', user.email, 'intendedRole:', intendedRole || '(none)')
@@ -125,9 +133,18 @@ export async function GET(request) {
       }
     }
 
-    // Recruiter promotion (only from candidate)
+    // Recruiter promotion (candidate → recruiter)
     if (role === 'candidate' && intendedRole === 'recruiter') {
       role = 'recruiter'
+      needsUpdate = true
+    }
+
+    // Recruiter demotion (recruiter → candidate) — only allowed if the
+    // recruiter hasn't completed onboarding yet (i.e. never filled the
+    // company profile). Once onboarding is done they are a confirmed
+    // recruiter and the toggle on the login page won't demote them.
+    if (role === 'recruiter' && intendedRole === 'candidate' && !onboardingCompleted) {
+      role = 'candidate'
       needsUpdate = true
     }
 
@@ -135,7 +152,7 @@ export async function GET(request) {
     if (needsUpdate || !profile.last_login_at) {
       const { error: updateErr } = await admin
         .from('user_profiles')
-        .update({ role, last_login_at: new Date().toISOString() })
+        .update({ role, last_login_at: new Date().toISOString(), updated_at: new Date().toISOString() })
         .eq('id', user.id)
 
       if (updateErr) {
@@ -147,7 +164,7 @@ export async function GET(request) {
       // Just stamp last_login_at
       await admin
         .from('user_profiles')
-        .update({ last_login_at: new Date().toISOString() })
+        .update({ last_login_at: new Date().toISOString(), updated_at: new Date().toISOString() })
         .eq('id', user.id)
       console.log('[auth/callback] Login:', user.email, 'role:', role)
     }

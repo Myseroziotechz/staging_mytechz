@@ -103,11 +103,22 @@ html {
 }
 .hero-pulse-ring::after { animation-delay: 1.2s; }
 
+/* Login showcase — rotating card entrance */
+@keyframes showcase-card-enter {
+  0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.showcase-card-enter {
+  animation: showcase-card-enter 0.45s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-blob, .hero-blob-delay, .hero-blob-slow,
   .hero-float-a, .hero-float-b, .hero-float-c,
   .hero-grid, .hero-gradient-text,
-  .hero-fade-up, .hero-fade-up-d1, .hero-fade-up-d2, .hero-fade-up-d3, .hero-fade-up-d4 {
+  .hero-fade-up, .hero-fade-up-d1, .hero-fade-up-d2, .hero-fade-up-d3, .hero-fade-up-d4,
+  .showcase-card-enter {
     animation: none;
   }
 }

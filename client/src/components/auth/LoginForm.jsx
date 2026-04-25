@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 import MagicLinkSent from '@/components/auth/MagicLinkSent'
+import LegalModal from '@/components/auth/LegalModal'
 
 export default function LoginForm() {
   const supabase = createClient()
@@ -18,6 +19,8 @@ export default function LoginForm() {
   const [error, setError] = useState(null)
   // 'candidate' | 'recruiter' — admin is never user-selectable
   const [intendedRole, setIntendedRole] = useState('candidate')
+  // null | 'terms' | 'privacy'
+  const [legalModal, setLegalModal] = useState(null)
 
   const returnTo = searchParams.get('returnTo') || '/'
   const urlError = searchParams.get('error')
@@ -92,6 +95,19 @@ export default function LoginForm() {
   // Google OAuth
   const handleGoogleLogin = async () => {
     saveIntentToStorage()
+    // Set the intended role via a server-side HttpOnly cookie. Client-side
+    // document.cookie is unreliable through the cross-domain OAuth redirect
+    // chain (Google → Supabase → localhost). This API call guarantees the
+    // cookie reaches /auth/callback.
+    try {
+      await fetch('/api/auth/set-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: intendedRole }),
+      })
+    } catch {
+      // If the API call fails, the document.cookie fallback is still set.
+    }
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -109,13 +125,13 @@ export default function LoginForm() {
   const isRecruiter = intendedRole === 'recruiter'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {isRecruiter ? 'Welcome, Recruiter' : 'Welcome to MyTechZ'}
+      <div className="text-center lg:text-left">
+        <h1 className="text-lg font-bold text-gray-900">
+          {isRecruiter ? 'Welcome, Recruiter' : 'Welcome back!'}
         </h1>
-        <p className="mt-2 text-gray-500">
+        <p className="mt-0.5 text-sm text-gray-500">
           {isRecruiter
             ? 'Sign in to post jobs and manage candidates'
             : 'Sign in to access your account'}
@@ -133,7 +149,7 @@ export default function LoginForm() {
           role="tab"
           aria-selected={!isRecruiter}
           onClick={() => setIntendedRole('candidate')}
-          className={`py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
+          className={`py-1.5 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
             !isRecruiter
               ? 'bg-white text-gray-900 shadow-sm'
               : 'text-gray-500 hover:text-gray-700'
@@ -146,7 +162,7 @@ export default function LoginForm() {
           role="tab"
           aria-selected={isRecruiter}
           onClick={() => setIntendedRole('recruiter')}
-          className={`py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
+          className={`py-1.5 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
             isRecruiter
               ? 'bg-white text-gray-900 shadow-sm'
               : 'text-gray-500 hover:text-gray-700'
@@ -158,7 +174,7 @@ export default function LoginForm() {
 
       {/* URL Error */}
       {urlError && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+        <div className="p-2.5 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
           {urlError === 'auth_failed'
             ? 'Authentication failed. Please try again.'
             : urlError}
@@ -173,13 +189,13 @@ export default function LoginForm() {
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-200" />
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-gray-400">or continue with email</span>
+        <div className="relative flex justify-center text-xs">
+          <span className="px-3 bg-white text-gray-400">or continue with email</span>
         </div>
       </div>
 
       {/* Email Magic Link Form */}
-      <form onSubmit={handleMagicLink} className="space-y-4">
+      <form onSubmit={handleMagicLink} className="space-y-2.5">
         <Input
           type="email"
           placeholder={isRecruiter ? 'Enter your work email' : 'Enter your email'}
@@ -191,7 +207,7 @@ export default function LoginForm() {
           type="submit"
           disabled={loading}
           className="w-full"
-          size="lg"
+          size="md"
         >
           {loading
             ? 'Sending...'
@@ -203,15 +219,36 @@ export default function LoginForm() {
 
       {/* Error */}
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+        <div className="p-2.5 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
           {error}
         </div>
       )}
 
       {/* Footer text */}
-      <p className="text-center text-xs text-gray-400">
-        By signing in, you agree to our Terms of Service and Privacy Policy.
+      <p className="text-center text-[11px] text-gray-400">
+        By signing in, you agree to our{' '}
+        <button
+          type="button"
+          onClick={() => setLegalModal('terms')}
+          className="underline text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
+        >
+          Terms of Service
+        </button>
+        {' '}and{' '}
+        <button
+          type="button"
+          onClick={() => setLegalModal('privacy')}
+          className="underline text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
+        >
+          Privacy Policy
+        </button>
+        .
       </p>
+
+      {/* Legal modals */}
+      {legalModal && (
+        <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
+      )}
     </div>
   )
 }

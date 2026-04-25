@@ -37,43 +37,20 @@ function AuthCompleteInner() {
         }
 
         // Read intended_role from localStorage (last resort).
-        let intendedRole = searchParams.get('intended_role') || null
-        if (!intendedRole) {
-          try {
-            intendedRole = localStorage.getItem('mytechz_intended_role') || null
-            localStorage.removeItem('mytechz_intended_role')
-            localStorage.removeItem('mytechz_return_to')
-          } catch { /* ignore */ }
-        }
+        try {
+          localStorage.removeItem('mytechz_intended_role')
+          localStorage.removeItem('mytechz_return_to')
+        } catch { /* ignore */ }
 
-        // Try the RPC one more time from the client
-        let role = null
-        let onboardingCompleted = false
+        // Direct query for role
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('role, onboarding_completed')
+          .eq('id', user.id)
+          .maybeSingle()
 
-        const { data: rpcData, error: rpcError } = await supabase.rpc(
-          'initialize_session',
-          { p_intended_role: intendedRole }
-        )
-
-        if (!rpcError && rpcData) {
-          const row = Array.isArray(rpcData) ? rpcData[0] : rpcData
-          if (row) {
-            role = row.role
-            onboardingCompleted = Boolean(row.onboarding_completed)
-          }
-        }
-
-        // Fallback: direct query
-        if (!role) {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('role, onboarding_completed')
-            .eq('id', user.id)
-            .maybeSingle()
-
-          role = profile?.role || 'candidate'
-          onboardingCompleted = Boolean(profile?.onboarding_completed)
-        }
+        const role = profile?.role || 'candidate'
+        const onboardingCompleted = Boolean(profile?.onboarding_completed)
 
         // Redirect
         let destination = '/dashboard'

@@ -28,5 +28,9 @@ export async function POST(request) {
 
   await supabase.auth.signOut()
 
-  return NextResponse.redirect(new URL('/', request.url), { status: 303 })
+  const response = NextResponse.redirect(new URL('/', request.url), { status: 303 })
+  // Clear all MyTechZ cookies
+  response.cookies.set('mytechz_intended_role', '', { path: '/', maxAge: 0 })
+  response.cookies.set('mytechz_return_to', '', { path: '/', maxAge: 0 })
+  return response
 }

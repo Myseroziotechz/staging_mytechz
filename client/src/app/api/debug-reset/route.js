@@ -15,7 +15,7 @@ export async function GET(request) {
 
   const { error } = await admin
     .from('user_profiles')
-    .update({ role: 'candidate', last_login_at: null, onboarding_completed: false })
+    .update({ role: 'candidate', last_login_at: null, onboarding_completed: false, updated_at: new Date().toISOString() })
     .eq('email', email)
 
   if (error) return NextResponse.json({ error: error.message })

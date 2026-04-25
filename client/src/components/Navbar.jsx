@@ -369,6 +369,22 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     await fetch('/auth/sign-out', { method: 'POST', redirect: 'manual' })
+    // Clear all MyTechZ data from localStorage
+    try {
+      localStorage.removeItem('mytechz_intended_role')
+      localStorage.removeItem('mytechz_return_to')
+      // Clear any Supabase auth tokens from localStorage
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('sb-') || key.startsWith('supabase')) {
+          localStorage.removeItem(key)
+        }
+      })
+    } catch { /* ignore */ }
+    // Clear any remaining cookies
+    try {
+      document.cookie = 'mytechz_intended_role=; path=/; max-age=0'
+      document.cookie = 'mytechz_return_to=; path=/; max-age=0'
+    } catch { /* ignore */ }
     setUser(null)
     setUserRole(null)
     router.push('/')

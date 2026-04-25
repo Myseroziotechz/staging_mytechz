@@ -45,6 +45,9 @@ export async function saveCompanyProfile(_prevState, formData) {
   }
 
   // Extract + normalize.
+  const full_name = str(formData, 'full_name')
+  const designation = str(formData, 'designation')
+  const phone = str(formData, 'phone') || null
   const company_name = str(formData, 'company_name')
   const company_website = str(formData, 'company_website') || null
   const industry = str(formData, 'industry')
@@ -56,6 +59,8 @@ export async function saveCompanyProfile(_prevState, formData) {
 
   // Validate.
   const fieldErrors = {}
+  if (!full_name) fieldErrors.full_name = 'Required'
+  if (!designation) fieldErrors.designation = 'Required'
   if (!company_name) fieldErrors.company_name = 'Required'
   if (!industry) fieldErrors.industry = 'Required'
   if (!ALLOWED_COMPANY_SIZES.includes(company_size))
@@ -72,8 +77,10 @@ export async function saveCompanyProfile(_prevState, formData) {
     return {
       error: 'Please correct the highlighted fields.',
       fieldErrors,
-      // Echo submitted values so the form can repaint without losing input.
       values: {
+        full_name,
+        designation,
+        phone: phone ?? '',
         company_name,
         company_website: company_website ?? '',
         industry,
@@ -94,6 +101,19 @@ export async function saveCompanyProfile(_prevState, formData) {
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 
+  // Update personal info on user_profiles.
+  const profileUpdate = { full_name, updated_at: new Date().toISOString() }
+  if (phone) profileUpdate.phone = phone
+
+  const { error: profileError } = await admin
+    .from('user_profiles')
+    .update(profileUpdate)
+    .eq('id', user.id)
+
+  if (profileError) {
+    return { error: `Could not update profile: ${profileError.message}` }
+  }
+
   // Upsert company row.
   const { error: upsertError } = await admin
     .from('recruiter_profiles')
@@ -108,6 +128,8 @@ export async function saveCompanyProfile(_prevState, formData) {
         work_mode,
         company_description,
         gst_or_cin,
+        designation,
+        updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id' }
     )
@@ -119,7 +141,7 @@ export async function saveCompanyProfile(_prevState, formData) {
   // Flip onboarding_completed.
   const { error: flagError } = await admin
     .from('user_profiles')
-    .update({ onboarding_completed: true })
+    .update({ onboarding_completed: true, updated_at: new Date().toISOString() })
     .eq('id', user.id)
 
   if (flagError) {

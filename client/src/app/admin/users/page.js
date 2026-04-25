@@ -19,7 +19,7 @@ export default async function AdminUsersPage() {
   const { data: users = [] } = await supabase
     .from('user_profiles')
     .select(
-      'id, email, role, full_name, onboarding_completed, is_active, last_login_at, created_at'
+      'id, email, role, full_name, onboarding_completed, is_active, is_subscribed, last_login_at, created_at'
     )
     .order('created_at', { ascending: false })
     .limit(PAGE_LIMIT)
@@ -41,6 +41,7 @@ export default async function AdminUsersPage() {
                 <th className="px-4 py-3 font-semibold">User</th>
                 <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Onboarded</th>
+                <th className="px-4 py-3 font-semibold">Subscribed</th>
                 <th className="px-4 py-3 font-semibold">Last login</th>
                 <th className="px-4 py-3 font-semibold">Created</th>
               </tr>
@@ -76,6 +77,22 @@ export default async function AdminUsersPage() {
                           : 'No'
                         : '—'}
                     </td>
+                    <td className="px-4 py-3 align-top">
+                      {u.role === 'candidate' ? (
+                        u.is_subscribed ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-medium">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            Yes
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-xs">No</span>
+                        )
+                      ) : (
+                        <span className="text-gray-300 text-xs">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 align-top text-gray-700">
                       {u.last_login_at
                         ? new Date(u.last_login_at).toLocaleDateString()
@@ -89,7 +106,7 @@ export default async function AdminUsersPage() {
               ) : (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-8 text-center text-gray-500"
                   >
                     No users yet.

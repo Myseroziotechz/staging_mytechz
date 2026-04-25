@@ -32,7 +32,7 @@ export default async function MyApplicationsPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50 pt-24 pb-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-6">
         <header>
           <h1 className="text-2xl font-bold text-gray-900">My Applications</h1>
           <p className="mt-1 text-sm text-gray-500">

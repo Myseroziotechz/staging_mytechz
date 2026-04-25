@@ -142,6 +142,13 @@ export async function ensureSessionInitialized() {
     newRole = 'recruiter'
   }
 
+  // Recruiter demotion — only if onboarding hasn't been completed yet.
+  // Once a recruiter fills their company profile they are confirmed and
+  // cannot be demoted by a login-page toggle.
+  if (newRole === 'recruiter' && intendedRole === 'candidate' && !profile.onboarding_completed) {
+    newRole = 'candidate'
+  }
+
   // 6. Update the profile
   console.log('[ensure-session] Updating role:', profile.role, '→', newRole)
 
@@ -150,6 +157,7 @@ export async function ensureSessionInitialized() {
     .update({
       role: newRole,
       last_login_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
     .eq('id', user.id)
 

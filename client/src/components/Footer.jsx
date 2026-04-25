@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import NewsletterSubscribe from '@/components/NewsletterSubscribe'
 
 export default function Footer() {
   return (
@@ -26,16 +27,7 @@ export default function Footer() {
                 Get the latest job alerts, AI tool updates, and career tips delivered to your inbox.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row w-full md:w-auto gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 md:w-72 px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm"
-              />
-              <button className="px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-blue-700 font-semibold rounded-lg sm:rounded-xl hover:bg-blue-50 transition-colors text-sm whitespace-nowrap shadow-lg">
-                Subscribe
-              </button>
-            </div>
+            <NewsletterSubscribe />
           </div>
         </div>
       </div>
