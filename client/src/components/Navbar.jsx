@@ -12,8 +12,9 @@ const navItems = [
     label: 'Jobs',
     href: '/jobs',
     dropdown: [
-      { label: 'Private Jobs', href: '/jobs/private', description: 'Explore opportunities in top private companies' },
-      { label: 'Government Jobs', href: '/jobs/government', description: 'Find secure careers in the public sector' },
+      { label: 'Private Jobs',     href: '/jobs?tab=private',    description: 'Explore opportunities in top private companies' },
+      { label: 'Government Jobs',  href: '/jobs?tab=government', description: 'Find secure careers in the public sector' },
+      { label: 'AI Featured Search', href: '/jobs?tab=ai',       description: 'Personalized matches powered by AI' },
     ],
   },
   {

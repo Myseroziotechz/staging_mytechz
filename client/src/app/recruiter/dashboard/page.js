@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { requireRecruiterOnboarded } from '@/lib/recruiter-auth'
+import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 
 export const metadata = {
   title: 'Recruiter Dashboard - MyTechZ',
@@ -137,6 +138,9 @@ export default async function RecruiterDashboardPage() {
             badge="Coming soon"
           />
         </section>
+
+        {/* Your job postings */}
+        <JobsDashboardWidget variant="recruiter" userId={user.id} limit={6} ctaHref="/recruiter/dashboard" ctaLabel="Manage all" />
 
         {/* Recent Activity */}
         <section className="bg-white border border-gray-200 rounded-2xl p-6">

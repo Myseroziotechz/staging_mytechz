@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { ensureSessionInitialized } from '@/lib/ensure-session'
+import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 
 export const metadata = {
   title: 'Dashboard - MyTechZ',
@@ -158,6 +159,9 @@ export default async function CandidateDashboardPage() {
           />
         </section>
 
+        {/* Latest jobs */}
+        <JobsDashboardWidget variant="default" limit={4} title="Latest jobs for you" ctaHref="/jobs?tab=ai" ctaLabel="See AI matches" />
+
         {/* Recent Activity Placeholder */}
         <section className="bg-white border border-gray-200 rounded-2xl p-6">
           <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
@@ -171,7 +175,7 @@ export default async function CandidateDashboardPage() {
             <p className="text-sm font-medium">No activity yet</p>
             <p className="text-xs mt-1">Start by browsing and applying to jobs</p>
             <Link
-              href="/jobs/private"
+              href="/jobs?tab=private"
               className="mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700"
             >
               Browse jobs →

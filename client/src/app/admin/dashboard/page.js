@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
+import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 
 export const metadata = {
   title: 'Admin Overview - MyTechZ',
@@ -149,6 +150,9 @@ export default async function AdminDashboardPage() {
           </div>
         </section>
       )}
+
+      {/* Jobs awaiting approval */}
+      <JobsDashboardWidget variant="admin" limit={6} ctaHref="/admin/dashboard" ctaLabel="Open queue" />
 
       {/* Recent Sign-ups */}
       <section className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
