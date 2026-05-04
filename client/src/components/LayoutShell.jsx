@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DashboardSidebar from '@/components/DashboardSidebar'
+import FloatingAIChat from '@/components/ai/FloatingAIChat'
 
 // Routes where navbar + footer + sidebar are all hidden.
 const BARE_ROUTES = ['/login']
@@ -24,6 +25,7 @@ export default function LayoutShell({ children }) {
       <DashboardSidebar />
       <main className="flex-1 pt-20">{children}</main>
       <Footer />
+      <FloatingAIChat />
     </>
   )
 }
