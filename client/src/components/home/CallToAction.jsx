@@ -2,8 +2,8 @@ import Link from 'next/link'
 
 export default function CallToAction() {
   return (
-    <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="relative py-16 sm:py-20 bg-gradient-to-r from-blue-600 to-indigo-700">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold text-white">
           Ready to Start Your Career Journey?
         </h2>
@@ -18,7 +18,7 @@ export default function CallToAction() {
             Sign Up Now
           </Link>
           <Link
-            href="#jobs"
+            href="/jobs"
             className="inline-flex items-center justify-center px-8 py-3.5 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
           >
             Browse Jobs

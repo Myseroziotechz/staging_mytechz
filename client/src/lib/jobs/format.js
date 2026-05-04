@@ -87,3 +87,28 @@ export function applyHref(job) {
 export function companyInitials(name = '') {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || '–'
 }
+
+// Stipend formatter for internships — same numbers as salary, but always per-month + "Stipend".
+export function formatStipend(job) {
+  if (!job) return null
+  if (job.is_salary_disclosed === false) return 'Unpaid / not disclosed'
+  const min = job.salary_min, max = job.salary_max
+  if (!min && !max) return null
+  // If salary_period is 'year', convert to monthly for display.
+  const toMonthly = (n) => job.salary_period === 'year' ? Math.round(n / 12) : n
+  const fmt = (n) => {
+    if (n == null) return ''
+    const m = toMonthly(n)
+    if (m >= 100000) return `${(m / 100000).toFixed(1)}L`
+    if (m >= 1000)   return `${(m / 1000).toFixed(0)}K`
+    return `${m}`
+  }
+  const sym = (job.salary_currency === 'INR' ? '₹' : (job.salary_currency || '') + ' ')
+  if (min && max) return `${sym}${fmt(min)} – ${sym}${fmt(max)} / mo`
+  return `${sym}${fmt(min ?? max)} / mo`
+}
+
+// Government meta accessor for cards.
+export function govMeta(job) {
+  return job?.government_meta || {}
+}

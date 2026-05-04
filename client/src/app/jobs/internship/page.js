@@ -3,37 +3,37 @@ import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingP
 import { getJobs } from '@/lib/jobs/queries'
 
 export const metadata = {
-  title: 'Private Jobs — Tech, BFSI, Startups & MNCs | MyTechz',
-  description: 'Curated private-sector job openings across IT services, product companies, BFSI and high-growth startups. Verified roles only.',
-  alternates: { canonical: '/jobs/private' },
+  title: 'Internships — Paid roles for students & freshers | MyTechz',
+  description: 'Explore paid internships across tech, design, marketing and more. Filter by stipend, duration and college eligibility.',
+  alternates: { canonical: '/jobs/internship' },
 }
 
 export const dynamic = 'force-dynamic'
 
 const PAGE_CONFIG = {
-  id: 'private',
-  title: 'Private Jobs',
-  subtitle: 'Top companies, startups and MNCs hiring across India.',
-  accentColor: 'blue',
-  heroBadge: 'Private sector',
-  placeholder: 'Job title, company or skill',
+  id: 'internship',
+  title: 'Internships',
+  subtitle: 'Paid internships for students and freshers — stipends shown per month.',
+  accentColor: 'amber',
+  heroBadge: 'For students & freshers',
+  placeholder: 'Role, college, or skill',
 }
 
 function parseFilters(sp) {
   const skills = sp?.skills ? String(sp.skills).split(',').map(s => s.trim()).filter(Boolean) : []
   return {
     q: sp?.q || '', location: sp?.loc || '',
-    work_mode: sp?.mode || '', job_type: sp?.type || '',
-    exp_min: sp?.exp_min || '', exp_max: sp?.exp_max || '',
+    work_mode: sp?.mode || '', job_type: 'internship',
+    exp_min: '', exp_max: '',
     sal_min: sp?.sal_min || '', skills,
     sort: sp?.sort || 'newest', page: Number(sp?.page) || 1,
   }
 }
 
-export default async function PrivateJobsPage({ searchParams }) {
+export default async function InternshipsPage({ searchParams }) {
   const sp = await searchParams
   const filters = parseFilters(sp)
-  const { jobs, error } = await getJobs({ ...filters, category: 'private', exclude_internships: true })
+  const { jobs, error } = await getJobs({ ...filters, job_type: 'internship' })
 
   return (
     <Suspense fallback={<JobsLoadingGrid />}>

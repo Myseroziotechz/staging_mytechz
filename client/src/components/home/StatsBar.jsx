@@ -1,27 +1,23 @@
+import HomeSection from './HomeSection'
+
 const stats = [
   { value: '500+', label: 'Jobs Posted' },
   { value: '100+', label: 'Companies' },
   { value: '10K+', label: 'Candidates' },
-  { value: '95%', label: 'Success Rate' },
+  { value: '95%',  label: 'Success Rate' },
 ]
 
 export default function StatsBar() {
   return (
-    <section className="py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-3xl sm:text-4xl font-bold text-blue-600">
-                {stat.value}
-              </p>
-              <p className="mt-1 text-sm text-gray-500 font-medium">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
+    <HomeSection tone="light" pad="py-10 sm:py-14">
+      <div className="job-glass-panel rounded-2xl px-6 py-7 grid grid-cols-2 md:grid-cols-4 gap-6 shadow-md shadow-blue-900/5">
+        {stats.map((stat) => (
+          <div key={stat.label} className="text-center">
+            <p className="text-3xl sm:text-4xl font-bold hero-gradient-text">{stat.value}</p>
+            <p className="mt-1 text-sm text-slate-500 font-medium">{stat.label}</p>
+          </div>
+        ))}
       </div>
-    </section>
+    </HomeSection>
   )
 }

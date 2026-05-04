@@ -33,6 +33,7 @@ export async function getJobs(filters = {}) {
     }
     if (filters.work_mode) q = q.eq('work_mode', filters.work_mode)
     if (filters.job_type)  q = q.eq('job_type', filters.job_type)
+    if (filters.exclude_internships) q = q.neq('job_type', 'internship')
 
     const hasNum = (v) => v !== '' && v !== null && v !== undefined && !Number.isNaN(Number(v))
     if (hasNum(filters.exp_min)) q = q.gte('experience_min', Number(filters.exp_min))

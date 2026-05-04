@@ -59,7 +59,10 @@ export default function JobCard({
   isSaved = false,
   isApplied = false,
   matchScore = null,           // 0-100
-  onSaveToggle,                // optional handler; if absent, link to detail page
+  cardExtras = null,           // node injected below the meta row (per-category extras)
+  primaryAmount = null,        // override the salary line text (e.g. stipend for internships)
+  accent = null,               // 'blue' | 'emerald' | 'amber' — adds a left ring
+  onSaveToggle,
   onApprove,
   onReject,
   onEdit,
@@ -68,12 +71,16 @@ export default function JobCard({
   if (!job) return null
 
   const href     = jobUrl(job)
-  const salary   = formatSalary(job)
+  const salary   = primaryAmount !== null ? primaryAmount : formatSalary(job)
   const loc      = formatLocation(job)
   const exp      = formatExperience(job)
   const posted   = formatPostedAgo(job.posted_at)
   const deadline = formatDeadline(job.application_deadline)
   const isNew = typeof posted === 'string' && (posted === 'Just now' || /^\d+[mh] ago$/.test(posted) || /^[12]d ago$/.test(posted))
+  const accentRing = accent === 'emerald' ? 'ring-2 ring-emerald-300/50'
+                  : accent === 'amber'   ? 'ring-2 ring-amber-300/50'
+                  : accent === 'blue'    ? 'ring-2 ring-blue-300/50'
+                  : ''
 
   const company  = job.company || {}
   const compName = company.name || job.company_name || 'Company'
@@ -92,7 +99,7 @@ export default function JobCard({
         'job-card group relative',
         radius, padding,
         'flex flex-col gap-3',
-        isFeatured ? 'ring-2 ring-amber-300/60' : '',
+        isFeatured ? 'ring-2 ring-amber-300/60' : accentRing,
       ].join(' ')}
     >
       {/* shimmer/gradient layers handled in CSS via ::before/::after */}
@@ -179,6 +186,11 @@ export default function JobCard({
             <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-50 text-slate-500">+{job.skills.length - (isCompact ? 3 : 5)} more</span>
           )}
         </div>
+      )}
+
+      {/* Per-category extras (e.g. stipend, exam date) */}
+      {!isMini && cardExtras && (
+        <div className="relative z-[2]">{cardExtras}</div>
       )}
 
       {/* Bottom: salary + deadline + match */}
