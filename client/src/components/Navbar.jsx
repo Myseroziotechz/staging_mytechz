@@ -86,12 +86,15 @@ const ico = {
 const ROLE_MENUS = {
   admin: [
     { label: 'Admin Dashboard', href: '/admin/dashboard', description: 'Platform overview and stats', icon: ico.dashboard },
+    { label: 'Post a Card', href: '/admin/post-job', description: 'Create private, govt, internship, or AI cards', icon: ico.dashboard },
     { label: 'Admin Emails', href: '/admin/whitelist', description: 'Manage admin access list', icon: ico.mail },
     { label: 'Users', href: '/admin/users', description: 'Browse all platform users', icon: ico.users },
     { label: 'Settings', href: '/settings', description: 'Preferences and account', icon: ico.settings },
   ],
   recruiter: [
     { label: 'Recruiter Dashboard', href: '/recruiter/dashboard', description: 'Your hiring overview', icon: ico.dashboard },
+    { label: 'Post a Job', href: '/recruiter/post-job', description: 'Create a new job or internship card', icon: ico.dashboard },
+    { label: 'Applicants', href: '/recruiter/applicants', description: 'Review candidates for your jobs', icon: ico.users },
     { label: 'Company Profile', href: '/recruiter/onboarding', description: 'Edit your company details', icon: ico.company },
     { label: 'Settings', href: '/settings', description: 'Preferences and account', icon: ico.settings },
   ],

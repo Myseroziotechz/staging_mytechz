@@ -1,4 +1,5 @@
-import AdminPostJobForm from '@/components/admin/AdminPostJobForm'
+import JobForm from '@/components/jobs/JobForm'
+import { adminCreateJobAction } from './actions'
 
 export const metadata = {
   title: 'Create Job Card | Admin Panel',
@@ -6,5 +7,5 @@ export const metadata = {
 }
 
 export default function AdminPostJobPage() {
-  return <AdminPostJobForm />
+  return <JobForm mode="admin" action={adminCreateJobAction} />
 }

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { requireRecruiterOnboarded } from '@/lib/recruiter-auth'
 import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
+import { getRecruiterApplicantStats } from '@/lib/applicants/queries'
 
 export const metadata = {
   title: 'Recruiter Dashboard - MyTechZ',
@@ -23,7 +24,7 @@ export default async function RecruiterDashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const [{ data: profile }, { data: company }] = await Promise.all([
+  const [{ data: profile }, { data: company }, { data: jobsList = [] }, applicantStats] = await Promise.all([
     supabase
       .from('user_profiles')
       .select('full_name, email, created_at')
@@ -36,7 +37,19 @@ export default async function RecruiterDashboardPage() {
       )
       .eq('user_id', user.id)
       .single(),
+    supabase
+      .from('jobs')
+      .select('id, status')
+      .eq('posted_by', user.id),
+    getRecruiterApplicantStats(user.id),
   ])
+
+  const totalJobs = jobsList.length
+  const activeJobs = jobsList.filter((j) => j.status === 'active').length
+  const shortlisted =
+    (applicantStats.byStatus.interview || 0) +
+    (applicantStats.byStatus.offered || 0) +
+    (applicantStats.byStatus.hired || 0)
 
   const greetingName = profile?.full_name?.split(' ')[0] || 'there'
   const memberSince = profile?.created_at
@@ -113,30 +126,30 @@ export default async function RecruiterDashboardPage() {
 
         {/* Stats */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard label="Jobs Posted" value="0" color="blue" />
-          <StatCard label="Total Applicants" value="0" color="green" />
-          <StatCard label="Active Jobs" value="0" color="amber" />
-          <StatCard label="Shortlisted" value="0" color="purple" />
+          <StatCard label="Jobs Posted" value={String(totalJobs)} color="blue" />
+          <StatCard label="Total Applicants" value={String(applicantStats.total)} color="green" />
+          <StatCard label="Active Jobs" value={String(activeJobs)} color="amber" />
+          <StatCard label="Shortlisted" value={String(shortlisted)} color="purple" />
         </section>
 
         {/* Action cards */}
         <section className="grid sm:grid-cols-2 gap-4">
-          <ActionCard
-            title="Post a Job"
-            description="Create a new job posting and start receiving applications from qualified candidates."
-            icon={
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            }
-            badge="Coming soon"
-          />
-          <ActionCard
-            title="View Applicants"
-            description="Review candidates who applied to your roles, manage shortlists, and schedule interviews."
-            icon={
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2a4 4 0 100-8 4 4 0 000 8z" />
-            }
-            badge="Coming soon"
-          />
+          <Link href="/recruiter/post-job" className="block">
+            <ActionCard
+              title="Post a Job"
+              description="Create a new job posting and start receiving applications from qualified candidates."
+              icon={<path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />}
+              cta="Open form →"
+            />
+          </Link>
+          <Link href="/recruiter/applicants" className="block">
+            <ActionCard
+              title="View Applicants"
+              description={`${applicantStats.total} total · ${applicantStats.weekCount} this week. Move candidates through your hiring pipeline.`}
+              icon={<path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2a4 4 0 100-8 4 4 0 000 8z" />}
+              cta="Open pipeline →"
+            />
+          </Link>
         </section>
 
         {/* Your job postings */}
@@ -202,21 +215,19 @@ function StatCard({ label, value, color }) {
   )
 }
 
-function ActionCard({ title, description, icon, badge }) {
+function ActionCard({ title, description, icon, cta }) {
   return (
-    <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-6 text-left relative">
-      {badge && (
-        <span className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
-          {badge}
-        </span>
-      )}
-      <div className="w-10 h-10 rounded-lg bg-gray-100 text-gray-500 inline-flex items-center justify-center">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 text-left relative hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+      <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 inline-flex items-center justify-center">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
           {icon}
         </svg>
       </div>
       <h3 className="mt-4 text-base font-semibold text-gray-900">{title}</h3>
       <p className="mt-1 text-sm text-gray-500">{description}</p>
+      {cta && (
+        <p className="mt-3 text-xs font-semibold text-blue-700">{cta}</p>
+      )}
     </div>
   )
 }

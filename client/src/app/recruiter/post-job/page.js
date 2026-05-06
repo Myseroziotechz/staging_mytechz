@@ -1,4 +1,5 @@
-import PostJobForm from '@/components/recruiter/PostJobForm'
+import JobForm from '@/components/jobs/JobForm'
+import { createJobAction } from './actions'
 
 export const metadata = {
   title: 'Post a Job | MyTechZ Recruiter',
@@ -6,5 +7,5 @@ export const metadata = {
 }
 
 export default function PostJobPage() {
-  return <PostJobForm />
+  return <JobForm mode="recruiter" action={createJobAction} />
 }

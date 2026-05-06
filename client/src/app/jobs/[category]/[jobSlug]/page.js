@@ -13,7 +13,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.in'
 
 export const revalidate = 300
 
-const VALID_CATEGORIES = ['private', 'government']
+const VALID_CATEGORIES = ['private', 'government', 'internship', 'ai']
 
 export async function generateMetadata({ params }) {
   const { category, jobSlug } = await params
@@ -167,9 +167,15 @@ export default async function JobDetailPage({ params, searchParams }) {
             )}
 
             <Block title="About the role">
-              <div className="prose prose-slate max-w-none whitespace-pre-wrap text-slate-700 text-[15px] leading-relaxed">
-                {job.description}
-              </div>
+              {job.description ? (
+                <div className="prose prose-slate max-w-none whitespace-pre-wrap text-slate-700 text-[15px] leading-relaxed">
+                  {job.description}
+                </div>
+              ) : (
+                <p className="text-sm italic text-slate-400">
+                  The recruiter hasn&apos;t added a description yet.
+                </p>
+              )}
             </Block>
 
             {Array.isArray(job.skills) && job.skills.length > 0 && (

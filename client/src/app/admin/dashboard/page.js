@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
+import { getAdminPlatformKPIs } from '@/lib/admin/queries'
 
 export const metadata = {
   title: 'Admin Overview - MyTechZ',
@@ -17,12 +18,13 @@ async function countRows(supabase, table, column, value) {
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
 
-  const [totalUsers, candidates, recruiters, admins, whitelisted] = await Promise.all([
+  const [totalUsers, candidates, recruiters, admins, whitelisted, platform] = await Promise.all([
     countRows(supabase, 'user_profiles'),
     countRows(supabase, 'user_profiles', 'role', 'candidate'),
     countRows(supabase, 'user_profiles', 'role', 'recruiter'),
     countRows(supabase, 'user_profiles', 'role', 'admin'),
     countRows(supabase, 'admin_whitelist'),
+    getAdminPlatformKPIs(),
   ])
 
   // Fetch recent users (last 5 sign-ups)
@@ -50,11 +52,59 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <section>
-        <h2 className="text-xl font-bold text-gray-900">Overview</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          A snapshot of platform activity.
+      <section className="flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Overview</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            A snapshot of platform activity.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/post-job"
+            className="text-xs font-semibold px-3 py-2 rounded-lg bg-blue-700 text-white hover:bg-blue-800"
+          >
+            + Post a card
+          </Link>
+          <Link
+            href="/admin/jobs?status=pending_approval"
+            className="text-xs font-semibold px-3 py-2 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
+          >
+            {platform.pendingJobs} pending review
+          </Link>
+        </div>
+      </section>
+
+      {/* Platform KPIs */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <KpiCard label="Active jobs" value={platform.activeJobs} tone="emerald" href="/admin/jobs?status=active" />
+        <KpiCard label="Pending review" value={platform.pendingJobs} tone="amber" href="/admin/jobs?status=pending_approval" />
+        <KpiCard label="Applications (total)" value={platform.totalApplicants} tone="blue" href="/admin/applications" />
+        <KpiCard label="This week" value={platform.weekApplicants} tone="purple" href="/admin/applications" />
+      </section>
+
+      {/* Category mix */}
+      <section className="bg-white border border-gray-200 rounded-2xl p-4">
+        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-3">
+          Active jobs by category
         </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {[
+            { k: 'private', label: 'Private', tone: 'bg-blue-50 text-blue-700' },
+            { k: 'government', label: 'Government', tone: 'bg-amber-50 text-amber-700' },
+            { k: 'internship', label: 'Internships', tone: 'bg-emerald-50 text-emerald-700' },
+            { k: 'ai', label: 'AI picks', tone: 'bg-purple-50 text-purple-700' },
+          ].map((c) => (
+            <Link
+              key={c.k}
+              href={`/admin/jobs?category=${c.k}&status=active`}
+              className={`px-3 py-2 rounded-lg ${c.tone} hover:opacity-80 flex items-center justify-between`}
+            >
+              <span className="text-xs font-semibold">{c.label}</span>
+              <span className="text-sm font-bold">{platform.byCategory[c.k] || 0}</span>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Stat Cards */}
@@ -232,3 +282,29 @@ const shieldIcon = (
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
   </svg>
 )
+
+const KPI_TONE = {
+  emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  amber: 'bg-amber-50 text-amber-700 border-amber-200',
+  blue: 'bg-blue-50 text-blue-700 border-blue-200',
+  purple: 'bg-purple-50 text-purple-700 border-purple-200',
+}
+
+function KpiCard({ label, value, tone = 'blue', href }) {
+  const inner = (
+    <>
+      <p className="text-xs uppercase tracking-wider opacity-70 font-semibold">
+        {label}
+      </p>
+      <p className="mt-1 text-2xl font-bold">{value}</p>
+    </>
+  )
+  const cls = `block rounded-2xl border p-4 transition hover:opacity-80 ${KPI_TONE[tone] || KPI_TONE.blue}`
+  return href ? (
+    <Link href={href} className={cls}>
+      {inner}
+    </Link>
+  ) : (
+    <div className={cls}>{inner}</div>
+  )
+}
