@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from 'next/font/google'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import LayoutShell from '@/components/LayoutShell'
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <LayoutShell>{children}</LayoutShell>
       </body>
+      <GoogleAnalytics gaId="G-FXKXL6XP9H" />
     </html>
   )
 }
