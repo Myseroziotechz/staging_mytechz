@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function ContactPage() {
-  return <ContactClient linkedinUrl={process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/mytechz'} />
+  return <ContactClient linkedinUrl={process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/108975050/admin/notifications/comments/'} />
 }

@@ -26,9 +26,9 @@ const CheckIcon = () => (
 )
 
 const STEPS = [
-  { id: 1, title: 'Search',  blurb: 'Find verified roles across private, government and internships — or let AI rank them against your resume.', cta: { label: 'Browse jobs',     href: '/jobs' },  Icon: SearchIcon,  accent: 'from-blue-500 to-indigo-500' },
-  { id: 2, title: 'Prepare', blurb: 'Tap "Prepare for this role" — get a 4-week study plan, mock-interview questions and resume tips per job.', cta: { label: 'Try the roadmap', href: '/jobs' },  Icon: SparkleIcon, accent: 'from-amber-500 to-orange-500' },
-  { id: 3, title: 'Apply',   blurb: 'One-tap apply to internal roles or jump to the official portal for government posts. We track everything.', cta: { label: 'Sign in to apply', href: '/login' }, Icon: CheckIcon,   accent: 'from-emerald-500 to-teal-500' },
+  { id: 1, title: 'Search',  blurb: 'Find verified roles across private, government and internships — or let AI rank them against your resume.', cta: { label: 'Browse jobs',     href: '/jobs' },  Icon: SearchIcon },
+  { id: 2, title: 'Prepare', blurb: 'Tap "Prepare for this role" — get a 4-week study plan, mock-interview questions and resume tips per job.', cta: { label: 'Try the roadmap', href: '/jobs' },  Icon: SparkleIcon },
+  { id: 3, title: 'Apply',   blurb: 'One-tap apply to internal roles or jump to the official portal for government posts. We track everything.', cta: { label: 'Sign in to apply', href: '/login' }, Icon: CheckIcon },
 ]
 
 export default function HowItWorks() {
@@ -53,7 +53,7 @@ export default function HowItWorks() {
         <div className="relative">
           {/* Connector line — desktop only */}
           <div aria-hidden className="hidden md:block absolute top-9 left-[16%] right-[16%] h-0.5 bg-slate-200 rounded-full overflow-hidden">
-            <div className={`h-full bg-gradient-to-r from-blue-500 via-amber-500 to-emerald-500 origin-left transition-transform duration-[1400ms] ease-out ${visible ? 'scale-x-100' : 'scale-x-0'}`} />
+            <div className={`h-full bg-slate-400 origin-left transition-transform duration-[1400ms] ease-out ${visible ? 'scale-x-100' : 'scale-x-0'}`} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 relative">
@@ -64,7 +64,7 @@ export default function HowItWorks() {
                   className={`job-glass-panel rounded-2xl p-6 text-center md:text-left transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                   style={{ transitionDelay: `${i * 200}ms` }}
                 >
-                  <div className={`mx-auto md:mx-0 w-16 h-16 rounded-2xl bg-gradient-to-br ${s.accent} text-white flex items-center justify-center shadow-lg shadow-blue-900/20 ring-4 ring-white/70`}>
+                  <div className="mx-auto md:mx-0 w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg shadow-slate-900/20 ring-4 ring-white/70">
                     <Icon />
                   </div>
                   <div className="mt-4 flex items-center md:items-start gap-2 justify-center md:justify-start">

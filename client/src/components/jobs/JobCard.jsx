@@ -46,8 +46,8 @@ const ICON = {
 
 function MetaPill({ icon, children }) {
   return (
-    <span className="inline-flex items-center gap-1 text-xs text-slate-600">
-      <span className="text-slate-400">{icon}</span>
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-800">
+      <span className="text-slate-500">{icon}</span>
       <span>{children}</span>
     </span>
   )

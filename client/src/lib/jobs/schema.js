@@ -88,12 +88,32 @@ export function validateJobInput(raw, { actorRole = 'recruiter' } = {}) {
     pushErr(errors, 'work_mode', 'Pick a work mode')
   out.work_mode = workMode
 
+  // Multi-location support.
+  out.is_multi_location = !!raw.is_multi_location
+  out.locations = Array.isArray(raw.locations)
+    ? raw.locations
+        .map((l) => (l || '').toString().trim())
+        .filter(Boolean)
+    : []
+
   // Location: required unless remote.
-  out.location_city = (raw.location_city || '').toString().trim() || null
+  if (out.is_multi_location) {
+    if (out.locations.length === 0)
+      pushErr(errors, 'locations', 'Add at least one location')
+    // Backfill location_city from first entry for backward compat.
+    out.location_city = out.locations[0] || null
+  } else {
+    out.location_city = (raw.location_city || '').toString().trim() || null
+    out.locations = []
+  }
   out.location_state = (raw.location_state || '').toString().trim() || null
   out.location_country =
     (raw.location_country || '').toString().trim() || 'India'
-  if (workMode !== 'remote' && !out.location_city)
+  if (
+    workMode !== 'remote' &&
+    !out.is_multi_location &&
+    !out.location_city
+  )
     pushErr(errors, 'location_city', 'City is required (unless remote)')
 
   // Skills: array of strings, max 15, dedupe + lowercase-trim.
@@ -301,6 +321,8 @@ export const FORM_DEFAULTS = {
   location_city: '',
   location_state: '',
   location_country: 'India',
+  is_multi_location: false,
+  locations: [],
   skills: [],
   experience_min: 0,
   experience_max: '',

@@ -16,6 +16,8 @@ export default function AdminPostJobForm() {
     work_mode: 'Remote',
     experience_level: '',
     location: '',
+    is_multi_location: false,
+    locations: [],
     min_salary: '',
     max_salary: '',
     currency: 'INR',
@@ -171,17 +173,82 @@ export default function AdminPostJobForm() {
                     placeholder="Max"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Location *</label>
-                  <input
-                    type="text"
-                    name="location"
-                    required
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
-                    placeholder="e.g. Bangalore"
-                  />
+                <div className="md:col-span-3 space-y-3">
+                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_multi_location}
+                      onChange={(e) => {
+                        const checked = e.target.checked
+                        setFormData((prev) => ({
+                          ...prev,
+                          is_multi_location: checked,
+                          locations: checked && prev.locations.length === 0
+                            ? (prev.location ? [prev.location] : [''])
+                            : prev.locations,
+                        }))
+                      }}
+                      className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                    />
+                    Multiple locations
+                  </label>
+                  {formData.is_multi_location ? (
+                    <div className="space-y-2">
+                      {formData.locations.map((loc, idx) => (
+                        <div key={idx} className="flex gap-2 items-center">
+                          <input
+                            type="text"
+                            value={loc}
+                            onChange={(e) => {
+                              const next = [...formData.locations]
+                              next[idx] = e.target.value
+                              setFormData((prev) => ({ ...prev, locations: next }))
+                            }}
+                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                            placeholder="e.g. Bangalore"
+                          />
+                          {formData.locations.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  locations: prev.locations.filter((_, i) => i !== idx),
+                                }))
+                              }
+                              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                            >
+                              &times;
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            locations: [...prev.locations, ''],
+                          }))
+                        }
+                        className="text-sm text-emerald-600 hover:text-emerald-800 font-medium"
+                      >
+                        + Add location
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <input
+                        type="text"
+                        name="location"
+                        required
+                        value={formData.location}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                        placeholder="e.g. Bangalore"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

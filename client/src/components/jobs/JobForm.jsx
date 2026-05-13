@@ -610,41 +610,109 @@ export default function JobForm({
           </FieldRow>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <FieldRow
-            label="City"
-            error={errors.location_city}
-            required={form.work_mode !== 'remote'}
-          >
-            <Input
-              name="location_city"
-              value={form.location_city}
-              onChange={set}
-              placeholder="Bengaluru"
-              list="jobform-cities"
-            />
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.is_multi_location}
+            onChange={(e) => {
+              const checked = e.target.checked
+              set('is_multi_location', checked)
+              if (checked && form.locations.length === 0) {
+                // Seed with current city if available
+                set('locations', form.location_city ? [form.location_city] : [''])
+              }
+            }}
+            className="h-4 w-4 rounded border-slate-300 text-blue-600"
+          />
+          This job is available in multiple locations
+        </label>
+
+        {form.is_multi_location ? (
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700">
+              Locations <span className="text-rose-500">*</span>
+            </label>
+            {form.locations.map((loc, idx) => (
+              <div key={idx} className="flex gap-2 items-center">
+                <input
+                  value={loc}
+                  onChange={(e) => {
+                    const next = [...form.locations]
+                    next[idx] = e.target.value
+                    set('locations', next)
+                  }}
+                  placeholder="e.g. Bengaluru"
+                  list="jobform-cities"
+                  autoComplete="off"
+                  className={inputClass}
+                />
+                {form.locations.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      set('locations', form.locations.filter((_, i) => i !== idx))
+                    }
+                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                    aria-label="Remove location"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => set('locations', [...form.locations, ''])}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              + Add location
+            </button>
             <datalist id="jobform-cities">
               {POPULAR_CITIES.map((c) => (
                 <option key={c} value={c} />
               ))}
             </datalist>
-          </FieldRow>
-          <FieldRow label="State">
-            <Input
-              name="location_state"
-              value={form.location_state}
-              onChange={set}
-              placeholder="Karnataka"
-            />
-          </FieldRow>
-          <FieldRow label="Country">
-            <Input
-              name="location_country"
-              value={form.location_country}
-              onChange={set}
-            />
-          </FieldRow>
-        </div>
+            {errors.locations && (
+              <p data-error="true" className="text-xs text-rose-600">{errors.locations}</p>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <FieldRow
+              label="City"
+              error={errors.location_city}
+              required={form.work_mode !== 'remote'}
+            >
+              <Input
+                name="location_city"
+                value={form.location_city}
+                onChange={set}
+                placeholder="Bengaluru"
+                list="jobform-cities"
+              />
+              <datalist id="jobform-cities">
+                {POPULAR_CITIES.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+            </FieldRow>
+            <FieldRow label="State">
+              <Input
+                name="location_state"
+                value={form.location_state}
+                onChange={set}
+                placeholder="Karnataka"
+              />
+            </FieldRow>
+            <FieldRow label="Country">
+              <Input
+                name="location_country"
+                value={form.location_country}
+                onChange={set}
+              />
+            </FieldRow>
+          </div>
+        )}
 
         <FieldRow label="Skills" hint="Press Enter or comma to add (max 15)">
           <SkillsInput value={form.skills} onChange={set} />

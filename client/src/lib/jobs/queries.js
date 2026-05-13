@@ -29,7 +29,9 @@ export async function getJobs(filters = {}) {
       q = q.or(`title.ilike.%${filters.q}%,summary.ilike.%${filters.q}%`)
     }
     if (filters.location) {
-      q = q.ilike('location_city', `%${filters.location}%`)
+      q = q.or(
+        `location_city.ilike.%${filters.location}%,locations.cs.{"${filters.location}"}`
+      )
     }
     if (filters.work_mode) q = q.eq('work_mode', filters.work_mode)
     if (filters.job_type)  q = q.eq('job_type', filters.job_type)
