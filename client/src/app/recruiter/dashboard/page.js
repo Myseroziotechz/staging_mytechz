@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase-server'
-import { requireRecruiterOnboarded } from '@/lib/recruiter-auth'
+import { createClient } from '@/lib/supabase/server'
+import { requireRecruiterOnboarded } from '@/lib/auth/recruiter-auth'
 import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 import { getRecruiterApplicantStats } from '@/lib/applicants/queries'
 

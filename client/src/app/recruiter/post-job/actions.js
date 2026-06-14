@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import { validateJobInput, toJobRow } from '@/lib/jobs/schema'
 
 // Resolve / create a `companies` row by name for this recruiter.

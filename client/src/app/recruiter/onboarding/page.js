@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import RecruiterOnboardingOverlay from '@/components/recruiter/RecruiterOnboardingOverlay'
 
 export const metadata = {

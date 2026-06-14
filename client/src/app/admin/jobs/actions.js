@@ -1,8 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase-server'
-import { getAdminClient } from '@/lib/supabase-admin'
+import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/admin'
 
 const ALLOWED_NEXT_STATUSES = new Set(['active', 'pending_approval', 'closed', 'rejected'])
 
