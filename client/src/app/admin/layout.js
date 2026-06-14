@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase-server'
-import { ensureSessionInitialized } from '@/lib/ensure-session'
+import { createClient } from '@/lib/supabase/server'
+import { ensureSessionInitialized } from '@/lib/auth/ensure-session'
+import AppShell from '@/components/layout/AppShell'
+import { ADMIN_NAV } from '@/config/navigation'
 
 export default async function AdminLayout({ children }) {
   const session = await ensureSessionInitialized()
@@ -22,24 +24,8 @@ export default async function AdminLayout({ children }) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">
-              Admin
-            </p>
-            <h1 className="text-lg font-bold text-gray-900">MyTechZ Control</h1>
-          </div>
-          <div className="text-right">
-            <p className="text-sm font-medium text-gray-900">
-              {profile.full_name || 'Admin'}
-            </p>
-            <p className="text-xs text-gray-500">{profile.email}</p>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
-    </div>
+    <AppShell user={session.user} navItems={ADMIN_NAV}>
+      {children}
+    </AppShell>
   )
 }
