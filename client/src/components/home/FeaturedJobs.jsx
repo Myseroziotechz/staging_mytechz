@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Card from '@/components/ui/Card'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import api from '@/lib/api'
+import api from '@/services/api'
 
 export default function FeaturedJobs() {
   const [jobs, setJobs] = useState([])

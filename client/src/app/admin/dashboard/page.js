@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 import { getAdminPlatformKPIs } from '@/lib/admin/queries'
 

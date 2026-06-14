@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 
 const JOB_SELECT = `
   id, short_id, slug, title, summary, description, category, job_type, work_mode,

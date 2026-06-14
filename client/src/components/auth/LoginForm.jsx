@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase-browser'
+import { createClient } from '@/lib/supabase/browser'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
@@ -129,46 +129,78 @@ export default function LoginForm() {
       {/* Header */}
       <div className="text-center lg:text-left">
         <h1 className="text-lg font-bold text-gray-900">
-          {isRecruiter ? 'Welcome, Recruiter' : 'Welcome back!'}
+          {isRecruiter ? 'Recruiter Sign In' : 'Welcome back!'}
         </h1>
         <p className="mt-0.5 text-sm text-gray-500">
           {isRecruiter
-            ? 'Sign in to post jobs and manage candidates'
-            : 'Sign in to access your account'}
+            ? 'Post jobs, search talent & manage applications'
+            : 'Sign in to find your next tech opportunity'}
         </p>
       </div>
 
-      {/* Role toggle */}
-      <div
-        role="tablist"
-        aria-label="Sign in as"
-        className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-lg"
-      >
+      {/* "I am a..." label */}
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">I am a</p>
+
+      {/* Role selection cards */}
+      <div role="tablist" aria-label="Sign in as" className="grid grid-cols-2 gap-2">
+        {/* Job Seeker card */}
         <button
           type="button"
           role="tab"
           aria-selected={!isRecruiter}
           onClick={() => setIntendedRole('candidate')}
-          className={`py-1.5 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
+          className={`relative flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer text-left ${
             !isRecruiter
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'border-blue-500 bg-blue-50 shadow-sm shadow-blue-100'
+              : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
           }`}
         >
-          Job Seeker
+          {/* Selected indicator */}
+          {!isRecruiter && (
+            <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
+              <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
+          )}
+          {/* Icon */}
+          <span className={`text-xl leading-none ${!isRecruiter ? 'opacity-100' : 'opacity-60'}`}>🎯</span>
+          <span className={`text-xs font-bold tracking-wide ${!isRecruiter ? 'text-blue-700' : 'text-gray-500'}`}>
+            Job Seeker
+          </span>
+          <span className={`text-[10px] text-center leading-tight ${!isRecruiter ? 'text-blue-500' : 'text-gray-400'}`}>
+            Find & apply for jobs
+          </span>
         </button>
+
+        {/* Recruiter card */}
         <button
           type="button"
           role="tab"
           aria-selected={isRecruiter}
           onClick={() => setIntendedRole('recruiter')}
-          className={`py-1.5 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
+          className={`relative flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer text-left ${
             isRecruiter
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'border-violet-500 bg-violet-50 shadow-sm shadow-violet-100'
+              : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
           }`}
         >
-          Recruiter
+          {/* Selected indicator */}
+          {isRecruiter && (
+            <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-violet-500 flex items-center justify-center">
+              <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
+          )}
+          {/* Icon */}
+          <span className={`text-xl leading-none ${isRecruiter ? 'opacity-100' : 'opacity-60'}`}>🏢</span>
+          <span className={`text-xs font-bold tracking-wide ${isRecruiter ? 'text-violet-700' : 'text-gray-500'}`}>
+            Recruiter
+          </span>
+          <span className={`text-[10px] text-center leading-tight ${isRecruiter ? 'text-violet-500' : 'text-gray-400'}`}>
+            Post jobs & hire talent
+          </span>
         </button>
       </div>
 
@@ -206,7 +238,7 @@ export default function LoginForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full"
+          className={`w-full ${isRecruiter ? '!bg-violet-600 hover:!bg-violet-700 active:!bg-violet-800' : ''}`}
           size="md"
         >
           {loading

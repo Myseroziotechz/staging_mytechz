@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import AddAdminEmailForm from '@/components/admin/AddAdminEmailForm'
 import RemoveAdminEmailButton from '@/components/admin/RemoveAdminEmailButton'
 
