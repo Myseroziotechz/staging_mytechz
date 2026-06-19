@@ -118,17 +118,6 @@ export default function LoginShowcase() {
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800" />
-      <div className="absolute -top-14 -left-14 w-48 h-48 rounded-full bg-white/5 hero-blob" />
-      <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white/5 hero-blob-delay" />
-      <div className="absolute top-1/3 right-1/4 w-28 h-28 rounded-full bg-white/[0.03] hero-blob-slow" />
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-          backgroundSize: '36px 36px',
-        }}
-      />
 
       {/* Glass back button */}
       <Link
