@@ -9,11 +9,11 @@ export default async function JobSearchFeature() {
 
   return (
     <HomeSection tone="light">
-      <div className="flex justify-center mb-10">
-        <div className="inline-flex bg-slate-100 border border-slate-200 rounded-xl p-1">
-          <span className="px-9 py-3 rounded-lg text-lg font-semibold bg-white text-slate-900 shadow-sm border border-slate-200">
+      <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="inline-block px-6 py-3 rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-100">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
             Hire Smarter
-          </span>
+          </h2>
         </div>
       </div>
 
