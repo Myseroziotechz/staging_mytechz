@@ -1,29 +1,54 @@
-import HomeSection from './HomeSection'
-
-const EMPLOYERS = [
-  'Acme Cloud Labs', 'Northwind Bank', 'Tata Helio', 'Pixel Pioneers',
-  'UPSC', 'ISRO', 'SBI', 'Infosys', 'Zoho', 'Razorpay', 'Swiggy', 'Freshworks',
+const PARTNERS = [
+  'Infosys', 'Zoho', 'TCS', 'Razorpay', 'Swiggy', 'Freshworks',
+  'ISRO', 'Wipro', 'HCL', 'Flipkart', 'PhonePe', 'Meesho',
 ]
 
 export default function VerifiedEmployersStrip() {
+  const doubled = [...PARTNERS, ...PARTNERS]
+
   return (
-    <HomeSection tone="light" pad="py-10 sm:py-14">
-      <div className="job-glass-panel rounded-2xl px-6 py-7 shadow-md shadow-blue-900/5">
-        <div className="flex items-center justify-center gap-2 mb-4 text-xs uppercase tracking-wider text-slate-500">
-          <svg className="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.5 2 3.2-.4 1 3 2.7 1.6-1.5 2.8.6 3.1-3 .8-1.7 2.7-2.8-1.5-3 .8-1.7-2.7-3-.8.6-3.1L1.3 8.2 4 6.6l1-3 3.2.4L10 2zm-1 11l5-5-1.4-1.4L9 10.2l-1.6-1.6L6 10l3 3z"/></svg>
-          <span className="font-bold text-slate-700">Verified by MyTechz</span>
-          <span className="text-slate-300">·</span>
-          <span>Trusted by recruiters from</span>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {EMPLOYERS.map((name) => (
-            <span key={name}
-              className="text-sm sm:text-base font-semibold tracking-tight text-slate-500 grayscale opacity-70 hover:opacity-100 hover:grayscale-0 hover:text-slate-900 transition">
-              {name}
-            </span>
+    <section className="relative w-full bg-white py-20 overflow-hidden">
+
+      {/* Heading */}
+      <div className="text-center mb-12 px-4">
+        <h2 className="text-3xl sm:text-4xl font-bold">
+          <span className="text-indigo-600">Trusted by experts.</span>
+          <br />
+          <span className="text-slate-900">Used by the leaders.</span>
+        </h2>
+        <p className="mt-3 text-sm text-slate-400 tracking-wide">
+          Partnered with India's top companies to connect you with real opportunities.
+        </p>
+      </div>
+
+      {/* Scrolling logo strip */}
+      <div className="relative z-10 overflow-hidden marquee-fade-edges mb-4">
+        <div className="marquee-track flex gap-4 w-max">
+          {doubled.map((name, i) => (
+            <div
+              key={i}
+              className="flex items-center px-5 py-2.5 rounded-full border border-slate-200 bg-white shadow-sm hover:border-indigo-300 hover:shadow-md transition-all duration-200 cursor-default select-none group shrink-0"
+            >
+              <span className="text-sm font-semibold text-slate-600 group-hover:text-slate-900 whitespace-nowrap transition-colors duration-200">
+                {name}
+              </span>
+            </div>
           ))}
         </div>
       </div>
-    </HomeSection>
+
+      {/* Arc glow — full width, subtle warm tint */}
+      <div className="relative w-full h-48 mt-2 pointer-events-none select-none overflow-hidden">
+        <div
+          className="absolute bottom-0 left-0 right-0 h-52 opacity-10"
+          style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 100%, #FBD89A 0%, #FDE9C9 50%, transparent 70%)' }}
+        />
+        <div
+          className="absolute bottom-0 left-0 right-0 h-40 opacity-15"
+          style={{ background: 'radial-gradient(ellipse 80% 100% at 50% 100%, #FDF6EC 0%, #FBD89A 60%, transparent 75%)' }}
+        />
+      </div>
+
+    </section>
   )
 }

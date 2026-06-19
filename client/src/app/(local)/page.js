@@ -29,11 +29,11 @@ export default function Home() {
     <main className="bg-white">
       <div>
         <HeroSection />
+        <JobCategories />
         <JobSearchFeature />
         <VerifiedEmployersStrip />
         <StatsBar />
         <HowItWorks />
-        <JobCategories />
         <Philosophy />
         <Reviews />
         <ForRecruiters />

@@ -9,10 +9,12 @@ export default async function JobSearchFeature() {
 
   return (
     <HomeSection tone="light">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight">
-          Find the Latest <span className="hero-gradient-text">Opportunities</span> Faster
-        </h2>
+      <div className="flex justify-center mb-10">
+        <div className="inline-flex bg-slate-100 border border-slate-200 rounded-xl p-1">
+          <span className="px-9 py-3 rounded-lg text-lg font-semibold bg-white text-slate-900 shadow-sm border border-slate-200">
+            Hire Smarter
+          </span>
+        </div>
       </div>
 
       <JobSearchForm />
