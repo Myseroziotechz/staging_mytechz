@@ -1,5 +1,5 @@
 'use client'
-
+// use case
 import Link from 'next/link'
 
 export default function ErrorPage({ error, reset }) {
