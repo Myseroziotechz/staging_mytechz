@@ -7,88 +7,30 @@ import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/browser'
 import Button from '@/components/ui/Button'
 
-// Hand-drawn style icons — thin stroke, round caps, no fill
-const ni = {
-  jobs: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="7" width="20" height="14" rx="2.5"/>
-      <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-      <path d="M2 12h20"/>
+const NAV_ICONS = {
+  Jobs: (
+    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
     </svg>
   ),
-  privateJobs: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21h18"/>
-      <path d="M5 21V10l7-7 7 7v11"/>
-      <rect x="9" y="13" width="6" height="8" rx="1"/>
+  'AI Tools': (
+    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
     </svg>
   ),
-  govtJobs: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2l7 4v4c0 5-3 8.5-7 10C8 18.5 5 15 5 10V6l7-4z"/>
-      <path d="M9 12l2 2 4-4"/>
+  Services: (
+    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l5.654-4.654m5.36-2.267l4.14-4.14a1.5 1.5 0 00-2.12-2.12l-4.14 4.14" />
     </svg>
   ),
-  internship: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 10v1a10 10 0 11-5.93-9.14"/>
-      <polyline points="22 4 12 14.01 9 11.01"/>
+  About: (
+    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   ),
-  aiFeatured: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-      <circle cx="12" cy="12" r="4"/>
-    </svg>
-  ),
-  aiTools: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M15 4l5 5-12 12-5-5L15 4z"/>
-      <path d="M19 2l3 3"/>
-      <path d="M7 17l-3 3"/>
-      <circle cx="9" cy="9" r="1" fill="currentColor"/>
-    </svg>
-  ),
-  resumeBuilder: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-      <path d="M14 2v6h6"/>
-      <line x1="8" y1="13" x2="16" y2="13"/>
-      <line x1="8" y1="17" x2="13" y2="17"/>
-    </svg>
-  ),
-  resumeAnalyzer: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <path d="M21 21l-4.35-4.35"/>
-      <path d="M8 11h6M11 8v6"/>
-    </svg>
-  ),
-  smartSearch: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <path d="M21 21l-4.35-4.35"/>
-      <path d="M8.5 10.5c.5-1.5 2-2.5 3.5-2"/>
-    </svg>
-  ),
-  services: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-      <polyline points="2 17 12 22 22 17"/>
-      <polyline points="2 12 12 17 22 12"/>
-    </svg>
-  ),
-  about: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="12" y1="8" x2="12" y2="8" strokeWidth="2.5"/>
-      <line x1="12" y1="12" x2="12" y2="16"/>
-    </svg>
-  ),
-  contact: (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-      <polyline points="22,6 12,13 2,6"/>
+  Contact: (
+    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
     </svg>
   ),
 }
@@ -97,27 +39,25 @@ const navItems = [
   {
     label: 'Jobs',
     href: '/jobs',
-    icon: ni.jobs,
     dropdown: [
-      { label: 'Private Jobs',    href: '/jobs/private',            description: 'Top companies, startups and MNCs',          icon: ni.privateJobs },
-      { label: 'Government Jobs', href: '/jobs/government',         description: 'Central, state, PSU and defence',           icon: ni.govtJobs },
-      { label: 'Internships',     href: '/jobs/internship',         description: 'Paid internships for students & freshers',  icon: ni.internship },
-      { label: 'AI Featured',     href: '/jobs/ai',                 description: 'Personalized AI-matched job recommendations', icon: ni.aiFeatured },
+      { label: 'Private Jobs',       href: '/jobs/private',     description: 'Top companies, startups and MNCs' },
+      { label: 'Government Jobs',    href: '/jobs/government',  description: 'Central, state, PSU and defence' },
+      { label: 'Internships',        href: '/jobs/internship',  description: 'Paid internships for students & freshers' },
+      { label: 'AI Featured',        href: '/jobs/ai',          description: 'Personalized AI-matched job recommendations' },
     ],
   },
   {
     label: 'AI Tools',
     href: '/ai-tools',
-    icon: ni.aiTools,
     dropdown: [
-      { label: 'Free Resume Builder', href: '/ai-tools/resume-builder',   description: 'ATS-ready resumes — free, no watermarks',   icon: ni.resumeBuilder },
-      { label: 'Resume Analyzer',     href: '/ai-tools/resume-analyzer',  description: 'Instant ATS score & keyword gap analysis',  icon: ni.resumeAnalyzer },
-      { label: 'Smart Job Search',    href: '/ai-tools/smart-job-search', description: 'AI-powered job matching for you',           icon: ni.smartSearch },
+      { label: 'Free Resume Builder',  href: '/ai-tools/resume-builder',  description: 'ATS-ready resumes — free, no watermarks' },
+      { label: 'Resume Analyzer',      href: '/ai-tools/resume-analyzer', description: 'Instant ATS score & keyword gap analysis' },
+      { label: 'Smart Job Search',     href: '/ai-tools/smart-job-search', description: 'AI-powered job matching for you' },
     ],
   },
-  { label: 'Services', href: '/services', icon: ni.services },
-  { label: 'About',    href: '/about',    icon: ni.about },
-  { label: 'Contact',  href: '/contact',  icon: ni.contact },
+  { label: 'Services', href: '/services' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 // ---- Icons reused across role menus ----------------------------------------
@@ -216,25 +156,18 @@ function DropdownMenu({ items, isOpen }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`group flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 hover:bg-blue-50/60 ${
+            className={`group flex flex-col gap-0.5 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-50/60 ${
               idx !== items.length - 1 ? 'mb-0.5' : ''
             }`}
           >
-            {item.icon && (
-              <span className="mt-0.5 w-8 h-8 rounded-lg bg-gray-900 text-white flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors">
-                {item.icon}
+            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+              {item.label}
+            </span>
+            {item.description && (
+              <span className="text-xs text-gray-500 group-hover:text-blue-500/70 transition-colors">
+                {item.description}
               </span>
             )}
-            <span className="flex flex-col gap-0.5 min-w-0">
-              <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {item.label}
-              </span>
-              {item.description && (
-                <span className="text-xs text-gray-600 group-hover:text-blue-500 transition-colors">
-                  {item.description}
-                </span>
-              )}
-            </span>
           </Link>
         ))}
       </div>
@@ -524,7 +457,6 @@ export default function Navbar() {
                 className="h-9 object-contain"
                 style={{ width: 'auto' }}
                 priority
-                loading="eager"
               />
             </Link>
 
@@ -539,13 +471,13 @@ export default function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                       pathname === item.href || pathname?.startsWith(item.href + '/')
                         ? 'text-blue-600 bg-blue-50/50'
-                        : 'text-gray-900 hover:text-blue-600 hover:bg-white/30'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-white/30'
                     }`}
                   >
-                    {item.icon && <span className="text-gray-900">{item.icon}</span>}
+                    {NAV_ICONS[item.label]}
                     {item.label}
                     {item.dropdown && (
                       <svg
@@ -588,7 +520,7 @@ export default function Navbar() {
                   <Button size="sm">Get Started</Button>
                 </Link>
               )}
-              <button
+            <button
               className="p-2 rounded-xl hover:bg-white/20 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
