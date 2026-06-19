@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.2",
-    "@next/third-parties": "^16.2.6",
+    "@next/third-parties": "^15.3.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "axios": "^1.15.0",
-    "next": "16.2.3",
+    "next": "^15.3.0",
     "nodemailer": "^8.0.5",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -22,7 +22,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "^15.3.0",
     "tailwindcss": "^4"
   }
 }
