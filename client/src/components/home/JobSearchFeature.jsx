@@ -13,9 +13,6 @@ export default async function JobSearchFeature() {
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight">
           Find the Latest <span className="hero-gradient-text">Opportunities</span> Faster
         </h2>
-        <p className="text-lg text-slate-600">
-          Skip the noise. Instantly search verified jobs across top companies — matched to your skills and aspirations.
-        </p>
       </div>
 
       <JobSearchForm />
