@@ -11,14 +11,11 @@ export default function VerifiedEmployersStrip() {
 
       {/* Heading */}
       <div className="text-center mb-12 px-4">
-        <h2 className="text-3xl sm:text-4xl font-bold">
-          <span className="text-indigo-600">Trusted by experts.</span>
-          <br />
-          <span className="text-slate-900">Used by the leaders.</span>
-        </h2>
-        <p className="mt-3 text-sm text-slate-400 tracking-wide">
-          Partnered with India's top companies to connect you with real opportunities.
-        </p>
+        <div className="inline-block px-6 py-3 rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-100">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
+            Our Partners
+          </h2>
+        </div>
       </div>
 
       {/* Scrolling logo strip */}
