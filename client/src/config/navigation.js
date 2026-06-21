@@ -61,6 +61,7 @@ export const RECRUITER_NAV = [
   { label: 'Home',            href: '/recruiter/dashboard',  icon: 'dashboard' },
   { label: 'Post a Job',      href: '/recruiter/post-job',   icon: 'document' },
   { label: 'Applicants',      href: '/recruiter/applicants', icon: 'users' },
+  { label: 'My Profile',      href: '/recruiter/profile',    icon: 'user' },
   { label: 'Company Profile', href: '/recruiter/onboarding', icon: 'building' },
   // Bottom-pinned
   { label: 'Contact',  href: '/contact',  icon: 'contact',  position: 'bottom' },
