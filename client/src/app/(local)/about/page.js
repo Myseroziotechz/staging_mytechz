@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
-
+// Abort page. 
 export const metadata = {
   title: 'About MyTechZ — India\'s AI-Powered Career Platform for Tech Professionals',
   description:
