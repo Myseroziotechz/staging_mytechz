@@ -119,14 +119,14 @@ export default async function CandidateDashboardPage() {
         <div className="grid sm:grid-cols-3 gap-4">
           <ToolCard
             href="/ai-tools/resume-builder"
-            emoji="📄"
+            icon={resumeIcon}
             title="Resume Builder"
             description="Create ATS-ready resumes for free — no watermarks, no sign-up wall."
             badge="Free"
           />
           <ToolCard
             href="/ai-tools/resume-rank-checker"
-            emoji="📊"
+            icon={chartIcon}
             title="Resume Rank Checker"
             description="Get your ATS score instantly and see exactly what keywords you are missing."
             badge="Coming soon"
@@ -134,7 +134,7 @@ export default async function CandidateDashboardPage() {
           />
           <ToolCard
             href="/ai-tools/smart-job-search"
-            emoji="🤖"
+            icon={aiIcon}
             title="Smart Job Search"
             description="AI-powered job matching that learns your skills and finds the best fits."
             badge="Coming soon"
@@ -147,10 +147,10 @@ export default async function CandidateDashboardPage() {
       <section>
         <h2 className="text-base font-semibold text-gray-900 mb-3">Browse Jobs</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <JobCategoryCard href="/jobs/private" label="Private Jobs" emoji="🏢" color="blue" />
-          <JobCategoryCard href="/jobs/government" label="Govt Jobs" emoji="🛡️" color="amber" />
-          <JobCategoryCard href="/jobs/internship" label="Internships" emoji="🎓" color="emerald" />
-          <JobCategoryCard href="/jobs/ai" label="AI-Matched" emoji="✨" color="purple" />
+          <JobCategoryCard href="/jobs/private"    label="Private Jobs" icon={buildingIcon}    color="blue" />
+          <JobCategoryCard href="/jobs/government" label="Govt Jobs"    icon={shieldCatIcon}   color="amber" />
+          <JobCategoryCard href="/jobs/internship" label="Internships"  icon={academicIcon}    color="emerald" />
+          <JobCategoryCard href="/jobs/ai"         label="AI-Matched"   icon={sparkleIcon}     color="purple" />
         </div>
       </section>
 
@@ -202,7 +202,7 @@ function StatCard({ label, value, icon, color }) {
   )
 }
 
-function ToolCard({ href, emoji, title, description, badge, badgeColor = 'blue' }) {
+function ToolCard({ href, icon, title, description, badge, badgeColor = 'blue' }) {
   const badgeStyle = badgeColor === 'gray'
     ? 'bg-gray-100 text-gray-500'
     : 'bg-blue-100 text-blue-700'
@@ -213,7 +213,9 @@ function ToolCard({ href, emoji, title, description, badge, badgeColor = 'blue' 
       className="group bg-white border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-sm transition-all flex flex-col gap-3"
     >
       <div className="flex items-start justify-between">
-        <span className="text-2xl">{emoji}</span>
+        <span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          {icon}
+        </span>
         {badge && (
           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeStyle}`}>
             {badge}
@@ -230,25 +232,27 @@ function ToolCard({ href, emoji, title, description, badge, badgeColor = 'blue' 
   )
 }
 
-function JobCategoryCard({ href, label, emoji, color }) {
+function JobCategoryCard({ href, label, icon, color }) {
   const colorMap = {
-    blue:    'bg-blue-50 border-blue-100 hover:border-blue-300 hover:bg-blue-100',
-    amber:   'bg-amber-50 border-amber-100 hover:border-amber-300 hover:bg-amber-100',
-    emerald: 'bg-emerald-50 border-emerald-100 hover:border-emerald-300 hover:bg-emerald-100',
-    purple:  'bg-purple-50 border-purple-100 hover:border-purple-300 hover:bg-purple-100',
+    blue:    { card: 'bg-blue-50 border-blue-100 hover:border-blue-300 hover:bg-blue-100', icon: 'text-blue-600' },
+    amber:   { card: 'bg-amber-50 border-amber-100 hover:border-amber-300 hover:bg-amber-100', icon: 'text-amber-600' },
+    emerald: { card: 'bg-emerald-50 border-emerald-100 hover:border-emerald-300 hover:bg-emerald-100', icon: 'text-emerald-600' },
+    purple:  { card: 'bg-purple-50 border-purple-100 hover:border-purple-300 hover:bg-purple-100', icon: 'text-purple-600' },
   }
+  const { card, icon: iconColor } = colorMap[color] || colorMap.blue
   return (
     <Link
       href={href}
-      className={`group flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center ${colorMap[color]}`}
+      className={`group flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center ${card}`}
     >
-      <span className="text-2xl">{emoji}</span>
+      <span className={`w-8 h-8 flex items-center justify-center ${iconColor}`}>{icon}</span>
       <span className="text-xs font-semibold text-gray-700 group-hover:text-gray-900">{label}</span>
     </Link>
   )
 }
 
-// ---- Stat icons (inline SVG) ------------------------------------------------
+// ---- Icons (inline SVG) -----------------------------------------------------
+
 const docIcon = (
   <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m-8 5h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -268,5 +272,40 @@ const eyeIcon = (
 const calendarIcon = (
   <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+)
+const resumeIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m-8 5h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+  </svg>
+)
+const chartIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+)
+const aiIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+  </svg>
+)
+const buildingIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+  </svg>
+)
+const shieldCatIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+)
+const academicIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+  </svg>
+)
+const sparkleIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
   </svg>
 )

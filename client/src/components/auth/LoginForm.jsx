@@ -168,7 +168,11 @@ export default function LoginForm({ defaultRole = null }) {
             </span>
           )}
           {/* Icon */}
-          <span className={`text-xl leading-none ${!isRecruiter ? 'opacity-100' : 'opacity-60'}`}>🎯</span>
+          <span className={`w-6 h-6 flex items-center justify-center ${!isRecruiter ? 'text-blue-600' : 'text-gray-400'}`}>
+            <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </span>
           <span className={`text-xs font-bold tracking-wide ${!isRecruiter ? 'text-blue-700' : 'text-gray-500'}`}>
             Job Seeker
           </span>
@@ -198,7 +202,11 @@ export default function LoginForm({ defaultRole = null }) {
             </span>
           )}
           {/* Icon */}
-          <span className={`text-xl leading-none ${isRecruiter ? 'opacity-100' : 'opacity-60'}`}>🏢</span>
+          <span className={`w-6 h-6 flex items-center justify-center ${isRecruiter ? 'text-violet-600' : 'text-gray-400'}`}>
+            <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+            </svg>
+          </span>
           <span className={`text-xs font-bold tracking-wide ${isRecruiter ? 'text-violet-700' : 'text-gray-500'}`}>
             Recruiter
           </span>

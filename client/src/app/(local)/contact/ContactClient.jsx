@@ -41,21 +41,8 @@ export default function ContactClient({ linkedinUrl }) {
     <section
       ref={sectionRef}
       onMouseMove={handleMouseMove}
-      className="relative -mt-20 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50"
+      className="bg-white -mt-20"
     >
-      <div className="pointer-events-none absolute inset-0 hero-grid" />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-70"
-        style={{
-          background:
-            'radial-gradient(600px circle at var(--mx, 50%) var(--my, 30%), rgba(245,158,11,0.12), transparent 40%)',
-        }}
-      />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="hero-blob absolute -top-24 -left-20 w-80 h-80 bg-blue-300/40 rounded-full blur-3xl" />
-        <div className="hero-blob-delay absolute top-1/3 -right-20 w-96 h-96 bg-amber-300/40 rounded-full blur-3xl" />
-        <div className="hero-blob-slow absolute bottom-0 left-1/3 w-72 h-72 bg-indigo-300/30 rounded-full blur-3xl" />
-      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 sm:pt-40">
         <div className="grid lg:grid-cols-2 gap-12 items-start">

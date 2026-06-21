@@ -89,13 +89,13 @@ export default async function AdminDashboardPage() {
       <section>
         <h2 className="text-base font-semibold text-gray-900 mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <AdminActionCard href="/admin/post-job"    emoji="✏️" label="Post a Card" />
-          <AdminActionCard href="/admin/jobs"        emoji="💼" label="Jobs" />
-          <AdminActionCard href="/admin/whitelist"   emoji="📧" label="Admin Emails" />
-          <AdminActionCard href="/admin/users"       emoji="👥" label="Users" />
-          <AdminActionCard href="/admin/recruiters"  emoji="🏢" label="Recruiters" />
+          <AdminActionCard href="/admin/post-job"   icon={editIcon}     label="Post a Card" />
+          <AdminActionCard href="/admin/jobs"       icon={briefcaseIcon} label="Jobs" />
+          <AdminActionCard href="/admin/whitelist"  icon={mailIcon}     label="Admin Emails" />
+          <AdminActionCard href="/admin/users"      icon={usersActionIcon} label="Users" />
+          <AdminActionCard href="/admin/recruiters" icon={buildingActionIcon} label="Recruiters" />
           <div className="flex flex-col items-center gap-1.5 p-4 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-center opacity-60">
-            <span className="text-xl">📊</span>
+            <span className="w-7 h-7 flex items-center justify-center text-gray-400">{analyticsIcon}</span>
             <span className="text-xs font-medium text-gray-500">Analytics</span>
             <span className="text-[10px] text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded-full">Soon</span>
           </div>
@@ -209,13 +209,13 @@ export default async function AdminDashboardPage() {
 
 // ---- Sub-components ---------------------------------------------------------
 
-function AdminActionCard({ href, emoji, label }) {
+function AdminActionCard({ href, icon, label }) {
   return (
     <Link
       href={href}
       className="group flex flex-col items-center gap-1.5 p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all text-center"
     >
-      <span className="text-2xl">{emoji}</span>
+      <span className="w-7 h-7 flex items-center justify-center text-gray-500 group-hover:text-blue-600 transition-colors">{icon}</span>
       <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{label}</span>
     </Link>
   )
@@ -242,6 +242,39 @@ const colorMap = {
   purple: 'bg-purple-50 text-purple-600',
 }
 
+// Quick-action icons
+const editIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+)
+const briefcaseIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+  </svg>
+)
+const mailIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+)
+const usersActionIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2a4 4 0 100-8 4 4 0 000 8z" />
+  </svg>
+)
+const buildingActionIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+  </svg>
+)
+const analyticsIcon = (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+)
+
+// Stat icons
 const usersIcon = (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2a4 4 0 100-8 4 4 0 000 8z" />

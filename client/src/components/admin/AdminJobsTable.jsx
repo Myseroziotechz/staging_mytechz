@@ -170,8 +170,9 @@ export default function AdminJobsTable({ jobs }) {
                       >
                         {job.title}
                         {job.is_featured && (
-                          <span className="ml-2 text-[10px] font-bold text-amber-700">
-                            ★ Featured
+                          <span className="ml-2 inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-700">
+                            <svg className="w-3 h-3 fill-amber-500" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            Featured
                           </span>
                         )}
                       </Link>
@@ -254,7 +255,10 @@ export default function AdminJobsTable({ jobs }) {
                                 : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                             }`}
                           >
-                            {job.is_featured ? '★ Featured' : '☆ Feature'}
+                            <span className="inline-flex items-center gap-0.5">
+                              <svg className={`w-3 h-3 ${job.is_featured ? 'fill-amber-500' : 'fill-none stroke-current'}`} viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                              {job.is_featured ? 'Featured' : 'Feature'}
+                            </span>
                           </button>
                         )}
                         {job.status !== 'closed' && (

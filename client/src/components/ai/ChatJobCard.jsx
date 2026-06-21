@@ -99,7 +99,7 @@ export default function ChatJobCard({ job, rank, onClick }) {
 
       {job._reason && (
         <p className="text-[10px] italic text-slate-500 line-clamp-1">
-          ✨ {job._reason}
+          {job._reason}
         </p>
       )}
 

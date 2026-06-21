@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ensureSessionInitialized } from '@/lib/auth/ensure-session'
 import AppShell from '@/components/layout/AppShell'
-import { RECRUITER_NAV } from '@/config/navigation'
+import { getNavForRole } from '@/lib/auth/get-role-nav'
 
 export default async function RecruiterLayout({ children }) {
   const session = await ensureSessionInitialized()
@@ -23,8 +23,10 @@ export default async function RecruiterLayout({ children }) {
     redirect('/')
   }
 
+  const { nav, homeHref } = getNavForRole('recruiter')
+
   return (
-    <AppShell user={session.user} navItems={RECRUITER_NAV}>
+    <AppShell user={session.user} navItems={nav} role="recruiter" homeHref={homeHref}>
       {children}
     </AppShell>
   )

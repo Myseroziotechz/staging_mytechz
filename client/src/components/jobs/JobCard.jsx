@@ -246,7 +246,14 @@ export default function JobCard({
                     : 'bg-blue-700 text-white hover:bg-blue-800 shadow-sm shadow-blue-700/20',
                 ].join(' ')}
               >
-                {isApplied ? 'Applied ✓' : 'Apply Now'}
+                {isApplied ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Applied
+                  </span>
+                ) : 'Apply Now'}
               </Link>
             )}
           </div>
