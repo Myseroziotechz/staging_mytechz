@@ -51,7 +51,15 @@ export async function middleware(request) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data?.user ?? null
+  } catch {
+    // Supabase unreachable (Edge sandbox network error) — let the page-level
+    // auth guard handle it instead of crashing the middleware worker.
+    return response
+  }
 
   if (!user) {
     const loginUrl = new URL('/login', request.url)
