@@ -32,7 +32,7 @@ export default function NotFound() {
   return (
     <>
       <JsonLd />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50 flex items-center">
+      <div className="min-h-screen bg-white flex items-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
           {/* Hero */}
           <div className="text-center mb-12">

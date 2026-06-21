@@ -89,13 +89,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
   ]
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50">
-      <div className="pointer-events-none absolute inset-0 hero-grid" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="hero-blob absolute -top-24 -left-20 w-80 h-80 bg-blue-300/30 rounded-full blur-3xl" />
-        <div className="hero-blob-delay absolute top-1/3 -right-20 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl" />
-        <div className="hero-blob-slow absolute bottom-0 left-1/3 w-72 h-72 bg-indigo-300/30 rounded-full blur-3xl" />
-      </div>
+    <section className="bg-white min-h-screen">
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         {/* Heading */}

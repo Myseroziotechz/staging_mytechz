@@ -36,11 +36,7 @@ export default async function JobApplyPage({ params }) {
   const externalHref = applyHref(job)
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50">
-      <div className="pointer-events-none absolute inset-0 hero-grid" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="hero-blob absolute -top-24 -left-20 w-80 h-80 bg-blue-300/30 rounded-full blur-3xl" />
-      </div>
+    <main className="bg-white min-h-screen">
 
       <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <nav aria-label="Breadcrumb" className="text-xs text-slate-500 mb-4 flex flex-wrap items-center gap-1">

@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import ClarityInit from '@/components/ClarityInit'
@@ -6,6 +6,12 @@ import ClarityInit from '@/components/ClarityInit'
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+})
+
+const playfair = Playfair_Display({
+  variable: '--font-playfair',
+  subsets: ['latin'],
+  weight: ['700', '800'],
 })
 
 const geistMono = Geist_Mono({
@@ -71,7 +77,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <head>
         <script

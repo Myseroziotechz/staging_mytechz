@@ -10,12 +10,11 @@ export default async function JobSearchFeature() {
   return (
     <HomeSection tone="light">
       <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight">
-          Find the Latest <span className="hero-gradient-text">Opportunities</span> Faster
-        </h2>
-        <p className="text-lg text-slate-600">
-          Skip the noise. Instantly search verified jobs across top companies — matched to your skills and aspirations.
-        </p>
+        <div className="inline-block px-6 py-3 rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-100">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
+            Hire Smarter
+          </h2>
+        </div>
       </div>
 
       <JobSearchForm />

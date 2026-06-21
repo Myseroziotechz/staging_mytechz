@@ -235,6 +235,30 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* FAQs */}
+        <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-gray-800/80">
+          <h3 className="text-white font-semibold mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base">
+            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+            FAQs
+          </h3>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 sm:gap-y-2.5">
+            {[
+              'Is MyTechz free for candidates?',
+              'How do you verify employers?',
+              'What is "AI Featured"?',
+              'Are government job notifications official?',
+              'Can I get a stipend-only internship?',
+              'Will recruiters see my profile if I just browse?',
+            ].map((q) => (
+              <li key={q}>
+                <Link href="/faq" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-200">
+                  {q}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Stats Bar */}
         <div className="mt-8 sm:mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 text-center border border-gray-700/50 hover:border-blue-500/30 transition-colors">

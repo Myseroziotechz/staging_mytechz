@@ -118,9 +118,43 @@ html {
   .hero-float-a, .hero-float-b, .hero-float-c,
   .hero-grid, .hero-gradient-text,
   .hero-fade-up, .hero-fade-up-d1, .hero-fade-up-d2, .hero-fade-up-d3, .hero-fade-up-d4,
-  .showcase-card-enter {
+  .showcase-card-enter, .marquee-track {
     animation: none;
   }
+}
+
+/* ============================================================
+ * Trusted-by marquee — infinite horizontal scroll
+ * ============================================================ */
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee-scroll 35s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.marquee-fade-edges {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
 }
 
 /* ============================================================

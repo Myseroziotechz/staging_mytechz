@@ -128,12 +128,7 @@ export default function JobsLandingPage() {
   return (
     <>
       <JsonLd />
-      <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50 py-16 sm:py-20">
-        <div className="pointer-events-none absolute inset-0 hero-grid" />
-        <div className="pointer-events-none absolute inset-0">
-          <div className="hero-blob absolute -top-24 -left-20 w-80 h-80 bg-blue-300/30 rounded-full blur-3xl" />
-          <div className="hero-blob-delay absolute top-1/3 -right-20 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl" />
-        </div>
+      <section className="bg-white py-16 sm:py-20">
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
