@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AppShell from '@/components/layout/AppShell'
-import { APP_NAV } from '@/config/navigation'
+import { getNavForRole } from '@/lib/auth/get-role-nav'
 
 export default async function AppLayout({ children }) {
   const supabase = await createClient()
@@ -11,8 +11,18 @@ export default async function AppLayout({ children }) {
     redirect('/login')
   }
 
+  // Fetch role so sidebar/navbar always matches who is logged in
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const role = profile?.role ?? 'candidate'
+  const { nav, homeHref } = getNavForRole(role)
+
   return (
-    <AppShell user={user} navItems={APP_NAV}>
+    <AppShell user={user} navItems={nav} role={role} homeHref={homeHref}>
       {children}
     </AppShell>
   )

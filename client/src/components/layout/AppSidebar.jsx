@@ -37,6 +37,11 @@ function Icon({ name, className = 'w-5 h-5' }) {
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
+    contact: (
+      <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
     list: (
       <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -92,11 +97,32 @@ function Icon({ name, className = 'w-5 h-5' }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Individual nav link
+// Individual nav link — shrinks to icon-only when collapsed
 // ─────────────────────────────────────────────────────────────────────────────
-function NavLink({ href, icon, label, isChild = false }) {
+function NavLink({ href, icon, label, isChild = false, iconOnly = false }) {
   const pathname = usePathname()
-  const isActive = pathname === href || (href !== '/dashboard' && pathname?.startsWith(href + '/'))
+  const HOME_HREFS = ['/dashboard', '/recruiter/dashboard', '/admin/dashboard']
+  const isActive =
+    pathname === href ||
+    (!HOME_HREFS.includes(href) && pathname?.startsWith(href + '/'))
+
+  if (iconOnly) {
+    return (
+      <Link
+        href={href}
+        title={label}
+        className={`
+          flex items-center justify-center w-10 h-10 mx-auto rounded-xl transition-all duration-150
+          ${isActive
+            ? 'bg-blue-600 text-white shadow-sm'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+          }
+        `}
+      >
+        <Icon name={icon} className="w-5 h-5" />
+      </Link>
+    )
+  }
 
   return (
     <Link
@@ -120,13 +146,34 @@ function NavLink({ href, icon, label, isChild = false }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Category with collapsible children
+// defaultOpen: true → always starts expanded
+// icon-only → show only icon, no children
 // ─────────────────────────────────────────────────────────────────────────────
-function NavCategory({ item }) {
+function NavCategory({ item, iconOnly = false }) {
   const pathname = usePathname()
   const isAnyChildActive = item.children?.some(
     (c) => pathname === c.href || pathname?.startsWith(c.href + '/')
-  )
-  const [open, setOpen] = useState(isAnyChildActive ?? true)
+  ) ?? false
+
+  const [open, setOpen] = useState(item.defaultOpen === true || isAnyChildActive)
+
+  // Icon-only mode: render as a single centered icon (tooltip on hover, no children)
+  if (iconOnly) {
+    return (
+      <button
+        title={item.label}
+        className={`
+          flex items-center justify-center w-10 h-10 mx-auto rounded-xl transition-all duration-150
+          ${isAnyChildActive
+            ? 'bg-blue-600 text-white'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+          }
+        `}
+      >
+        <Icon name={item.icon} className="w-5 h-5" />
+      </button>
+    )
+  }
 
   return (
     <div>
@@ -159,6 +206,7 @@ function NavCategory({ item }) {
               icon={child.icon}
               label={child.label}
               isChild
+              iconOnly={false}
             />
           ))}
         </div>
@@ -168,41 +216,62 @@ function NavCategory({ item }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Main Sidebar — always 240 px, no hover expand/collapse
+// Main Sidebar
+// Desktop: fixed width driven by parent (AppShell), with icon-only mode
+// Mobile:  fixed overlay, slide-in from left
 // ─────────────────────────────────────────────────────────────────────────────
-export default function AppSidebar({ navItems = APP_NAV, open = false, onClose }) {
+export default function AppSidebar({
+  navItems = APP_NAV,
+  open = false,
+  onClose,
+  width = 240,
+  iconOnly = false,
+}) {
   const pathname = usePathname()
 
-  // Close sidebar on route change (mobile)
   useEffect(() => {
     if (onClose) onClose()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
+  const topItems    = navItems.filter((item) => item.position !== 'bottom')
+  const bottomItems = navItems.filter((item) => item.position === 'bottom')
+
+  const renderItem = (item) =>
+    item.children ? (
+      <NavCategory key={item.label} item={item} iconOnly={iconOnly} />
+    ) : (
+      <NavLink
+        key={item.href}
+        href={item.href}
+        icon={item.icon}
+        label={item.label}
+        iconOnly={iconOnly}
+      />
+    )
+
   return (
     <aside
+      style={{ width: width }}
       className={`
-        fixed left-0 top-16 bottom-0 z-40 w-60
+        fixed left-0 top-16 bottom-0 z-40
         bg-white border-r border-slate-200 flex flex-col
-        transition-transform duration-300 ease-in-out
+        transition-transform duration-300 ease-in-out overflow-hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}
     >
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-0.5">
-        {navItems.map((item) =>
-          item.children ? (
-            <NavCategory key={item.label} item={item} />
-          ) : (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              icon={item.icon}
-              label={item.label}
-            />
-          )
-        )}
+      {/* Top scrollable nav zone */}
+      <nav className={`flex-1 overflow-y-auto overflow-x-hidden min-h-0 p-2 space-y-0.5 ${iconOnly ? 'flex flex-col items-center' : ''}`}>
+        {topItems.map(renderItem)}
       </nav>
+
+      {/* Bottom pinned zone — Contact + Settings */}
+      {bottomItems.length > 0 && (
+        <div className={`shrink-0 border-t border-slate-100 p-2 space-y-0.5 ${iconOnly ? 'flex flex-col items-center' : ''}`}>
+          {bottomItems.map(renderItem)}
+        </div>
+      )}
     </aside>
   )
 }

@@ -86,7 +86,7 @@ export default async function JobApplyPage({ params }) {
             )}
             <Link href={`/jobs/${job.category}/${job.slug}/preparation`}
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-slate-800 text-sm font-semibold border border-slate-200 hover:bg-slate-50 transition active:scale-[0.98]">
-              Prepare first ✨
+              Prepare first
             </Link>
             <Link href={`/jobs/${job.category}/${job.slug}`}
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-slate-800 text-sm font-semibold border border-slate-200 hover:bg-slate-50 transition active:scale-[0.98]">

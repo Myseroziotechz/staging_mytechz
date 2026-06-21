@@ -26,14 +26,22 @@ const TYPES = [
     key: 'private',
     label: 'Private Job',
     desc: 'Standard role at a private company',
-    icon: '💼',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+      </svg>
+    ),
     accent: 'blue',
   },
   {
     key: 'government',
     label: 'Government',
     desc: 'PSU / sarkari notification',
-    icon: '🏛️',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+      </svg>
+    ),
     accent: 'amber',
     adminOnly: true,
   },
@@ -41,14 +49,22 @@ const TYPES = [
     key: 'internship',
     label: 'Internship',
     desc: 'Stipend + duration based',
-    icon: '🎓',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+      </svg>
+    ),
     accent: 'emerald',
   },
   {
     key: 'ai',
     label: 'AI Pick',
     desc: 'Curated featured card',
-    icon: '✨',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+      </svg>
+    ),
     accent: 'purple',
     adminOnly: true,
   },
@@ -501,7 +517,7 @@ export default function JobForm({
                     : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
-                <div className="text-xl">{t.icon}</div>
+                <div className="w-6 h-6 flex items-center justify-center">{t.icon}</div>
                 <div className="text-sm font-semibold mt-1">{t.label}</div>
                 <div className="text-[11px] opacity-70">{t.desc}</div>
               </button>

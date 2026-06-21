@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ensureSessionInitialized } from '@/lib/auth/ensure-session'
 import AppShell from '@/components/layout/AppShell'
-import { ADMIN_NAV } from '@/config/navigation'
+import { getNavForRole } from '@/lib/auth/get-role-nav'
 
 export default async function AdminLayout({ children }) {
   const session = await ensureSessionInitialized()
@@ -23,8 +23,10 @@ export default async function AdminLayout({ children }) {
     redirect('/')
   }
 
+  const { nav, homeHref } = getNavForRole('admin')
+
   return (
-    <AppShell user={session.user} navItems={ADMIN_NAV}>
+    <AppShell user={session.user} navItems={nav} role="admin" homeHref={homeHref}>
       {children}
     </AppShell>
   )

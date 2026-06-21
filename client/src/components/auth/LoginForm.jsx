@@ -9,7 +9,8 @@ import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 import MagicLinkSent from '@/components/auth/MagicLinkSent'
 import LegalModal from '@/components/auth/LegalModal'
 
-export default function LoginForm() {
+// defaultRole: 'candidate' | 'recruiter' — when set, locks the role and hides the role selector
+export default function LoginForm({ defaultRole = null }) {
   const supabase = createClient()
   const searchParams = useSearchParams()
 
@@ -18,7 +19,7 @@ export default function LoginForm() {
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [error, setError] = useState(null)
   // 'candidate' | 'recruiter' — admin is never user-selectable
-  const [intendedRole, setIntendedRole] = useState('candidate')
+  const [intendedRole, setIntendedRole] = useState(defaultRole ?? 'candidate')
   // null | 'terms' | 'privacy'
   const [legalModal, setLegalModal] = useState(null)
 
@@ -138,10 +139,13 @@ export default function LoginForm() {
         </p>
       </div>
 
-      {/* "I am a..." label */}
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">I am a</p>
+      {/* Role selector — hidden when defaultRole is locked */}
+      {!defaultRole && (
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">I am a</p>
+      )}
 
-      {/* Role selection cards */}
+      {/* Role selection cards — only shown when role is not pre-set */}
+      {!defaultRole && (
       <div role="tablist" aria-label="Sign in as" className="grid grid-cols-2 gap-2">
         {/* Job Seeker card */}
         <button
@@ -164,7 +168,11 @@ export default function LoginForm() {
             </span>
           )}
           {/* Icon */}
-          <span className={`text-xl leading-none ${!isRecruiter ? 'opacity-100' : 'opacity-60'}`}>🎯</span>
+          <span className={`w-6 h-6 flex items-center justify-center ${!isRecruiter ? 'text-blue-600' : 'text-gray-400'}`}>
+            <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </span>
           <span className={`text-xs font-bold tracking-wide ${!isRecruiter ? 'text-blue-700' : 'text-gray-500'}`}>
             Job Seeker
           </span>
@@ -194,7 +202,11 @@ export default function LoginForm() {
             </span>
           )}
           {/* Icon */}
-          <span className={`text-xl leading-none ${isRecruiter ? 'opacity-100' : 'opacity-60'}`}>🏢</span>
+          <span className={`w-6 h-6 flex items-center justify-center ${isRecruiter ? 'text-violet-600' : 'text-gray-400'}`}>
+            <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+            </svg>
+          </span>
           <span className={`text-xs font-bold tracking-wide ${isRecruiter ? 'text-violet-700' : 'text-gray-500'}`}>
             Recruiter
           </span>
@@ -203,6 +215,7 @@ export default function LoginForm() {
           </span>
         </button>
       </div>
+      )}
 
       {/* URL Error */}
       {urlError && (
