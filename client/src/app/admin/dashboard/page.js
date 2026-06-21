@@ -2,9 +2,10 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 import { getAdminPlatformKPIs } from '@/lib/admin/queries'
+import SmartSearchBar from '@/components/dashboard/SmartSearchBar'
 
 export const metadata = {
-  title: 'Admin Overview - MyTechZ',
+  title: 'Admin Home - MyTechZ',
   description: 'Administer MyTechZ users, recruiters, and platform settings.',
   robots: { index: false, follow: false },
 }
@@ -28,14 +29,12 @@ export default async function AdminDashboardPage() {
     getAdminPlatformKPIs(),
   ])
 
-  // Fetch recent users (last 5 sign-ups)
   const { data: recentUsers = [] } = await supabase
     .from('user_profiles')
     .select('id, email, role, full_name, created_at, last_login_at, is_active')
     .order('created_at', { ascending: false })
     .limit(5)
 
-  // Fetch recruiters pending verification
   const { data: pendingRecruiters = [] } = await supabase
     .from('recruiter_profiles')
     .select('user_id, company_name, industry, verification_status, created_at')
@@ -44,21 +43,20 @@ export default async function AdminDashboardPage() {
     .limit(10)
 
   const statCards = [
-    { label: 'Total Users', value: totalUsers, color: 'blue', icon: usersIcon },
-    { label: 'Candidates', value: candidates, color: 'green', icon: candidateIcon },
-    { label: 'Recruiters', value: recruiters, color: 'amber', icon: recruiterIcon },
-    { label: 'Admins', value: admins, color: 'purple', icon: shieldIcon },
+    { label: 'Total Users',  value: totalUsers,  color: 'blue',   icon: usersIcon },
+    { label: 'Candidates',   value: candidates,  color: 'green',  icon: candidateIcon },
+    { label: 'Recruiters',   value: recruiters,  color: 'amber',  icon: recruiterIcon },
+    { label: 'Admins',       value: admins,      color: 'purple', icon: shieldIcon },
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
-      <section className="flex items-end justify-between flex-wrap gap-3">
+      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Overview</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            A snapshot of platform activity.
-          </p>
+          <p className="text-sm text-gray-500">Admin Panel</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Overview</h1>
+          <p className="mt-1 text-sm text-gray-500">A snapshot of platform activity.</p>
         </div>
         <div className="flex gap-2">
           <Link
@@ -74,51 +72,42 @@ export default async function AdminDashboardPage() {
             {platform.pendingJobs} pending review
           </Link>
         </div>
-      </section>
+      </header>
+
+      {/* Smart Search Bar */}
+      <SmartSearchBar placeholder="Search users, jobs, emails..." />
 
       {/* Platform KPIs */}
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <KpiCard label="Active jobs" value={platform.activeJobs} tone="emerald" href="/admin/jobs?status=active" />
-        <KpiCard label="Pending review" value={platform.pendingJobs} tone="amber" href="/admin/jobs?status=pending_approval" />
-        <KpiCard label="Applications (total)" value={platform.totalApplicants} tone="blue" href="/admin/applications" />
-        <KpiCard label="This week" value={platform.weekApplicants} tone="purple" href="/admin/applications" />
+        <KpiCard label="Active jobs"          value={platform.activeJobs}     tone="emerald" href="/admin/jobs?status=active" />
+        <KpiCard label="Pending review"       value={platform.pendingJobs}    tone="amber"   href="/admin/jobs?status=pending_approval" />
+        <KpiCard label="Applications (total)" value={platform.totalApplicants} tone="blue"   href="/admin/applications" />
+        <KpiCard label="This week"            value={platform.weekApplicants} tone="purple"  href="/admin/applications" />
       </section>
 
-      {/* Category mix */}
-      <section className="bg-white border border-gray-200 rounded-2xl p-4">
-        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-3">
-          Active jobs by category
-        </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {[
-            { k: 'private', label: 'Private', tone: 'bg-blue-50 text-blue-700' },
-            { k: 'government', label: 'Government', tone: 'bg-amber-50 text-amber-700' },
-            { k: 'internship', label: 'Internships', tone: 'bg-emerald-50 text-emerald-700' },
-            { k: 'ai', label: 'AI picks', tone: 'bg-purple-50 text-purple-700' },
-          ].map((c) => (
-            <Link
-              key={c.k}
-              href={`/admin/jobs?category=${c.k}&status=active`}
-              className={`px-3 py-2 rounded-lg ${c.tone} hover:opacity-80 flex items-center justify-between`}
-            >
-              <span className="text-xs font-semibold">{c.label}</span>
-              <span className="text-sm font-bold">{platform.byCategory[c.k] || 0}</span>
-            </Link>
-          ))}
+      {/* Quick Actions */}
+      <section>
+        <h2 className="text-base font-semibold text-gray-900 mb-3">Quick Actions</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <AdminActionCard href="/admin/post-job"    emoji="✏️" label="Post a Card" />
+          <AdminActionCard href="/admin/jobs"        emoji="💼" label="Jobs" />
+          <AdminActionCard href="/admin/whitelist"   emoji="📧" label="Admin Emails" />
+          <AdminActionCard href="/admin/users"       emoji="👥" label="Users" />
+          <AdminActionCard href="/admin/recruiters"  emoji="🏢" label="Recruiters" />
+          <div className="flex flex-col items-center gap-1.5 p-4 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-center opacity-60">
+            <span className="text-xl">📊</span>
+            <span className="text-xs font-medium text-gray-500">Analytics</span>
+            <span className="text-[10px] text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded-full">Soon</span>
+          </div>
         </div>
       </section>
 
-      {/* Stat Cards */}
+      {/* User stats */}
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {statCards.map((c) => (
-          <div
-            key={c.label}
-            className="bg-white border border-gray-200 rounded-xl p-5"
-          >
+          <div key={c.label} className="bg-white border border-gray-200 rounded-xl p-5">
             <div className="flex items-center justify-between">
-              <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">
-                {c.label}
-              </p>
+              <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">{c.label}</p>
               <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorMap[c.color]}`}>
                 {c.icon}
               </span>
@@ -130,47 +119,27 @@ export default async function AdminDashboardPage() {
         ))}
       </section>
 
-      {/* Quick Actions */}
-      <section className="grid sm:grid-cols-3 gap-4">
-        <Link
-          href="/admin/whitelist"
-          className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-blue-600 hover:shadow-sm transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-gray-900">Admin Emails</h3>
-            <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-              {whitelisted}
-            </span>
-          </div>
-          <p className="mt-2 text-sm text-gray-500">
-            Add or remove emails that are auto-promoted to admin on sign-in.
-          </p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700 group-hover:text-blue-800">
-            Manage whitelist <span aria-hidden="true">→</span>
-          </span>
-        </Link>
-
-        <Link
-          href="/admin/users"
-          className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-blue-600 hover:shadow-sm transition-all"
-        >
-          <h3 className="text-base font-semibold text-gray-900">Users</h3>
-          <p className="mt-2 text-sm text-gray-500">
-            Browse every user on the platform and their role.
-          </p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700 group-hover:text-blue-800">
-            View users <span aria-hidden="true">→</span>
-          </span>
-        </Link>
-
-        <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-6 relative">
-          <span className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
-            Coming soon
-          </span>
-          <h3 className="text-base font-semibold text-gray-900">Analytics</h3>
-          <p className="mt-2 text-sm text-gray-500">
-            Platform-wide analytics, growth charts, and engagement metrics.
-          </p>
+      {/* Category mix */}
+      <section className="bg-white border border-gray-200 rounded-2xl p-4">
+        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-3">
+          Active jobs by category
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {[
+            { k: 'private',     label: 'Private',     tone: 'bg-blue-50 text-blue-700' },
+            { k: 'government',  label: 'Government',  tone: 'bg-amber-50 text-amber-700' },
+            { k: 'internship',  label: 'Internships', tone: 'bg-emerald-50 text-emerald-700' },
+            { k: 'ai',          label: 'AI picks',    tone: 'bg-purple-50 text-purple-700' },
+          ].map((c) => (
+            <Link
+              key={c.k}
+              href={`/admin/jobs?category=${c.k}&status=active`}
+              className={`px-3 py-2 rounded-lg ${c.tone} hover:opacity-80 flex items-center justify-between`}
+            >
+              <span className="text-xs font-semibold">{c.label}</span>
+              <span className="text-sm font-bold">{platform.byCategory[c.k] || 0}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -189,7 +158,7 @@ export default async function AdminDashboardPage() {
                 <div className="min-w-0">
                   <p className="font-medium text-gray-900">{r.company_name}</p>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    {r.industry || 'No industry specified'} · Applied {new Date(r.created_at).toLocaleDateString()}
+                    {r.industry || 'No industry'} · Applied {new Date(r.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-amber-200 bg-amber-50 text-amber-700 text-xs font-medium shrink-0">
@@ -231,9 +200,7 @@ export default async function AdminDashboardPage() {
             ))}
           </div>
         ) : (
-          <div className="px-5 py-8 text-sm text-gray-500 text-center">
-            No users yet.
-          </div>
+          <div className="px-5 py-8 text-sm text-gray-500 text-center">No users yet.</div>
         )}
       </section>
     </div>
@@ -242,8 +209,20 @@ export default async function AdminDashboardPage() {
 
 // ---- Sub-components ---------------------------------------------------------
 
+function AdminActionCard({ href, emoji, label }) {
+  return (
+    <Link
+      href={href}
+      className="group flex flex-col items-center gap-1.5 p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all text-center"
+    >
+      <span className="text-2xl">{emoji}</span>
+      <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{label}</span>
+    </Link>
+  )
+}
+
 const ROLE_BADGE = {
-  admin: 'bg-purple-50 text-purple-700 border-purple-200',
+  admin:     'bg-purple-50 text-purple-700 border-purple-200',
   recruiter: 'bg-blue-50 text-blue-700 border-blue-200',
   candidate: 'bg-gray-100 text-gray-700 border-gray-200',
 }
@@ -257,9 +236,9 @@ function RoleBadge({ role }) {
 }
 
 const colorMap = {
-  blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-green-50 text-green-600',
-  amber: 'bg-amber-50 text-amber-600',
+  blue:   'bg-blue-50 text-blue-600',
+  green:  'bg-green-50 text-green-600',
+  amber:  'bg-amber-50 text-amber-600',
   purple: 'bg-purple-50 text-purple-600',
 }
 
@@ -286,26 +265,18 @@ const shieldIcon = (
 
 const KPI_TONE = {
   emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  amber: 'bg-amber-50 text-amber-700 border-amber-200',
-  blue: 'bg-blue-50 text-blue-700 border-blue-200',
-  purple: 'bg-purple-50 text-purple-700 border-purple-200',
+  amber:   'bg-amber-50 text-amber-700 border-amber-200',
+  blue:    'bg-blue-50 text-blue-700 border-blue-200',
+  purple:  'bg-purple-50 text-purple-700 border-purple-200',
 }
 
 function KpiCard({ label, value, tone = 'blue', href }) {
   const inner = (
     <>
-      <p className="text-xs uppercase tracking-wider opacity-70 font-semibold">
-        {label}
-      </p>
+      <p className="text-xs uppercase tracking-wider opacity-70 font-semibold">{label}</p>
       <p className="mt-1 text-2xl font-bold">{value}</p>
     </>
   )
   const cls = `block rounded-2xl border p-4 transition hover:opacity-80 ${KPI_TONE[tone] || KPI_TONE.blue}`
-  return href ? (
-    <Link href={href} className={cls}>
-      {inner}
-    </Link>
-  ) : (
-    <div className={cls}>{inner}</div>
-  )
+  return href ? <Link href={href} className={cls}>{inner}</Link> : <div className={cls}>{inner}</div>
 }

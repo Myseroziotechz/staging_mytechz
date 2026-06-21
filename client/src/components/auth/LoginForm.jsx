@@ -9,7 +9,8 @@ import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 import MagicLinkSent from '@/components/auth/MagicLinkSent'
 import LegalModal from '@/components/auth/LegalModal'
 
-export default function LoginForm() {
+// defaultRole: 'candidate' | 'recruiter' — when set, locks the role and hides the role selector
+export default function LoginForm({ defaultRole = null }) {
   const supabase = createClient()
   const searchParams = useSearchParams()
 
@@ -18,7 +19,7 @@ export default function LoginForm() {
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [error, setError] = useState(null)
   // 'candidate' | 'recruiter' — admin is never user-selectable
-  const [intendedRole, setIntendedRole] = useState('candidate')
+  const [intendedRole, setIntendedRole] = useState(defaultRole ?? 'candidate')
   // null | 'terms' | 'privacy'
   const [legalModal, setLegalModal] = useState(null)
 
@@ -138,10 +139,13 @@ export default function LoginForm() {
         </p>
       </div>
 
-      {/* "I am a..." label */}
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">I am a</p>
+      {/* Role selector — hidden when defaultRole is locked */}
+      {!defaultRole && (
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">I am a</p>
+      )}
 
-      {/* Role selection cards */}
+      {/* Role selection cards — only shown when role is not pre-set */}
+      {!defaultRole && (
       <div role="tablist" aria-label="Sign in as" className="grid grid-cols-2 gap-2">
         {/* Job Seeker card */}
         <button
@@ -203,6 +207,7 @@ export default function LoginForm() {
           </span>
         </button>
       </div>
+      )}
 
       {/* URL Error */}
       {urlError && (

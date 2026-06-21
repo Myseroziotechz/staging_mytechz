@@ -476,9 +476,17 @@ export default function Navbar() {
               {user ? (
                 <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
-                <Link href="/login">
-                  <Button size="sm">Get Started</Button>
-                </Link>
+                <>
+                  <Link
+                    href="/login/recruiter"
+                    className="px-4 py-2 rounded-xl text-sm font-medium border border-blue-600 text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                  >
+                    For Recruiters
+                  </Link>
+                  <Link href="/login/user">
+                    <Button size="sm">Get Started</Button>
+                  </Link>
+                </>
               )}
             </div>
 
@@ -487,7 +495,7 @@ export default function Navbar() {
               {user ? (
                 <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
-                <Link href="/login">
+                <Link href="/login/user">
                   <Button size="sm">Get Started</Button>
                 </Link>
               )}
@@ -578,6 +586,19 @@ export default function Navbar() {
                 )}
               </div>
             ))}
+
+            {/* Mobile auth buttons (shown when not logged in) */}
+            {!user && (
+              <div className="pt-2 border-t border-white/20 mt-1 flex flex-col gap-2">
+                <Link
+                  href="/login/recruiter"
+                  className="block text-center py-2.5 px-4 rounded-xl border border-blue-600 text-blue-600 font-medium text-sm hover:bg-blue-50 transition-all duration-200"
+                  onClick={() => setIsOpen(false)}
+                >
+                  For Recruiters
+                </Link>
+              </div>
+            )}
 
           </div>
         </div>

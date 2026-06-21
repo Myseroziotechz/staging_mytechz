@@ -37,6 +37,11 @@ function Icon({ name, className = 'w-5 h-5' }) {
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
+    contact: (
+      <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
     list: (
       <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -96,7 +101,7 @@ function Icon({ name, className = 'w-5 h-5' }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function NavLink({ href, icon, label, isChild = false }) {
   const pathname = usePathname()
-  const isActive = pathname === href || (href !== '/dashboard' && pathname?.startsWith(href + '/'))
+  const isActive = pathname === href || (href !== '/dashboard' && href !== '/recruiter/dashboard' && href !== '/admin/dashboard' && pathname?.startsWith(href + '/'))
 
   return (
     <Link
@@ -120,13 +125,16 @@ function NavLink({ href, icon, label, isChild = false }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Category with collapsible children
+// defaultOpen: true → always starts expanded
 // ─────────────────────────────────────────────────────────────────────────────
 function NavCategory({ item }) {
   const pathname = usePathname()
   const isAnyChildActive = item.children?.some(
     (c) => pathname === c.href || pathname?.startsWith(c.href + '/')
-  )
-  const [open, setOpen] = useState(isAnyChildActive ?? true)
+  ) ?? false
+
+  // Start open if defaultOpen flag is set OR if a child is currently active
+  const [open, setOpen] = useState(item.defaultOpen === true || isAnyChildActive)
 
   return (
     <div>
@@ -168,7 +176,9 @@ function NavCategory({ item }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Main Sidebar — always 240 px, no hover expand/collapse
+// Main Sidebar
+// - Top zone: scrollable, all items without position:'bottom'
+// - Bottom zone: pinned to bottom, items with position:'bottom'
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AppSidebar({ navItems = APP_NAV, open = false, onClose }) {
   const pathname = usePathname()
@@ -178,6 +188,21 @@ export default function AppSidebar({ navItems = APP_NAV, open = false, onClose }
     if (onClose) onClose()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
+
+  const topItems = navItems.filter((item) => item.position !== 'bottom')
+  const bottomItems = navItems.filter((item) => item.position === 'bottom')
+
+  const renderItem = (item) =>
+    item.children ? (
+      <NavCategory key={item.label} item={item} />
+    ) : (
+      <NavLink
+        key={item.href}
+        href={item.href}
+        icon={item.icon}
+        label={item.label}
+      />
+    )
 
   return (
     <aside
@@ -189,20 +214,17 @@ export default function AppSidebar({ navItems = APP_NAV, open = false, onClose }
         lg:translate-x-0
       `}
     >
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-0.5">
-        {navItems.map((item) =>
-          item.children ? (
-            <NavCategory key={item.label} item={item} />
-          ) : (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              icon={item.icon}
-              label={item.label}
-            />
-          )
-        )}
+      {/* Top zone — scrollable nav items */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-0.5 min-h-0">
+        {topItems.map(renderItem)}
       </nav>
+
+      {/* Bottom zone — pinned Contact + Settings */}
+      {bottomItems.length > 0 && (
+        <div className="shrink-0 border-t border-slate-100 p-3 space-y-0.5">
+          {bottomItems.map(renderItem)}
+        </div>
+      )}
     </aside>
   )
 }

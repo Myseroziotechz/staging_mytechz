@@ -1,65 +1,84 @@
-import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import LoginForm from '@/components/auth/LoginForm'
-import LoginShowcase from '@/components/auth/LoginShowcase'
 
 export const metadata = {
   title: 'Login - MyTechZ',
-  description: 'Sign in to your MyTechZ account',
+  description: 'Sign in to your MyTechZ account as a job seeker or recruiter.',
   robots: { index: false, follow: false },
 }
 
 export default function LoginPage() {
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-3 lg:p-5 overflow-hidden">
-      {/* Card */}
-      <div className="relative w-full max-w-[960px] h-[540px] max-h-[95vh] bg-white rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-        {/* Mobile glass back button */}
-        <Link
-          href="/"
-          aria-label="Back to home"
-          className="lg:hidden absolute top-3 left-3 z-20 w-8 h-8 rounded-full bg-gray-100/80 backdrop-blur-md border border-gray-200/60 flex items-center justify-center text-gray-500 hover:bg-gray-200/80 hover:text-gray-700 transition-all duration-200"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
-
-        <div className="flex h-full">
-          {/* Left: Showcase (desktop only) */}
-          <div className="hidden lg:block lg:w-[48%]">
-            <LoginShowcase />
-          </div>
-
-          {/* Right: Login form */}
-          <div className="w-full lg:w-[52%] flex flex-col justify-center px-5 sm:px-8 lg:px-9 py-4">
-            <div className="w-full max-w-[340px] mx-auto space-y-3">
-              {/* Logo */}
-              <div className="flex justify-center lg:justify-start">
-                <Link href="/" aria-label="MyTechZ Home" className="inline-flex">
-                  <Image
-                    src="/Mytechz_logo.png"
-                    alt="MyTechZ"
-                    width={140}
-                    height={38}
-                    className="h-8 object-contain"
-                    style={{ width: 'auto' }}
-                    priority
-                  />
-                </Link>
-              </div>
-
-              <Suspense
-                fallback={
-                  <div className="text-center text-gray-400 py-6">Loading...</div>
-                }
-              >
-                <LoginForm />
-              </Suspense>
-            </div>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Link href="/" aria-label="MyTechZ Home">
+            <Image
+              src="/Mytechz_logo.png"
+              alt="MyTechZ"
+              width={140}
+              height={38}
+              className="h-9 object-contain"
+              style={{ width: 'auto' }}
+              priority
+            />
+          </Link>
         </div>
+
+        {/* Heading */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Welcome to MyTechZ</h1>
+          <p className="mt-2 text-sm text-gray-500">Choose how you want to sign in</p>
+        </div>
+
+        {/* Role cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Job Seeker */}
+          <Link
+            href="/login/user"
+            className="group flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-blue-500 hover:shadow-md transition-all duration-200 text-center"
+          >
+            <span className="text-4xl">🎯</span>
+            <div>
+              <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                Job Seeker
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                Find jobs, build resumes & track applications
+              </p>
+            </div>
+            <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              Sign in <span aria-hidden="true">→</span>
+            </span>
+          </Link>
+
+          {/* Recruiter */}
+          <Link
+            href="/login/recruiter"
+            className="group flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-violet-500 hover:shadow-md transition-all duration-200 text-center"
+          >
+            <span className="text-4xl">🏢</span>
+            <div>
+              <p className="font-bold text-gray-900 group-hover:text-violet-600 transition-colors">
+                Recruiter
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                Post jobs, find talent & manage your pipeline
+              </p>
+            </div>
+            <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-violet-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              Sign in <span aria-hidden="true">→</span>
+            </span>
+          </Link>
+        </div>
+
+        {/* Back link */}
+        <p className="mt-8 text-center text-sm text-gray-400">
+          <Link href="/" className="hover:text-blue-600 transition-colors">
+            ← Back to home
+          </Link>
+        </p>
       </div>
     </div>
   )
