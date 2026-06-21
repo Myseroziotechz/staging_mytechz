@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import ProfileForm from './ProfileForm'
+import ProfileForm from './ProfileForm.jsx'
 
 export const metadata = {
   title: 'My Profile - MyTechZ',

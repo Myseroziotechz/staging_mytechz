@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import RecruiterProfileForm from './RecruiterProfileForm'
+import RecruiterProfileForm from './RecruiterProfileForm.jsx'
 
 export const metadata = {
   title: 'My Profile - MyTechZ Recruiter',
