@@ -4,7 +4,7 @@ const SITE = 'https://mytechz.com'
 
 export const metadata = {
   title: 'Page Not Found (404) | MyTechZ',
-  description: 'The page you are looking for could not be found. Browse verified tech jobs, use our free resume builder, or explore AI career tools on MyTechZ.',
+  description: 'The page you are looking for could not be found. Browse verified tech jobs or explore AI career tools on MyTechZ.',
   robots: { index: false, follow: true },
 }
 
@@ -12,8 +12,8 @@ const POPULAR_LINKS = [
   { href: '/jobs/private', label: 'Private Tech Jobs', icon: '💼', desc: '50,000+ verified tech jobs across India' },
   { href: '/jobs/government', label: 'Government Jobs', icon: '🏛️', desc: 'UPSC, SSC, PSU & defence vacancies' },
   { href: '/jobs/internship', label: 'Paid Internships', icon: '🎓', desc: 'For students and freshers' },
-  { href: '/ai-tools/resume-builder', label: 'Free Resume Builder', icon: '📄', desc: 'Best free CV builder — PDF & DOCX' },
-  { href: '/ai-tools/resume-builder/templates', label: 'Free Templates', icon: '✨', desc: '6 ATS-friendly resume templates' },
+  { href: '/ai-tools/smart-job-search', label: 'Smart Job Search', icon: '🤖', desc: 'AI-powered job matching by fit score' },
+  { href: '/ai-tools', label: 'AI Career Tools', icon: '✨', desc: 'Free tools to accelerate your career' },
   { href: '/about', label: 'About MyTechZ', icon: 'ℹ️', desc: 'Learn about our platform' },
 ]
 
@@ -32,7 +32,7 @@ export default function NotFound() {
   return (
     <>
       <JsonLd />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50 flex items-center">
+      <div className="min-h-screen bg-white flex items-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
           {/* Hero */}
           <div className="text-center mb-12">
@@ -75,10 +75,10 @@ export default function NotFound() {
               Go to Homepage
             </Link>
             <Link
-              href="/ai-tools/resume-builder"
+              href="/jobs"
               className="inline-flex items-center gap-2 bg-white text-slate-700 font-semibold px-6 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all"
             >
-              Build Free Resume
+              Browse Jobs
             </Link>
           </div>
         </div>

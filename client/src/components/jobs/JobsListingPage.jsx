@@ -1,11 +1,14 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
 import SortDropdown from './SortDropdown'
-import { formatStipend, govMeta } from '@/lib/jobs/format'
+import { formatStipend, govMeta, parseInternshipMeta } from '@/lib/jobs/format'
+import { loadMoreJobsAction } from '@/lib/jobs/client-actions'
+
+const PER_PAGE = 12
 
 function setOrDelete(params, key, value) {
   if (value == null || value === '' || (Array.isArray(value) && value.length === 0)) params.delete(key)
@@ -38,6 +41,33 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
 
   const [filters, setFilters]         = useState(initialFilters)
   const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Load-more state — resets whenever initialJobs changes (i.e. filter navigation)
+  const [allJobs, setAllJobs]     = useState(initialJobs)
+  const [loadPage, setLoadPage]   = useState(2)
+  const [hasMore, setHasMore]     = useState(initialJobs.length >= PER_PAGE)
+  const [loadingMore, setLoadingMore] = useState(false)
+
+  useEffect(() => {
+    setAllJobs(initialJobs)
+    setLoadPage(2)
+    setHasMore(initialJobs.length >= PER_PAGE)
+  }, [initialJobs])
+
+  const handleLoadMore = async () => {
+    setLoadingMore(true)
+    const { jobs, hasMore: more } = await loadMoreJobsAction({
+      ...filters,
+      category: pageConfig.id,
+      exclude_internships: pageConfig.id === 'private',
+      page: loadPage,
+      per_page: PER_PAGE,
+    })
+    setAllJobs(prev => [...prev, ...jobs])
+    setLoadPage(p => p + 1)
+    setHasMore(more)
+    setLoadingMore(false)
+  }
 
   const updateUrl = (next) => {
     const sp = new URLSearchParams(searchParams.toString())
@@ -89,13 +119,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
   ]
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50">
-      <div className="pointer-events-none absolute inset-0 hero-grid" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="hero-blob absolute -top-24 -left-20 w-80 h-80 bg-blue-300/30 rounded-full blur-3xl" />
-        <div className="hero-blob-delay absolute top-1/3 -right-20 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl" />
-        <div className="hero-blob-slow absolute bottom-0 left-1/3 w-72 h-72 bg-indigo-300/30 rounded-full blur-3xl" />
-      </div>
+    <section className="bg-white min-h-screen">
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         {/* Heading */}
@@ -174,20 +198,57 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
               </div>
             )}
 
-            {initialJobs.length === 0 ? (
+            {allJobs.length === 0 ? (
               <EmptyState pageConfig={pageConfig} />
             ) : (
-              <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
-                {initialJobs.map(job => (
-                  <JobCard
-                    key={job.id}
-                    job={job}
-                    accent={pageConfig.accentColor}
-                    primaryAmount={pageConfig.id === 'internship' ? formatStipend(job) : null}
-                    cardExtras={renderExtras(pageConfig.id, job)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                  {allJobs.map(job => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      accent={pageConfig.accentColor}
+                      primaryAmount={pageConfig.id === 'internship' ? formatStipend(job) : null}
+                      cardExtras={renderExtras(pageConfig.id, job)}
+                    />
+                  ))}
+                </div>
+
+                {/* Load more */}
+                {hasMore && (
+                  <div className="mt-8 flex flex-col items-center gap-2">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-sm hover:border-blue-300 hover:text-blue-700 hover:shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loadingMore ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                          </svg>
+                          Loading…
+                        </>
+                      ) : (
+                        <>
+                          See more jobs
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </>
+                      )}
+                    </button>
+                    <p className="text-xs text-slate-400">{allJobs.length} jobs loaded</p>
+                  </div>
+                )}
+
+                {!hasMore && allJobs.length > PER_PAGE && (
+                  <p className="mt-8 text-center text-xs text-slate-400">
+                    All {allJobs.length} jobs loaded
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -223,21 +284,40 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
 
 function renderExtras(pageId, job) {
   if (pageId === 'internship') {
-    const months = job.duration_months || job.government_meta?.duration_months
+    const { durationMonths, ppoChance } = parseInternshipMeta(job)
+    const hasBadge = durationMonths || (ppoChance != null && ppoChance > 0)
+    if (!hasBadge) return null
     return (
       <div className="flex flex-wrap gap-1.5 text-[11px]">
-        {months && <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">{months} months</span>}
-        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">PPO possible</span>
+        {durationMonths && (
+          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+            {durationMonths} months
+          </span>
+        )}
+        {ppoChance != null && ppoChance > 0 && (
+          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+            {ppoChance}% PPO chance
+          </span>
+        )}
       </div>
     )
   }
   if (pageId === 'government') {
     const m = govMeta(job)
-    if (!m.notification_number && !m.exam_date) return null
+    const hasVacancies = m.vacancies != null && m.vacancies > 0
+    if (!hasVacancies && !m.exam_date) return null
     return (
       <div className="flex flex-wrap gap-1.5 text-[11px]">
-        {m.notification_number && <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">Notif: {m.notification_number}</span>}
-        {m.exam_date && <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Exam: {new Date(m.exam_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>}
+        {hasVacancies && (
+          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+            {m.vacancies} vacancies
+          </span>
+        )}
+        {m.exam_date && (
+          <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+            Exam: {new Date(m.exam_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+          </span>
+        )}
       </div>
     )
   }

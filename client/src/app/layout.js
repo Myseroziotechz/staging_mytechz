@@ -1,12 +1,17 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
-import LayoutShell from '@/components/LayoutShell'
 import ClarityInit from '@/components/ClarityInit'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+})
+
+const playfair = Playfair_Display({
+  variable: '--font-playfair',
+  subsets: ['latin'],
+  weight: ['700', '800'],
 })
 
 const geistMono = Geist_Mono({
@@ -72,7 +77,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <head>
         <script
@@ -91,17 +96,16 @@ export default function RootLayout({ children }) {
                 height: 60,
               },
               description:
-                'India\'s AI-powered career platform connecting tech talent with verified private and government job opportunities. Offers a free resume builder, free CV builder, AI job matching, and expert mentorship.',
+                'India\'s AI-powered career platform connecting tech talent with verified private and government job opportunities. AI job matching, expert mentorship, and free career tools for Indian job seekers.',
               foundingDate: '2023',
               foundingLocation: { '@type': 'Place', addressCountry: 'IN' },
               areaServed: { '@type': 'Country', name: 'India' },
               knowsAbout: [
-                'Free Resume Builder',
-                'CV Builder Free',
-                'ATS Resume Builder',
                 'Tech Jobs India',
                 'Government Jobs India',
                 'Paid Internships India',
+                'AI Job Matching',
+                'Smart Job Search',
                 'AI Career Tools',
               ],
               sameAs: [
@@ -117,8 +121,8 @@ export default function RootLayout({ children }) {
                 '@type': 'OfferCatalog',
                 name: 'MyTechZ Free Career Services',
                 itemListElement: [
-                  { '@type': 'Offer', name: 'Free Resume Builder', description: 'Build ATS-friendly resumes free. Download PDF or DOCX.', price: '0', priceCurrency: 'INR', url: `${SITE}/ai-tools/resume-builder` },
                   { '@type': 'Offer', name: 'Free Job Search', description: 'Browse 50,000+ verified tech jobs in India.', price: '0', priceCurrency: 'INR', url: `${SITE}/jobs` },
+                  { '@type': 'Offer', name: 'Smart Job Search', description: 'AI-powered job matching based on your skills and career goals.', price: '0', priceCurrency: 'INR', url: `${SITE}/ai-tools/smart-job-search` },
                 ],
               },
             }),
@@ -152,7 +156,7 @@ export default function RootLayout({ children }) {
                 { '@type': 'SiteNavigationElement', name: 'Government Jobs', url: `${SITE}/jobs/government` },
                 { '@type': 'SiteNavigationElement', name: 'Internships', url: `${SITE}/jobs/internship` },
                 { '@type': 'SiteNavigationElement', name: 'AI Tools', url: `${SITE}/ai-tools` },
-                { '@type': 'SiteNavigationElement', name: 'Resume Builder', url: `${SITE}/ai-tools/resume-builder` },
+                { '@type': 'SiteNavigationElement', name: 'Smart Job Search', url: `${SITE}/ai-tools/smart-job-search` },
                 { '@type': 'SiteNavigationElement', name: 'About', url: `${SITE}/about` },
                 { '@type': 'SiteNavigationElement', name: 'Services', url: `${SITE}/services` },
                 { '@type': 'SiteNavigationElement', name: 'Contact', url: `${SITE}/contact` },
@@ -163,7 +167,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-full flex flex-col">
         <ClarityInit />
-        <LayoutShell>{children}</LayoutShell>
+        {children}
       </body>
       <GoogleAnalytics gaId="G-FXKXL6XP9H" />
     </html>

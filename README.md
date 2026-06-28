@@ -148,6 +148,170 @@ staging_mytechz/
 
 ---
 
+## Frontend Page Architecture
+
+### Layout Hierarchy
+
+```
+layout.js  (Root Layout — wraps every page)
+│
+├── Navbar.jsx          ← top navigation bar
+├── LayoutShell.jsx     ← client shell (auth context, sidebar toggle)
+│   └── {page content}
+└── Footer.jsx          ← bottom footer
+```
+
+GA (G-FXKXL6XP9H) and Microsoft Clarity are injected in the root layout and fire on every page.
+
+---
+
+### Page Tree
+
+```
+/  (Homepage — page.js)
+│
+├── /about
+├── /contact
+├── /services
+│
+├── /jobs                                  Jobs Hub
+│   ├── /jobs/private                      Private tech jobs
+│   ├── /jobs/government                   Government jobs
+│   ├── /jobs/internship                   Paid internships
+│   ├── /jobs/ai                           AI-matched jobs
+│   └── /jobs/[category]/[jobSlug]         Job detail (dynamic)
+│       ├── /apply                         Job application form
+│       └── /preparation                   Interview prep guide
+│
+├── /ai-tools                              AI Tools Hub
+│   ├── /ai-tools/resume-builder           ★ Primary conversion page
+│   │   ├── /templates                     Template gallery
+│   │   ├── /templates/[slug]              Template detail
+│   │   ├── /editor                        Resume editor (auth-gated)
+│   │   └── /my-resumes                    Saved resumes (auth-gated)
+│   ├── /ai-tools/resume-rank-checker      ATS score checker
+│   │   └── /results/[id]                  ATS results page
+│   │       └── /editor                    Optimise resume from results
+│   └── /ai-tools/smart-job-search         AI job matching (coming soon)
+│
+├── /login                                 Authentication entry point
+├── /dashboard                             User home (auth-gated)
+├── /profile                               User profile (auth-gated)
+├── /my-applications                       Applications tracker (auth-gated)
+├── /saved-jobs                            Saved jobs (auth-gated)
+├── /settings                              Account settings (auth-gated)
+│
+├── /auth/                                 Auth flow (not user-facing UI)
+│   ├── /callback                          OAuth / magic link callback
+│   ├── /complete                          Post-auth profile setup (new users)
+│   ├── /error                             Auth error display
+│   └── /sign-out                          Logout route
+│
+├── /recruiter/                            Recruiter Portal (own layout.js)
+│   ├── /onboarding                        Recruiter registration & verification
+│   ├── /dashboard                         Recruiter home
+│   ├── /post-job                          Create job listing
+│   └── /applicants                        View & filter applicants
+│
+└── /admin/                                Admin Panel (own layout.js)
+    ├── /dashboard
+    ├── /jobs
+    ├── /post-job
+    ├── /recruiters
+    ├── /users
+    ├── /whitelist
+    └── /applications
+```
+
+---
+
+### API Routes (`/api/*` — Next.js Route Handlers)
+
+```
+/api/auth/send-otp              POST  — send email OTP
+/api/auth/set-intent            POST  — store pre-login redirect intent
+
+/api/resume/parse               POST  — extract text from PDF/DOCX upload
+/api/resume/generate            POST  — AI-generate resume content (Claude)
+/api/resume/export              POST  — export resume to PDF or DOCX
+/api/resume/[id]                GET / PUT / DELETE — CRUD a single resume
+
+/api/ats/upload                 POST  — upload resume for ATS analysis
+/api/ats/list                   GET   — list user's ATS checks
+/api/ats/job-roles              GET   — available job roles for scoring
+/api/ats/[id]                   GET   — full ATS result
+/api/ats/[id]/status            GET   — polling status (async processing)
+/api/ats/[id]/insights          GET   — improvement insights
+/api/ats/[id]/keywords          GET   — missing / matched keywords
+/api/ats/[id]/sections          GET   — section-by-section breakdown
+/api/ats/[id]/quick-fix         POST  — AI quick-fix suggestions
+/api/ats/[id]/editor-data       GET   — load resume into editor from ATS
+/api/ats/[id]/save-edit         POST  — save edits made via ATS editor
+
+/api/jobs/[jobId]/roadmap       GET   — AI learning roadmap for a job role
+/api/ai/chat                    POST  — general AI chat endpoint
+/api/skills/suggest             POST  — AI skill tag suggestions
+
+/api/contact                    POST  — contact form submission
+/api/exports/[scope]            GET   — data export (admin)
+```
+
+---
+
+### User Journey Flow
+
+```
+VISITOR (not logged in)
+        │
+        ▼
+   [/]  Homepage
+        │
+   ┌────┴──────────────────────────────────────┐
+   ▼                                            ▼
+[/jobs]  Jobs Hub                  [/ai-tools]  AI Tools Hub
+   │                                            │
+   ├── /jobs/private                            ├── /ai-tools/resume-builder ★
+   ├── /jobs/government                         │       │
+   ├── /jobs/internship                         │   [Browse Templates]──► /templates/[slug]
+   ├── /jobs/ai                                 │       │
+   └── /jobs/:cat/:slug  (detail)               │   [Start Building]
+               │                                │       │
+           [Apply]─────► needs login ◄──────────┘  needs login
+                               │
+                               ▼
+                         [/login]
+                               │
+                    OTP / OAuth → /auth/callback
+                               │
+                    new user? → /auth/complete  (profile setup)
+                               │
+                               ▼
+                         [/dashboard]  ← user home after login
+                               │
+              ┌────────────────┼─────────────────┐
+              ▼                ▼                  ▼
+       [/profile]   [/my-applications]     [/saved-jobs]
+                                                  │
+                                         [/ai-tools/resume-builder/editor]
+                                         [/ai-tools/resume-builder/my-resumes]
+```
+
+---
+
+### Key Architectural Patterns
+
+| Pattern | Detail |
+|---|---|
+| **Framework** | Next.js 15 App Router — file-system routing |
+| **Auth** | Supabase (OTP email + OAuth), cookie-based sessions |
+| **Server vs Client** | Pages are Server Components by default; interactive pages have a split `*Client.jsx` file (e.g. `EditorClient.jsx`, `ContactClient.jsx`) |
+| **Multiple layouts** | Root layout for public; `/admin` and `/recruiter` each have their own `layout.js` |
+| **API layer** | Next.js Route Handlers act as a BFF — proxy to Django backend or call AI directly |
+| **Auth-gated routes** | `editor`, `my-resumes`, `dashboard`, `profile`, `settings`, `my-applications`, `saved-jobs` all redirect to `/login?next=...` |
+| **Crawler access** | Public pages open to GPTBot, ClaudeBot, PerplexityBot; `/admin`, `/recruiter`, `/api`, `/auth/*`, `/dashboard`, `/profile`, `/settings` blocked in `robots.js` |
+
+---
+
 ## Features
 
 ### Job Portal

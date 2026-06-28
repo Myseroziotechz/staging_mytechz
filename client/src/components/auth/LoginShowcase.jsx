@@ -40,19 +40,19 @@ const FEATURES = [
     ),
   },
   {
-    id: 'resume-builder',
-    title: 'AI Resume Builder',
-    subtitle: 'Professional Templates',
+    id: 'government-jobs',
+    title: 'Government Jobs',
+    subtitle: 'Central & State Listings',
     description:
-      'Stand out from the crowd with a polished, ATS-friendly resume. Our AI suggests impactful bullet points, optimises keywords, and formats everything beautifully.',
-    highlight: 'ATS-optimised templates',
+      'UPSC, SSC, PSU, banking, and state government vacancies — all curated and searchable with exam dates, eligibility, and direct apply links.',
+    highlight: 'Updated daily',
     bg: 'bg-violet-50',
     text: 'text-violet-600',
     border: 'border-violet-100',
     highlightBg: 'bg-violet-600/10 text-violet-700',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M5 21V10m14 11V10M9 21v-6h6v6M4 10l8-6 8 6" />
       </svg>
     ),
   },
@@ -74,19 +74,19 @@ const FEATURES = [
     ),
   },
   {
-    id: 'resume-rank',
-    title: 'Resume Rank Checker',
-    subtitle: 'Score & Improve',
+    id: 'internships',
+    title: 'Paid Internships',
+    subtitle: 'For Students & Freshers',
     description:
-      'Upload your resume and get an instant compatibility score against any job description. See exactly what to fix, what to add, and how to climb higher in recruiter rankings.',
-    highlight: 'Data-driven insights',
+      'Explore hundreds of paid internship opportunities at top startups, MNCs, and emerging tech companies — build real experience and land your first role faster.',
+    highlight: 'Verified & paid only',
     bg: 'bg-indigo-50',
     text: 'text-indigo-600',
     border: 'border-indigo-100',
     highlightBg: 'bg-indigo-600/10 text-indigo-700',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347M12 13.489a50.702 50.702 0 017.74-3.342M12 13.489a50.57 50.57 0 00-7.74-3.342m15.48 0A59.905 59.905 0 0012 3.493 59.902 59.902 0 001.601 9.333" />
       </svg>
     ),
   },
@@ -118,17 +118,6 @@ export default function LoginShowcase() {
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800" />
-      <div className="absolute -top-14 -left-14 w-48 h-48 rounded-full bg-white/5 hero-blob" />
-      <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white/5 hero-blob-delay" />
-      <div className="absolute top-1/3 right-1/4 w-28 h-28 rounded-full bg-white/[0.03] hero-blob-slow" />
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-          backgroundSize: '36px 36px',
-        }}
-      />
 
       {/* Glass back button */}
       <Link

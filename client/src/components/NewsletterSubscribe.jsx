@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase-browser'
+import { createClient } from '@/lib/supabase/browser'
 
 export default function NewsletterSubscribe() {
   const [user, setUser] = useState(null)

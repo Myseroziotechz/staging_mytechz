@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { removeSavedJob } from '@/app/saved-jobs/actions'
+import { removeSavedJob } from '@/app/(app)/saved-jobs/actions'
 
 export default function RemoveSavedJobButton({ jobId }) {
   const [state, formAction, pending] = useActionState(removeSavedJob, {})

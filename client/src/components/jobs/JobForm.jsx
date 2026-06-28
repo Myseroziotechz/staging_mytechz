@@ -26,14 +26,22 @@ const TYPES = [
     key: 'private',
     label: 'Private Job',
     desc: 'Standard role at a private company',
-    icon: '💼',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+      </svg>
+    ),
     accent: 'blue',
   },
   {
     key: 'government',
     label: 'Government',
     desc: 'PSU / sarkari notification',
-    icon: '🏛️',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3m4-10h2m4 0h2m-6 4h2m4 0h2" />
+      </svg>
+    ),
     accent: 'amber',
     adminOnly: true,
   },
@@ -41,14 +49,22 @@ const TYPES = [
     key: 'internship',
     label: 'Internship',
     desc: 'Stipend + duration based',
-    icon: '🎓',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+      </svg>
+    ),
     accent: 'emerald',
   },
   {
     key: 'ai',
     label: 'AI Pick',
     desc: 'Curated featured card',
-    icon: '✨',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+      </svg>
+    ),
     accent: 'purple',
     adminOnly: true,
   },
@@ -340,6 +356,7 @@ export default function JobForm({
   mode = 'recruiter', // 'recruiter' | 'admin'
   action, // server action: (payload) => { ok, job?, errors? }
   initial = null,
+  editMode = false, // true when editing an existing job
 }) {
   const router = useRouter()
   const [form, setForm] = useState({ ...FORM_DEFAULTS, ...(initial || {}) })
@@ -398,6 +415,19 @@ export default function JobForm({
         ? `/jobs/${success.category}/${success.slug}`
         : null
     const dashHref = mode === 'admin' ? '/admin/dashboard' : '/recruiter/dashboard'
+
+    const headingText = editMode
+      ? needsApproval ? 'Changes saved' : 'Changes saved!'
+      : needsApproval ? 'Submitted for review' : 'Card is live!'
+
+    const bodyText = editMode
+      ? needsApproval
+        ? 'Your edits have been saved. The job is still awaiting admin approval before it goes public.'
+        : 'Your edits are live — the job card has been updated on the public listings.'
+      : needsApproval
+        ? "Your company isn't verified yet, so an admin will approve this card before it's listed publicly. You can already see it on your dashboard."
+        : 'Your card is published and visible on the public listings.'
+
     return (
       <div className="max-w-2xl mx-auto p-8 text-center">
         <div
@@ -421,14 +451,8 @@ export default function JobForm({
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          {needsApproval ? 'Submitted for review' : 'Card is live!'}
-        </h2>
-        <p className="text-sm text-slate-500 max-w-md mx-auto">
-          {needsApproval
-            ? "Your company isn't verified yet, so an admin will approve this card before it's listed publicly. You can already see it on your dashboard."
-            : 'Your card is published and visible on the public listings.'}
-        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">{headingText}</h2>
+        <p className="text-sm text-slate-500 max-w-md mx-auto">{bodyText}</p>
 
         <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
           {liveHref && !needsApproval && (
@@ -445,17 +469,19 @@ export default function JobForm({
           >
             Go to dashboard
           </Link>
-          <button
-            type="button"
-            onClick={() => {
-              setSuccess(null)
-              setNeedsApproval(false)
-              setForm({ ...FORM_DEFAULTS })
-            }}
-            className="px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition"
-          >
-            Post another
-          </button>
+          {!editMode && (
+            <button
+              type="button"
+              onClick={() => {
+                setSuccess(null)
+                setNeedsApproval(false)
+                setForm({ ...FORM_DEFAULTS })
+              }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition"
+            >
+              Post another
+            </button>
+          )}
         </div>
       </div>
     )
@@ -467,12 +493,14 @@ export default function JobForm({
     <form onSubmit={onSubmit} className="max-w-4xl mx-auto p-4 sm:p-6 space-y-8">
       <header>
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-          {mode === 'admin' ? 'Create Job Card' : 'Post a Job'}
+          {editMode ? 'Edit Job Card' : mode === 'admin' ? 'Create Job Card' : 'Post a Job'}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {mode === 'admin'
-            ? 'Posts go live immediately. AI/Government cards are admin-only.'
-            : 'Your post will be reviewed before going live.'}
+          {editMode
+            ? 'Editing an existing card. The public URL stays the same.'
+            : mode === 'admin'
+              ? 'Posts go live immediately. AI/Government cards are admin-only.'
+              : 'Your post will be reviewed before going live.'}
         </p>
       </header>
 
@@ -501,7 +529,7 @@ export default function JobForm({
                     : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
-                <div className="text-xl">{t.icon}</div>
+                <div className="w-6 h-6 flex items-center justify-center">{t.icon}</div>
                 <div className="text-sm font-semibold mt-1">{t.label}</div>
                 <div className="text-[11px] opacity-70">{t.desc}</div>
               </button>
@@ -1086,9 +1114,11 @@ export default function JobForm({
         >
           {submitting
             ? 'Saving…'
-            : mode === 'admin'
-              ? 'Publish card'
-              : 'Submit for review'}
+            : editMode
+              ? 'Save changes'
+              : mode === 'admin'
+                ? 'Publish card'
+                : 'Submit for review'}
         </button>
       </div>
     </form>

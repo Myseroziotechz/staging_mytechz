@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 
 const JOB_SELECT = `
   id, short_id, slug, title, summary, description, category, job_type, work_mode,
@@ -7,14 +7,14 @@ const JOB_SELECT = `
   salary_min, salary_max, salary_currency, salary_period, is_salary_disclosed,
   experience_min, experience_max,
   openings, openings_filled,
-  posted_at, job_start_date, application_deadline,
+  posted_at, updated_at, job_start_date, application_deadline,
   skills, qualifications, department, industry, benefits,
   apply_mode, apply_url, apply_email, apply_phone,
   government_meta,
   status, is_featured, is_urgent,
   views_count, applications_count,
   meta_title, meta_description, og_image_url, faq,
-  company:companies ( id, name, slug, logo_url, website, industry, size, is_verified )
+  company:companies ( id, name, slug, logo_url, website, industry, size, is_verified, hq_location )
 `
 
 export async function getJobs(filters = {}) {
@@ -115,6 +115,28 @@ export async function getRecentJobsForWidget(limit = 4, category = null) {
     return data || []
   } catch {
     return []
+  }
+}
+
+// Fetch a single job by id, regardless of status, only if the requester owns it.
+// Used for recruiter preview of pending/draft jobs before they go live.
+export async function getJobForOwner(jobId, userId) {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('jobs')
+      .select(JOB_SELECT)
+      .eq('id', jobId)
+      .eq('posted_by', userId)
+      .maybeSingle()
+    if (error) {
+      console.warn('[getJobForOwner]', error.message)
+      return null
+    }
+    return data
+  } catch (err) {
+    console.warn('[getJobForOwner] unexpected:', err?.message)
+    return null
   }
 }
 

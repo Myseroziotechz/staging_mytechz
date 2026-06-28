@@ -2,14 +2,9 @@ import Link from 'next/link'
 
 export default function ComingSoon({ title, description, icon }) {
   return (
-    <section className="relative -mt-20 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50 min-h-screen flex items-center">
-      <div className="pointer-events-none absolute inset-0 hero-grid" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="hero-blob absolute -top-24 -left-20 w-80 h-80 bg-blue-300/40 rounded-full blur-3xl" />
-        <div className="hero-blob-delay absolute top-1/3 -right-20 w-96 h-96 bg-amber-300/40 rounded-full blur-3xl" />
-      </div>
+    <section className="bg-white -m-6 min-h-[calc(100vh-4rem)] flex items-center">
 
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 text-center w-full">
+      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 text-center w-full">
         <div className="hero-fade-up inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/90 backdrop-blur border border-slate-100 shadow-lg text-blue-700 mx-auto">
           {icon}
         </div>

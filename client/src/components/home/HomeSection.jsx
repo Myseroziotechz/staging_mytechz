@@ -26,14 +26,6 @@ export default function HomeSection({
 
   return (
     <section id={id} className={`relative ${pad} ${toneClass} ${className}`}>
-      {tone === 'dark' && (
-        <>
-          <div className="absolute inset-0 opacity-30 pointer-events-none" style={{
-            backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(99,102,241,0.4), transparent 40%), radial-gradient(circle at 80% 60%, rgba(245,158,11,0.3), transparent 40%)',
-          }} />
-          <div className="pointer-events-none absolute inset-0 hero-grid opacity-20" />
-        </>
-      )}
       <div className={`relative ${width} mx-auto px-4 sm:px-6 lg:px-8`}>
         {children}
       </div>

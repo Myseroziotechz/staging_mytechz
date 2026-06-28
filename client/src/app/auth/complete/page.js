@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase-browser'
+import { createClient } from '@/lib/supabase/browser'
 
 // This page is now a FALLBACK only. The primary role-assignment and redirect
 // happens server-side in /auth/callback/route.js. This page handles edge cases

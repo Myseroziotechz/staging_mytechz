@@ -182,10 +182,16 @@ export default function AdminApplicationsTable({ applications }) {
                       <td className="px-4 py-3 text-slate-500">
                         {fmtDate(app.last_status_at)}
                       </td>
-                      <td className="px-4 py-3 text-right text-amber-500">
-                        {app.rating
-                          ? '★'.repeat(app.rating) + '☆'.repeat(5 - app.rating)
-                          : '—'}
+                      <td className="px-4 py-3 text-right">
+                        {app.rating ? (
+                          <span className="inline-flex items-center gap-0.5">
+                            {Array.from({ length: 5 }, (_, i) => (
+                              <svg key={i} className={`w-3 h-3 ${i < app.rating ? 'fill-amber-400' : 'fill-none stroke-amber-300'}`} viewBox="0 0 24 24" strokeWidth={1.8}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              </svg>
+                            ))}
+                          </span>
+                        ) : '—'}
                       </td>
                     </tr>
                   )

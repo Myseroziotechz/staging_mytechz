@@ -73,7 +73,6 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
       <div className="absolute inset-0 opacity-40" style={{
         backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(99,102,241,0.35), transparent 40%), radial-gradient(circle at 80% 60%, rgba(245,158,11,0.25), transparent 40%), radial-gradient(circle at 50% 100%, rgba(59,130,246,0.3), transparent 50%)',
       }} />
-      <div className="pointer-events-none absolute inset-0 hero-grid opacity-30" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <Link href="/jobs" className="text-xs text-slate-300 hover:text-white inline-flex items-center gap-1">
