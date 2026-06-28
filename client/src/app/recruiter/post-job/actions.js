@@ -89,13 +89,18 @@ export async function createJobAction(payload) {
 
   if (error) {
     console.warn('[createJobAction] insert failed:', error.message)
-    return { ok: false, errors: { _form: error.message } }
+    const msg = error.message?.includes('duplicate key') || error.message?.includes('unique')
+      ? 'A job with this title already exists. Add the company name, location, or year to make the title unique.'
+      : error.message
+    return { ok: false, errors: { _form: msg } }
   }
 
   revalidatePath('/recruiter/dashboard')
   revalidatePath('/jobs')
-  if (data?.category)
+  if (data?.category) {
+    revalidatePath(`/jobs/${data.category}`)
     revalidatePath(`/jobs/${data.category}/${data.slug}`)
+  }
 
   return {
     ok: true,

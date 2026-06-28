@@ -63,12 +63,17 @@ export async function adminCreateJobAction(payload) {
 
   if (error) {
     console.warn('[adminCreateJobAction] insert failed:', error.message)
-    return { ok: false, errors: { _form: error.message } }
+    const msg = error.message?.includes('duplicate key') || error.message?.includes('unique')
+      ? 'A job with this title already exists. Add the company name, location, or year to make the title unique.'
+      : error.message
+    return { ok: false, errors: { _form: msg } }
   }
 
   revalidatePath('/admin/dashboard')
   revalidatePath('/jobs')
-  if (data?.category)
+  if (data?.category) {
+    revalidatePath(`/jobs/${data.category}`)
     revalidatePath(`/jobs/${data.category}/${data.slug}`)
+  }
   return { ok: true, job: data, pending: row.status !== 'active' }
 }

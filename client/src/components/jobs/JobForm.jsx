@@ -356,6 +356,7 @@ export default function JobForm({
   mode = 'recruiter', // 'recruiter' | 'admin'
   action, // server action: (payload) => { ok, job?, errors? }
   initial = null,
+  editMode = false, // true when editing an existing job
 }) {
   const router = useRouter()
   const [form, setForm] = useState({ ...FORM_DEFAULTS, ...(initial || {}) })
@@ -414,6 +415,19 @@ export default function JobForm({
         ? `/jobs/${success.category}/${success.slug}`
         : null
     const dashHref = mode === 'admin' ? '/admin/dashboard' : '/recruiter/dashboard'
+
+    const headingText = editMode
+      ? needsApproval ? 'Changes saved' : 'Changes saved!'
+      : needsApproval ? 'Submitted for review' : 'Card is live!'
+
+    const bodyText = editMode
+      ? needsApproval
+        ? 'Your edits have been saved. The job is still awaiting admin approval before it goes public.'
+        : 'Your edits are live — the job card has been updated on the public listings.'
+      : needsApproval
+        ? "Your company isn't verified yet, so an admin will approve this card before it's listed publicly. You can already see it on your dashboard."
+        : 'Your card is published and visible on the public listings.'
+
     return (
       <div className="max-w-2xl mx-auto p-8 text-center">
         <div
@@ -437,14 +451,8 @@ export default function JobForm({
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          {needsApproval ? 'Submitted for review' : 'Card is live!'}
-        </h2>
-        <p className="text-sm text-slate-500 max-w-md mx-auto">
-          {needsApproval
-            ? "Your company isn't verified yet, so an admin will approve this card before it's listed publicly. You can already see it on your dashboard."
-            : 'Your card is published and visible on the public listings.'}
-        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">{headingText}</h2>
+        <p className="text-sm text-slate-500 max-w-md mx-auto">{bodyText}</p>
 
         <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
           {liveHref && !needsApproval && (
@@ -461,17 +469,19 @@ export default function JobForm({
           >
             Go to dashboard
           </Link>
-          <button
-            type="button"
-            onClick={() => {
-              setSuccess(null)
-              setNeedsApproval(false)
-              setForm({ ...FORM_DEFAULTS })
-            }}
-            className="px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition"
-          >
-            Post another
-          </button>
+          {!editMode && (
+            <button
+              type="button"
+              onClick={() => {
+                setSuccess(null)
+                setNeedsApproval(false)
+                setForm({ ...FORM_DEFAULTS })
+              }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition"
+            >
+              Post another
+            </button>
+          )}
         </div>
       </div>
     )
@@ -483,12 +493,14 @@ export default function JobForm({
     <form onSubmit={onSubmit} className="max-w-4xl mx-auto p-4 sm:p-6 space-y-8">
       <header>
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-          {mode === 'admin' ? 'Create Job Card' : 'Post a Job'}
+          {editMode ? 'Edit Job Card' : mode === 'admin' ? 'Create Job Card' : 'Post a Job'}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {mode === 'admin'
-            ? 'Posts go live immediately. AI/Government cards are admin-only.'
-            : 'Your post will be reviewed before going live.'}
+          {editMode
+            ? 'Editing an existing card. The public URL stays the same.'
+            : mode === 'admin'
+              ? 'Posts go live immediately. AI/Government cards are admin-only.'
+              : 'Your post will be reviewed before going live.'}
         </p>
       </header>
 
@@ -1102,9 +1114,11 @@ export default function JobForm({
         >
           {submitting
             ? 'Saving…'
-            : mode === 'admin'
-              ? 'Publish card'
-              : 'Submit for review'}
+            : editMode
+              ? 'Save changes'
+              : mode === 'admin'
+                ? 'Publish card'
+                : 'Submit for review'}
         </button>
       </div>
     </form>

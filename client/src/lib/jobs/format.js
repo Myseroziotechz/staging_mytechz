@@ -112,3 +112,16 @@ export function formatStipend(job) {
 export function govMeta(job) {
   return job?.government_meta || {}
 }
+
+// Parse duration_months and ppo_chance from the description text
+// (they were folded in by toJobRow since they have no dedicated DB columns).
+// Returns { durationMonths: number|null, ppoChance: number|null }
+export function parseInternshipMeta(job) {
+  if (!job?.description) return { durationMonths: null, ppoChance: null }
+  const durMatch = job.description.match(/\*{0,2}Duration:\*{0,2}\s*(\d+)\s*months?/i)
+  const ppoMatch = job.description.match(/\*{0,2}PPO chance:\*{0,2}\s*(\d+)\s*%/i)
+  return {
+    durationMonths: durMatch ? Number(durMatch[1]) : null,
+    ppoChance: ppoMatch ? Number(ppoMatch[1]) : null,
+  }
+}

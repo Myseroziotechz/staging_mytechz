@@ -2,18 +2,20 @@ import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
 import { getJobs } from '@/lib/jobs/queries'
 
+const YEAR = new Date().getFullYear()
+
 export const metadata = {
-  title: 'Paid Internships in India 2024 — Tech, Design & Marketing for Students & Freshers',
-  description: 'Find paid internships in India for students and freshers — across tech, software, design, marketing, finance, and more. Stipends shown per month. Filter by skills, duration, and eligibility.',
-  keywords: 'paid internships India, internships for students, freshers internship, tech internship India, software internship, stipend internship, internship 2024 India',
+  title: `Paid Internships in India ${YEAR} — Tech, Design & Marketing for Students & Freshers | MyTechZ`,
+  description: `Find paid internships in India for students and freshers ${YEAR} — across tech, software, design, marketing, finance, and more. Stipends shown per month. Filter by skills, duration, and location.`,
+  keywords: `paid internships India, internships for students, freshers internship, tech internship India, software internship, stipend internship, internship ${YEAR} India`,
   alternates: { canonical: 'https://mytechz.com/jobs/internship' },
   openGraph: {
-    title: 'Paid Internships India 2024 — Tech, Design & Marketing for Students | MyTechZ',
-    description: 'Find paid internships in India for students and freshers. Stipends shown. Filter by skills, duration, eligibility.',
+    title: `Paid Internships India ${YEAR} — Tech, Design & Marketing for Students | MyTechZ`,
+    description: `Find paid internships in India for students and freshers ${YEAR}. Stipends shown. Filter by skills, duration, location.`,
     url: 'https://mytechz.com/jobs/internship',
     type: 'website',
     siteName: 'MyTechZ',
-    images: [{ url: 'https://mytechz.com/og-image.png', width: 1200, height: 630, alt: 'Paid Internships India 2024 — MyTechZ' }],
+    images: [{ url: 'https://mytechz.com/og-image.png', width: 1200, height: 630, alt: `Paid Internships India ${YEAR} — MyTechZ` }],
   },
   twitter: { card: 'summary_large_image' },
 }
