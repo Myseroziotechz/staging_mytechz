@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import JobRoadmapView, { FALLBACK_ROADMAP } from '@/components/jobs/JobRoadmapView'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
-const VALID = ['private', 'government']
+const VALID = ['private', 'government', 'internship', 'ai']
 
 export const revalidate = 600
 
@@ -15,9 +15,10 @@ export async function generateMetadata({ params }) {
   const job = await getJobBySlug(category, jobSlug)
   if (!job) return { title: 'Preparation roadmap not found', robots: { index: false } }
   const url = `${SITE}/jobs/${category}/${jobSlug}/preparation`
+  const categoryLabel = category === 'internship' ? 'internship' : category === 'ai' ? 'AI-curated role' : 'role'
   return {
     title: `Preparation roadmap — ${job.title} at ${job.company?.name || ''} | MyTechz`,
-    description: `A 4-week preparation roadmap for the ${job.title} role: skill gap, study plan, resources, mock-interview questions, resume tips and a final checklist.`,
+    description: `A 4-week preparation roadmap for the ${job.title} ${categoryLabel}: skill gap, study plan, resources, mock-interview questions, resume tips and a final checklist.`,
     alternates: { canonical: url },
     openGraph: { title: `Prepare for: ${job.title}`, url, type: 'article' },
     robots: { index: true, follow: true },
@@ -67,7 +68,7 @@ export default async function JobPreparationPage({ params }) {
           <span>›</span>
           <Link href="/jobs" className="hover:text-blue-700">Jobs</Link>
           <span>›</span>
-          <Link href={`/jobs?tab=${job.category}`} className="hover:text-blue-700 capitalize">{job.category}</Link>
+          <Link href={`/jobs/${job.category}`} className="hover:text-blue-700 capitalize">{job.category}</Link>
           <span>›</span>
           <Link href={`/jobs/${job.category}/${job.slug}`} className="hover:text-blue-700 truncate">{job.title}</Link>
           <span>›</span>

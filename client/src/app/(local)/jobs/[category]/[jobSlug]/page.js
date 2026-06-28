@@ -28,13 +28,14 @@ export async function generateMetadata({ params }) {
   const desc     = (job.meta_description || job.summary || job.description || '').replace(/\s+/g, ' ').slice(0, 155)
   const url      = `${SITE}/jobs/${category}/${jobSlug}`
 
+  const ogImage = job.og_image_url || `${SITE}/og-image.png`
   return {
     title,
     description: desc,
     alternates: { canonical: url },
     openGraph: {
-      title, description: desc, url, type: 'website',
-      images: job.og_image_url ? [{ url: job.og_image_url }] : undefined,
+      title, description: desc, url, type: 'website', siteName: 'MyTechZ',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${job.title} at ${compName} — MyTechZ` }],
     },
     twitter: { card: 'summary_large_image', title, description: desc },
     robots: job.status === 'active'
@@ -67,7 +68,15 @@ export default async function JobDetailPage({ params, searchParams }) {
   const deadline  = formatDeadline(job.application_deadline)
   const compName  = job.company?.name || 'Company'
   const compLogo  = job.company?.logo_url
-  const applyPath = `/jobs/${job.category}/${job.slug}/apply`
+
+  // Build the correct apply href based on mode — external goes direct, not via /apply.
+  const applyHref =
+    job.apply_mode === 'external' ? (job.apply_url || '#')
+    : job.apply_mode === 'email'  ? `mailto:${job.apply_email}`
+    : job.apply_mode === 'phone'  ? `tel:${job.apply_phone}`
+    : `/jobs/${job.category}/${job.slug}/apply`  // internal — requires auth
+
+  const applyIsExternal = ['external', 'email', 'phone'].includes(job.apply_mode)
   const applyLabel = job.apply_mode === 'external' ? 'Apply on company website'
                   : job.apply_mode === 'email'    ? 'Apply by email'
                   : job.apply_mode === 'phone'    ? 'Call to apply'
@@ -90,7 +99,7 @@ export default async function JobDetailPage({ params, searchParams }) {
           <span>›</span>
           <Link href="/jobs" className="hover:text-blue-700">Jobs</Link>
           <span>›</span>
-          <Link href={`/jobs?tab=${job.category}`} className="hover:text-blue-700 capitalize">{job.category}</Link>
+          <Link href={`/jobs/${job.category}`} className="hover:text-blue-700 capitalize">{job.category}</Link>
           <span>›</span>
           <span className="text-slate-700 truncate">{job.title}</span>
         </nav>
@@ -131,20 +140,30 @@ export default async function JobDetailPage({ params, searchParams }) {
 
           {/* Action bar */}
           <div className="mt-5 pt-5 border-t border-slate-200 flex flex-wrap items-center gap-2">
-            <Link
-              href={isApplied ? `?applied=1` : applyPath}
-              className={[
-                'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition active:scale-[0.98]',
-                isApplied
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : 'bg-blue-700 text-white hover:bg-blue-800 shadow-md shadow-blue-700/20',
-              ].join(' ')}
-            >
-              {isApplied ? 'Applied ✓' : applyLabel}
-              {!isApplied && job.apply_mode === 'external' && (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 3h7v7m0-7L10 14M5 5h6v2H7v10h10v-4h2v6H5V5z"/></svg>
-              )}
-            </Link>
+            {isApplied ? (
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Applied ✓
+              </span>
+            ) : applyIsExternal ? (
+              <a
+                href={applyHref}
+                target={job.apply_mode === 'external' ? '_blank' : undefined}
+                rel={job.apply_mode === 'external' ? 'noopener noreferrer' : undefined}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-blue-700 text-white hover:bg-blue-800 shadow-md shadow-blue-700/20 transition active:scale-[0.98]"
+              >
+                {applyLabel}
+                {job.apply_mode === 'external' && (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 3h7v7m0-7L10 14M5 5h6v2H7v10h10v-4h2v6H5V5z"/></svg>
+                )}
+              </a>
+            ) : (
+              <Link
+                href={applyHref}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-blue-700 text-white hover:bg-blue-800 shadow-md shadow-blue-700/20 transition active:scale-[0.98]"
+              >
+                {applyLabel}
+              </Link>
+            )}
 
             {job.company?.website && (
               <a href={job.company.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-slate-800 text-sm font-semibold border border-slate-200 hover:bg-slate-50 transition active:scale-[0.98]">
@@ -214,10 +233,11 @@ export default async function JobDetailPage({ params, searchParams }) {
                     ) : null
                   ))}
                 </dl>
-                {job.government_meta.notification_pdf_url && (
-                  <a href={job.government_meta.notification_pdf_url} target="_blank" rel="noreferrer"
+                {job.government_meta.notification_url && (
+                  <a href={job.government_meta.notification_url} target="_blank" rel="noopener noreferrer"
                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition">
-                    Download official PDF
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    View official notification
                   </a>
                 )}
               </Block>

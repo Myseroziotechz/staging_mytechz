@@ -143,9 +143,13 @@ export default function JobCard({
 
         <div className="shrink-0 flex items-center gap-1.5">
           {!isMini && job.status === 'pending_approval' && (
-            <span title="Awaiting admin approval — not yet on public listings" className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-              Pending review
-            </span>
+            variant === 'recruiter'
+              ? <Link href={`/recruiter/preview/${job.id}`} className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition" title="Click to preview — awaiting admin approval">
+                  Pending review ↗
+                </Link>
+              : <span title="Awaiting admin approval — not yet on public listings" className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                  Pending review
+                </span>
           )}
           {!isMini && job.status === 'closed' && (
             <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
@@ -232,7 +236,10 @@ export default function JobCard({
               </>
             ) : variant === 'recruiter' ? (
               <>
-                <button onClick={(e) => { e.preventDefault(); onEdit?.(job) }} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition active:scale-[0.98]">Edit</button>
+                {onEdit
+                  ? <button onClick={(e) => { e.preventDefault(); onEdit(job) }} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition active:scale-[0.98]">Edit</button>
+                  : <Link href={`/recruiter/edit-job/${job.id}`} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition active:scale-[0.98]">Edit</Link>
+                }
                 <button onClick={(e) => { e.preventDefault(); onClose?.(job) }} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition active:scale-[0.98]">Close</button>
                 <span className="text-xs text-slate-500">{job.applications_count || 0} applicants</span>
               </>
