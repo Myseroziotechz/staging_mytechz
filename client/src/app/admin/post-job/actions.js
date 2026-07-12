@@ -1,8 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase-server'
-import { getAdminClient } from '@/lib/supabase-admin'
+import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/admin'
 import { validateJobInput, toJobRow } from '@/lib/jobs/schema'
 
 export async function adminCreateJobAction(payload) {
@@ -63,12 +63,17 @@ export async function adminCreateJobAction(payload) {
 
   if (error) {
     console.warn('[adminCreateJobAction] insert failed:', error.message)
-    return { ok: false, errors: { _form: error.message } }
+    const msg = error.message?.includes('duplicate key') || error.message?.includes('unique')
+      ? 'A job with this title already exists. Add the company name, location, or year to make the title unique.'
+      : error.message
+    return { ok: false, errors: { _form: msg } }
   }
 
   revalidatePath('/admin/dashboard')
   revalidatePath('/jobs')
-  if (data?.category)
+  if (data?.category) {
+    revalidatePath(`/jobs/${data.category}`)
     revalidatePath(`/jobs/${data.category}/${data.slug}`)
+  }
   return { ok: true, job: data, pending: row.status !== 'active' }
 }

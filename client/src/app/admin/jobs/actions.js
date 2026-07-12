@@ -1,8 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase-server'
-import { getAdminClient } from '@/lib/supabase-admin'
+import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/admin'
 
 const ALLOWED_NEXT_STATUSES = new Set(['active', 'pending_approval', 'closed', 'rejected'])
 
@@ -31,12 +31,21 @@ export async function adminUpdateJobStatusAction({ jobId, status }) {
   const admin = getAdminClient()
   const updates = { status }
   if (status === 'active') updates.posted_at = new Date().toISOString()
+
+  // Fetch category before update so we can revalidate the right listing page.
+  const { data: job } = await admin
+    .from('jobs').select('category, slug').eq('id', jobId).maybeSingle()
+
   const { error } = await admin.from('jobs').update(updates).eq('id', jobId)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/admin/jobs')
   revalidatePath('/admin/dashboard')
   revalidatePath('/jobs')
+  if (job?.category) {
+    revalidatePath(`/jobs/${job.category}`)
+    if (job.slug) revalidatePath(`/jobs/${job.category}/${job.slug}`)
+  }
   return { ok: true }
 }
 

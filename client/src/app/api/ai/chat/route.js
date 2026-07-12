@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import { buildUserContext } from '@/lib/ai/context'
 import { detectIntent } from '@/lib/ai/intent'
 import { rateLimit } from '@/lib/ai/rate-limit'
@@ -7,7 +7,6 @@ import { ensureSession, persistTurn } from '@/lib/ai/session'
 import { searchJobsBranch } from '@/lib/ai/branches/search-jobs'
 import { howToApplyBranch } from '@/lib/ai/branches/how-to-apply'
 import { aboutBranch } from '@/lib/ai/branches/about'
-import { resumeBranch } from '@/lib/ai/branches/resume'
 import { generalBranch } from '@/lib/ai/branches/general'
 
 export const runtime = 'nodejs'
@@ -19,7 +18,7 @@ const BRANCHES = {
   search_jobs: searchJobsBranch,
   how_to_apply: howToApplyBranch,
   about_mytechz: aboutBranch,
-  resume_advice: resumeBranch,
+  resume_advice: generalBranch,
   general: generalBranch,
 }
 
