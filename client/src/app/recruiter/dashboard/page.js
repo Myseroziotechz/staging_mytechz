@@ -6,7 +6,7 @@ import { getRecruiterApplicantStats } from '@/lib/applicants/queries'
 import SmartSearchBar from '@/components/dashboard/SmartSearchBar'
 
 export const metadata = {
-  title: 'Home - MyTechZ Recruiter',
+  title: 'Recruiter Home',
   description: 'Post jobs, review applicants, and manage your hiring pipeline.',
   robots: { index: false, follow: false },
 }

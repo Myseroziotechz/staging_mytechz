@@ -3,7 +3,7 @@ import Link from 'next/link'
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Page Not Found (404) | MyTechZ',
+  title: 'Page Not Found (404)',
   description: 'The page you are looking for could not be found. Browse verified tech jobs or explore AI career tools on MyTechZ.',
   robots: { index: false, follow: true },
 }

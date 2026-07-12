@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import RemoveSavedJobButton from '@/components/saved-jobs/RemoveSavedJobButton'
 
 export const metadata = {
-  title: 'Saved Jobs - MyTechZ',
+  title: 'Saved Jobs',
   description: 'Your bookmarked job opportunities.',
   robots: { index: false, follow: false },
 }

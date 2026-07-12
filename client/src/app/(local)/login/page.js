@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Login - MyTechZ',
+  title: 'Login to MyTechZ',
   description: 'Sign in to your MyTechZ account as a job seeker or recruiter.',
   robots: { index: false, follow: false },
 }

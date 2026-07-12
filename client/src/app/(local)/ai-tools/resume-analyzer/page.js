@@ -1,16 +1,17 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Free Resume Analyzer — ATS Score Checker & Job Match Tool | MyTechZ',
+  title: 'Free Resume Analyzer — ATS Score Checker & Job Match Tool',
   description:
     'Check your resume ATS score for free. Paste a job description and get an instant match score, keyword gap analysis, and suggestions to improve your resume — 100% free.',
   keywords:
     'free resume analyzer, ATS score checker, resume score checker, ATS resume checker India, resume keyword analyzer, job match score, resume rank checker, resume compatibility checker India',
   alternates: { canonical: `${SITE}/ai-tools/resume-analyzer` },
   openGraph: {
-    title: 'Free Resume Analyzer — ATS Score Checker | MyTechZ',
+    title: 'Free Resume Analyzer — ATS Score Checker',
     description: 'Get your resume ATS match score instantly. See which keywords you are missing and how to improve your chances — free.',
     url: `${SITE}/ai-tools/resume-analyzer`,
     type: 'website',

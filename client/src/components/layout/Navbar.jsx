@@ -312,6 +312,7 @@ function ProfileDropdown({ user, userRole, onSignOut }) {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [overFooter, setOverFooter] = useState(false)
   const [user, setUser] = useState(null)
   const [userRole, setUserRole] = useState(null)
   const [openDropdown, setOpenDropdown] = useState(null)
@@ -327,6 +328,20 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Flip to the dark navbar variant while floating over the black footer,
+  // otherwise the light-glass pill and dark text disappear against it.
+  // The rootMargin shrinks the observed zone to the top ~12% of the viewport.
+  useEffect(() => {
+    const footer = document.querySelector('footer')
+    if (!footer) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setOverFooter(entry.isIntersecting),
+      { rootMargin: '0px 0px -88% 0px' }
+    )
+    observer.observe(footer)
+    return () => observer.disconnect()
+  }, [pathname])
 
   // Fetch role from user_profiles after getting the auth user.
   const fetchRole = async (authUser) => {
@@ -439,8 +454,10 @@ export default function Navbar() {
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 lg:px-8 pt-3 pointer-events-none">
       <nav
         ref={navRef}
-        className={`pointer-events-auto w-full max-w-6xl transition-all duration-500 ease-out rounded-2xl ${
-          scrolled
+        className={`pointer-events-auto w-full max-w-7xl transition-all duration-500 ease-out rounded-2xl ${
+          overFooter
+            ? 'bg-gray-950/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] border border-white/10'
+            : scrolled
             ? 'bg-white/25 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-1px_0_rgba(255,255,255,0.1)] border border-white/40'
             : 'bg-white/15 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.5)] border border-white/30'
         }`}
@@ -454,7 +471,7 @@ export default function Navbar() {
                 alt="MyTechz Logo"
                 width={140}
                 height={40}
-                className="h-9 object-contain"
+                className={`h-9 object-contain transition-[filter] duration-300 ${overFooter ? 'brightness-0 invert' : ''}`}
                 style={{ width: 'auto' }}
                 priority
               />
@@ -473,7 +490,11 @@ export default function Navbar() {
                     href={item.href}
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                       pathname === item.href || pathname?.startsWith(item.href + '/')
-                        ? 'text-blue-600 bg-blue-50/50'
+                        ? overFooter
+                          ? 'text-blue-400 bg-white/10'
+                          : 'text-blue-600 bg-blue-50/50'
+                        : overFooter
+                        ? 'text-gray-200 hover:text-white hover:bg-white/10'
                         : 'text-gray-700 hover:text-blue-600 hover:bg-white/30'
                     }`}
                   >
@@ -508,7 +529,11 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login/recruiter"
-                    className="px-4 py-2 rounded-xl text-sm font-medium border border-blue-600 text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                    className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                      overFooter
+                        ? 'border-blue-400/60 text-blue-300 hover:bg-blue-500/10'
+                        : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                    }`}
                   >
                     For Recruiters
                   </Link>
@@ -535,17 +560,17 @@ export default function Navbar() {
             >
               <div className="w-5 h-5 flex flex-col justify-center gap-1">
                 <span
-                  className={`block h-0.5 w-5 bg-gray-700 transition-all duration-300 ${
+                  className={`block h-0.5 w-5 ${overFooter ? 'bg-gray-200' : 'bg-gray-700'} transition-all duration-300 ${
                     isOpen ? 'rotate-45 translate-y-1.5' : ''
                   }`}
                 />
                 <span
-                  className={`block h-0.5 w-5 bg-gray-700 transition-all duration-300 ${
+                  className={`block h-0.5 w-5 ${overFooter ? 'bg-gray-200' : 'bg-gray-700'} transition-all duration-300 ${
                     isOpen ? 'opacity-0' : ''
                   }`}
                 />
                 <span
-                  className={`block h-0.5 w-5 bg-gray-700 transition-all duration-300 ${
+                  className={`block h-0.5 w-5 ${overFooter ? 'bg-gray-200' : 'bg-gray-700'} transition-all duration-300 ${
                     isOpen ? '-rotate-45 -translate-y-1.5' : ''
                   }`}
                 />
@@ -567,7 +592,11 @@ export default function Navbar() {
                 {item.dropdown ? (
                   <>
                     <button
-                      className="flex items-center justify-between w-full py-2.5 px-3 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-white/20 font-medium transition-all duration-200"
+                      className={`flex items-center justify-between w-full py-2.5 px-3 rounded-xl font-medium transition-all duration-200 ${
+                        overFooter
+                          ? 'text-gray-200 hover:text-white hover:bg-white/10'
+                          : 'text-gray-700 hover:text-blue-600 hover:bg-white/20'
+                      }`}
                       onClick={() =>
                         setMobileExpanded(mobileExpanded === item.label ? null : item.label)
                       }
@@ -595,7 +624,11 @@ export default function Navbar() {
                           <Link
                             key={sub.href}
                             href={sub.href}
-                            className="block py-2 px-3 rounded-lg text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50/40 transition-all duration-200"
+                            className={`block py-2 px-3 rounded-lg text-sm transition-all duration-200 ${
+                              overFooter
+                                ? 'text-gray-400 hover:text-white hover:bg-white/10'
+                                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/40'
+                            }`}
                             onClick={() => setIsOpen(false)}
                           >
                             {sub.label}
@@ -607,7 +640,11 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="block py-2.5 px-3 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-white/20 font-medium transition-all duration-200"
+                    className={`block py-2.5 px-3 rounded-xl font-medium transition-all duration-200 ${
+                      overFooter
+                        ? 'text-gray-200 hover:text-white hover:bg-white/10'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-white/20'
+                    }`}
                     onClick={() => setIsOpen(false)}
                   >
                     {item.label}
@@ -621,7 +658,11 @@ export default function Navbar() {
               <div className="pt-2 border-t border-white/20 mt-1 flex flex-col gap-2">
                 <Link
                   href="/login/recruiter"
-                  className="block text-center py-2.5 px-4 rounded-xl border border-blue-600 text-blue-600 font-medium text-sm hover:bg-blue-50 transition-all duration-200"
+                  className={`block text-center py-2.5 px-4 rounded-xl border font-medium text-sm transition-all duration-200 ${
+                    overFooter
+                      ? 'border-blue-400/60 text-blue-300 hover:bg-blue-500/10'
+                      : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
                   For Recruiters

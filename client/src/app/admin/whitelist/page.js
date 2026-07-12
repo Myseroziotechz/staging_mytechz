@@ -3,7 +3,7 @@ import AddAdminEmailForm from '@/components/admin/AddAdminEmailForm'
 import RemoveAdminEmailButton from '@/components/admin/RemoveAdminEmailButton'
 
 export const metadata = {
-  title: 'Admin Emails - MyTechZ Admin',
+  title: 'Admin Emails',
   robots: { index: false, follow: false },
 }
 

@@ -7,7 +7,7 @@ import {
 import ApplicantPipeline from '@/components/recruiter/ApplicantPipeline'
 
 export const metadata = {
-  title: 'Applicants | MyTechZ Recruiter',
+  title: 'Applicants',
   description: 'Review candidates and move them through your hiring pipeline.',
   robots: { index: false, follow: false },
 }

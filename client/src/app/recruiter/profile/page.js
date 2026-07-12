@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import RecruiterProfileForm from './RecruiterProfileForm.jsx'
 
 export const metadata = {
-  title: 'My Profile - MyTechZ Recruiter',
+  title: 'Recruiter Profile',
   description: 'Manage your personal recruiter profile on MyTechZ.',
   robots: { index: false, follow: false },
 }

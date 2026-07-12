@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import ProfileForm from './ProfileForm.jsx'
 
 export const metadata = {
-  title: 'My Profile - MyTechZ',
+  title: 'My Profile',
   description: 'Manage your MyTechZ profile — name, skills, and professional details.',
   robots: { index: false, follow: false },
 }

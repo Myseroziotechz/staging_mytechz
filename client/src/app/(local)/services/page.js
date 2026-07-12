@@ -1,16 +1,17 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Our Services — AI Job Matching, Tech Jobs & Career Tools | MyTechZ',
+  title: 'Our Services — AI Job Matching, Tech Jobs & Career Tools',
   description:
     'MyTechZ services: verified private & government job listings, AI-powered job matching, paid internships, and expert mentorship — everything for your tech career in India.',
   keywords:
     'MyTechZ services, tech job listings India, government job notifications, AI career tools, AI job matching, paid internships India, job portal India services',
   alternates: { canonical: `${SITE}/services` },
   openGraph: {
-    title: 'Our Services — AI Job Matching, Tech Jobs & Career Tools | MyTechZ',
+    title: 'Our Services — AI Job Matching, Tech Jobs & Career Tools',
     description: 'Verified job listings, AI job matching, paid internships, government jobs, and expert mentorship — all in one platform.',
     url: `${SITE}/services`,
     type: 'website',

@@ -1,16 +1,18 @@
+// Page Version: v1.1.0 | Last Updated: 2026-07-12
 import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
+import InternshipInfoSections from '@/components/jobs/InternshipInfoSections'
 import { getJobs } from '@/lib/jobs/queries'
 
 const YEAR = new Date().getFullYear()
 
 export const metadata = {
-  title: `Paid Internships in India ${YEAR} — Tech, Design & Marketing for Students & Freshers | MyTechZ`,
+  title: `Paid Internships in India ${YEAR} — Tech, Design & Marketing for Students & Freshers`,
   description: `Find paid internships in India for students and freshers ${YEAR} — across tech, software, design, marketing, finance, and more. Stipends shown per month. Filter by skills, duration, and location.`,
   keywords: `paid internships India, internships for students, freshers internship, tech internship India, software internship, stipend internship, internship ${YEAR} India`,
   alternates: { canonical: 'https://mytechz.com/jobs/internship' },
   openGraph: {
-    title: `Paid Internships India ${YEAR} — Tech, Design & Marketing for Students | MyTechZ`,
+    title: `Paid Internships India ${YEAR} — Tech, Design & Marketing for Students`,
     description: `Find paid internships in India for students and freshers ${YEAR}. Stipends shown. Filter by skills, duration, location.`,
     url: 'https://mytechz.com/jobs/internship',
     type: 'website',
@@ -63,6 +65,7 @@ export default async function InternshipsPage({ searchParams }) {
       <Suspense fallback={<JobsLoadingGrid />}>
         <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} />
       </Suspense>
+      <InternshipInfoSections />
     </>
   )
 }

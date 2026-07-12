@@ -5,7 +5,7 @@ import LoginForm from '@/components/auth/LoginForm'
 import LoginShowcase from '@/components/auth/LoginShowcase'
 
 export const metadata = {
-  title: 'Job Seeker Sign In - MyTechZ',
+  title: 'Job Seeker Sign In',
   description: 'Sign in to find jobs, build your resume, and track applications on MyTechZ.',
   robots: { index: false, follow: false },
 }
