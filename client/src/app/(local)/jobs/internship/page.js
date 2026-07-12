@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
+import InternshipInfoSections from '@/components/jobs/InternshipInfoSections'
 import { getJobs } from '@/lib/jobs/queries'
 
 const YEAR = new Date().getFullYear()
@@ -63,6 +64,7 @@ export default async function InternshipsPage({ searchParams }) {
       <Suspense fallback={<JobsLoadingGrid />}>
         <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} />
       </Suspense>
+      <InternshipInfoSections />
     </>
   )
 }
