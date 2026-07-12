@@ -6,7 +6,7 @@ import JobsDashboardWidget from '@/components/jobs/JobsDashboardWidget'
 import SmartSearchBar from '@/components/dashboard/SmartSearchBar'
 
 export const metadata = {
-  title: 'Home - MyTechZ',
+  title: 'Home',
   description: 'Your personalised MyTechZ dashboard.',
   robots: { index: false, follow: false },
 }

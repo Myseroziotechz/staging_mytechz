@@ -1,15 +1,16 @@
+// Page Version: v1.1.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Browse Jobs — Private, Government & Internships in India | MyTechZ',
+  title: 'Browse Jobs — Private, Government & Internships in India',
   description: 'Find verified tech jobs in India: private company jobs, UPSC/SSC government jobs, paid internships for students, and AI-personalized job matches. 50,000+ verified listings updated daily.',
   keywords:
     'tech jobs India, private jobs India, government jobs 2024, paid internships India, IT jobs, software developer jobs India, verified job portal India',
   alternates: { canonical: `${SITE}/jobs` },
   openGraph: {
-    title: 'Browse Jobs — Private, Government & Internships in India | MyTechZ',
+    title: 'Browse Jobs — Private, Government & Internships in India',
     description: 'Find 50,000+ verified tech jobs in India: private, government, internships, and AI-matched. Updated daily.',
     url: `${SITE}/jobs`,
     type: 'website',
@@ -130,7 +131,7 @@ export default function JobsLandingPage() {
       <JsonLd />
       <section className="bg-white py-16 sm:py-20">
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-8 text-xs text-slate-500 flex flex-wrap items-center gap-1">
             <Link href="/" className="hover:text-blue-700">Home</Link>

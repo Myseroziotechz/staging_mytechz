@@ -1,16 +1,17 @@
+// Page Version: v1.1.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Free AI Career Tools — Resume Builder, Analyzer & Smart Job Search | MyTechZ',
+  title: 'Free AI Career Tools — Resume Builder, Analyzer & Smart Job Search',
   description:
     'Free AI-powered career tools by MyTechZ: free resume builder, ATS resume analyzer, and smart job search — all free for Indian job seekers.',
   keywords:
     'AI career tools, free resume builder, resume analyzer, ATS score checker, smart job search, AI job matching India, free CV builder, career tools free India',
   alternates: { canonical: `${SITE}/ai-tools` },
   openGraph: {
-    title: 'Free AI Career Tools — Smart Job Search | MyTechZ',
+    title: 'Free AI Career Tools — Smart Job Search',
     description: 'Free AI-powered career tools: AI job matching and smart job search.',
     url: `${SITE}/ai-tools`,
     type: 'website',
@@ -75,8 +76,48 @@ function JsonLd() {
     ],
   }
 
+  const itemList = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'MyTechZ Free AI Career Tools',
+    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, and smart job search.',
+    url: `${SITE}/ai-tools`,
+    numberOfItems: 3,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Free Resume Builder', url: `${SITE}/ai-tools/resume-builder`, description: 'Build ATS-friendly resumes with AI — 100% free, no watermarks.' },
+      { '@type': 'ListItem', position: 2, name: 'Resume Analyzer', url: `${SITE}/ai-tools/resume-analyzer`, description: 'Get instant ATS match score and keyword recommendations for your resume.' },
+      { '@type': 'ListItem', position: 3, name: 'Smart Job Search', url: `${SITE}/ai-tools/smart-job-search`, description: 'AI matches you with jobs ranked by fit score, not just keywords.' },
+    ],
+  }
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Are MyTechZ AI career tools really free?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes — all AI tools on MyTechZ are 100% free. No subscriptions, no hidden fees, no credit card required. Build resumes, check ATS scores, and get AI job matches at no cost.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'What AI tools does MyTechZ offer?',
+        acceptedAnswer: { '@type': 'Answer', text: 'MyTechZ offers three free AI career tools: (1) Free Resume Builder with AI bullet points and ATS-optimised templates, (2) Resume Analyzer that scores your resume against job descriptions, and (3) Smart Job Search that matches you with jobs by fit score.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Who are MyTechZ AI tools built for?',
+        acceptedAnswer: { '@type': 'Answer', text: 'MyTechZ AI tools are built specifically for Indian tech job seekers — optimised for Indian job market standards, ATS systems used by Indian companies, and common career patterns in India.' },
+      },
+    ],
+  }
+
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+    </>
   )
 }
 

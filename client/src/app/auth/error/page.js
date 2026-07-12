@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Authentication Error - MyTechZ',
+  title: 'Authentication Error',
 }
 
 const ERROR_MESSAGES = {

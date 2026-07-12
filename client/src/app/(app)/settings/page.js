@@ -1,7 +1,7 @@
 import ComingSoon from '@/components/ComingSoon'
 
 export const metadata = {
-  title: 'Settings - MyTechZ',
+  title: 'Settings',
   description: 'Manage your MyTechZ account preferences.',
   robots: { index: false, follow: false },
 }

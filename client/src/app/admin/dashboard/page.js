@@ -5,7 +5,7 @@ import { getAdminPlatformKPIs } from '@/lib/admin/queries'
 import SmartSearchBar from '@/components/dashboard/SmartSearchBar'
 
 export const metadata = {
-  title: 'Admin Home - MyTechZ',
+  title: 'Admin Home',
   description: 'Administer MyTechZ users, recruiters, and platform settings.',
   robots: { index: false, follow: false },
 }

@@ -1,16 +1,17 @@
+// Page Version: v1.1.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Free Resume Builder — Create ATS-Friendly Resumes in Minutes | MyTechZ',
+  title: 'Free Resume Builder — Create ATS-Friendly Resumes in Minutes',
   description:
     'Build a professional resume for free with MyTechZ AI Resume Builder. Choose from ATS-optimised templates, get AI-powered bullet points, and export as PDF — 100% free, no watermarks.',
   keywords:
     'free resume builder, free CV builder, best free resume builder India, AI resume builder, ATS resume builder, resume maker free, CV maker free, online resume builder India, resume builder no watermark',
   alternates: { canonical: `${SITE}/ai-tools/resume-builder` },
   openGraph: {
-    title: 'Free Resume Builder — ATS-Friendly, AI-Powered | MyTechZ',
+    title: 'Free Resume Builder — ATS-Friendly, AI-Powered',
     description: 'Create a recruiter-ready resume in minutes. Free templates, AI bullet points, PDF export — no watermarks, no paid plans.',
     url: `${SITE}/ai-tools/resume-builder`,
     type: 'website',

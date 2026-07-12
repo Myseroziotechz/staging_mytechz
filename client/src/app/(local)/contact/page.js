@@ -1,3 +1,4 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import ContactClient from './ContactClient'
 
 const SITE = 'https://mytechz.com'

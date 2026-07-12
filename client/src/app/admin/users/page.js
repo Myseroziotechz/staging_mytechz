@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
-  title: 'Users - MyTechZ Admin',
+  title: 'Users',
   robots: { index: false, follow: false },
 }
 

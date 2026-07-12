@@ -1,3 +1,4 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
 import { getJobs } from '@/lib/jobs/queries'
@@ -8,7 +9,7 @@ export const metadata = {
   keywords: 'private tech jobs India, IT jobs, software developer jobs, MNC jobs India, startup jobs, BFSI jobs, verified private jobs',
   alternates: { canonical: 'https://mytechz.com/jobs/private' },
   openGraph: {
-    title: 'Private Tech Jobs — IT, Software, Startups, BFSI & MNC Openings | MyTechZ',
+    title: 'Private Tech Jobs — IT, Software, Startups, BFSI & MNC Openings',
     description: 'Verified private-sector tech jobs in India: IT, software, startups, MNCs, BFSI. Updated daily.',
     url: 'https://mytechz.com/jobs/private',
     type: 'website',

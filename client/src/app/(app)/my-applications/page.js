@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
-  title: 'My Applications - MyTechZ',
+  title: 'My Applications',
   description: 'Track the status of every job you have applied to.',
   robots: { index: false, follow: false },
 }

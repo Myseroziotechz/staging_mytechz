@@ -1,15 +1,16 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import { Suspense } from 'react'
 import AiFeaturedJobsPage, { AiLoadingGrid } from '@/components/jobs/AiFeaturedJobsPage'
 import { getJobs } from '@/lib/jobs/queries'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
-  title: 'AI-Matched Jobs — Personalised Tech Job Recommendations India | MyTechZ',
+  title: 'AI-Matched Jobs — Personalised Tech Job Recommendations India',
   description: 'AI-ranked job matches personalized to your resume, skills, and ambitions. Find roles where you fit best — not just keyword matches. Free for all Indian job seekers.',
   keywords: 'AI matched jobs India, personalized job recommendations, AI job search, fit score jobs, resume-matched jobs India',
   alternates: { canonical: 'https://mytechz.com/jobs/ai' },
   openGraph: {
-    title: 'AI-Matched Jobs — Personalised Tech Job Recommendations | MyTechZ',
+    title: 'AI-Matched Jobs — Personalised Tech Job Recommendations',
     description: 'AI-ranked job matches based on your resume, skills, and ambitions. Skip the noise — find roles where you actually fit.',
     url: 'https://mytechz.com/jobs/ai',
     type: 'website',

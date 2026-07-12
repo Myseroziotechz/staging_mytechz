@@ -18,6 +18,8 @@ export default async function sitemap() {
     { url: `${SITE}/ai-tools/resume-builder`,        lastModified: now, priority: 0.85, changeFrequency: 'weekly'  },
     { url: `${SITE}/ai-tools/resume-analyzer`,       lastModified: now, priority: 0.8,  changeFrequency: 'weekly'  },
     { url: `${SITE}/ai-tools/smart-job-search`,      lastModified: now, priority: 0.75, changeFrequency: 'weekly'  },
+    // Blog
+    { url: `${SITE}/blog`,                            lastModified: now, priority: 0.7,  changeFrequency: 'weekly'  },
     // Informational pages
     { url: `${SITE}/services`,                       lastModified: now, priority: 0.65, changeFrequency: 'monthly' },
     { url: `${SITE}/about`,                          lastModified: now, priority: 0.6,  changeFrequency: 'monthly' },
