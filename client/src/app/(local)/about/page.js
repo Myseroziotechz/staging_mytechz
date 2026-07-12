@@ -1,3 +1,4 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'

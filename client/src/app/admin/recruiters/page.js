@@ -3,7 +3,7 @@ import RecruiterVerifyButton from '@/components/admin/RecruiterVerifyButton'
 import RecruiterRejectButton from '@/components/admin/RecruiterRejectButton'
 
 export const metadata = {
-  title: 'Recruiters - MyTechZ Admin',
+  title: 'Recruiters',
   robots: { index: false, follow: false },
 }
 

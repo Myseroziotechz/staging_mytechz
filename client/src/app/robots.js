@@ -26,6 +26,7 @@ const AI_ALLOW_PATHS = [
   '/ai-tools/resume-builder',
   '/ai-tools/resume-analyzer',
   '/ai-tools/smart-job-search',
+  '/blog',
 ]
 
 export default function robots() {

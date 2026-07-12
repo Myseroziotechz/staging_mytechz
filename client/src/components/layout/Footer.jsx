@@ -10,7 +10,7 @@ const linkColumns = [
       { label: 'Private Jobs', href: '/jobs/private' },
       { label: 'Government Jobs', href: '/jobs/government' },
       { label: 'Browse All Jobs', href: '/jobs' },
-      { label: 'Internships', href: '/jobs' },
+      { label: 'Internships', href: '/jobs/internship' },
       { label: 'Fresher Jobs', href: '/jobs' },
     ],
   },
@@ -28,6 +28,7 @@ const linkColumns = [
     links: [
       { label: 'About Us', href: '/about' },
       { label: 'Services', href: '/services' },
+      { label: 'Blog', href: '/blog' },
       { label: 'Contact Us', href: '/contact' },
       { label: 'Login / Sign Up', href: '/login' },
     ],

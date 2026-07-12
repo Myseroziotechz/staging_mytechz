@@ -1,3 +1,4 @@
+// Page Version: v1.0.0 | Last Updated: 2026-07-12
 import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
 import { getJobs } from '@/lib/jobs/queries'
@@ -5,12 +6,12 @@ import { getJobs } from '@/lib/jobs/queries'
 const YEAR = new Date().getFullYear()
 
 export const metadata = {
-  title: `Government Jobs ${YEAR} — UPSC, SSC, PSU, State & Defence Vacancies | MyTechZ`,
+  title: `Government Jobs ${YEAR} — UPSC, SSC, PSU, State & Defence Vacancies`,
   description: `Latest central and state government job notifications ${YEAR}: UPSC, SSC, PSU, railways, banks, defence vacancies. Exam dates, age limits, eligibility, and official notification links. Updated daily.`,
   keywords: `government jobs ${YEAR}, UPSC vacancies, SSC jobs, PSU jobs India, state government jobs, defence jobs, railway jobs, bank jobs India, sarkari naukri`,
   alternates: { canonical: 'https://mytechz.com/jobs/government' },
   openGraph: {
-    title: `Government Jobs ${YEAR} — UPSC, SSC, PSU & Defence Vacancies | MyTechZ`,
+    title: `Government Jobs ${YEAR} — UPSC, SSC, PSU & Defence Vacancies`,
     description: `Latest government job notifications in India ${YEAR}: UPSC, SSC, PSU, railways, banks, defence. Exam dates, age limits, official notifications.`,
     url: 'https://mytechz.com/jobs/government',
     type: 'website',

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Resume Rank Checker - MyTechZ',
+  title: 'Resume Rank Checker',
   description: 'Instantly check your resume ATS score and find keyword gaps. Coming soon to MyTechZ.',
   robots: { index: false, follow: false },
 }

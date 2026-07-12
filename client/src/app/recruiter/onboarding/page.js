@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import RecruiterOnboardingOverlay from '@/components/recruiter/RecruiterOnboardingOverlay'
 
 export const metadata = {
-  title: 'Complete Your Company Profile - MyTechZ',
+  title: 'Complete Your Company Profile',
   description: 'Tell us about your company to start posting jobs on MyTechZ.',
   robots: { index: false, follow: false },
 }

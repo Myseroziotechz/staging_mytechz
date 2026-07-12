@@ -454,7 +454,7 @@ export default function Navbar() {
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 lg:px-8 pt-3 pointer-events-none">
       <nav
         ref={navRef}
-        className={`pointer-events-auto w-full max-w-6xl transition-all duration-500 ease-out rounded-2xl ${
+        className={`pointer-events-auto w-full max-w-7xl transition-all duration-500 ease-out rounded-2xl ${
           overFooter
             ? 'bg-gray-950/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] border border-white/10'
             : scrolled

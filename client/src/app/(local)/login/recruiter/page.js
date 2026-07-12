@@ -4,7 +4,7 @@ import Link from 'next/link'
 import LoginForm from '@/components/auth/LoginForm'
 
 export const metadata = {
-  title: 'Recruiter Sign In - MyTechZ',
+  title: 'Recruiter Sign In',
   description: 'Sign in as a recruiter to post jobs and find top tech talent on MyTechZ.',
   robots: { index: false, follow: false },
 }
