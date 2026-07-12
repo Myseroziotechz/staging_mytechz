@@ -33,17 +33,7 @@ export function middleware(request) {
     (c) => c.name.startsWith('sb-') && c.name.includes('auth-token')
   )
 
-  let user = null
-  try {
-    const { data } = await supabase.auth.getUser()
-    user = data?.user ?? null
-  } catch {
-    // Supabase unreachable (Edge sandbox network error) — let the page-level
-    // auth guard handle it instead of crashing the middleware worker.
-    return response
-  }
-
-  if (!user) {
+  if (!hasSession) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('returnTo', pathname)
     return NextResponse.redirect(loginUrl)
