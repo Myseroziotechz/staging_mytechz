@@ -208,8 +208,8 @@ export default function HeroSection() {
         <Image
           src="/robot_transparent_3.png"
           alt="AI Robot"
-          width={580}
-          height={510}
+          width={490}
+          height={430}
           className="relative z-10 object-contain object-bottom"
           priority
         />
