@@ -88,10 +88,10 @@ export default function HeroSection() {
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="mt-8 w-full max-w-2xl bg-white rounded-xl shadow-md border border-slate-200 flex flex-col sm:flex-row items-stretch"
+          className="mt-8 w-full max-w-2xl bg-white rounded-full shadow-lg shadow-slate-900/5 border border-slate-100 p-1.5 flex flex-col sm:flex-row items-stretch"
         >
           {/* Skills / Role */}
-          <div className="flex items-center gap-2 px-4 py-3 flex-1 min-w-0">
+          <div className="flex items-center gap-2 pl-5 pr-3 py-3 flex-1 min-w-0">
             <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -99,12 +99,12 @@ export default function HeroSection() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter Skills/Role"
+              placeholder="Enter skills / designations / companies"
               className="w-full text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none"
             />
           </div>
 
-          <div className="hidden sm:block w-px bg-slate-200 self-stretch" />
+          <div className="hidden sm:block w-px bg-slate-200 self-center h-6" />
 
           {/* Experience Dropdown */}
           <div className="relative flex items-center px-4 py-3 min-w-[160px]">
@@ -114,7 +114,7 @@ export default function HeroSection() {
               className="flex items-center gap-1 text-sm text-slate-500 w-full"
             >
               <span className="flex-1 text-left whitespace-nowrap">
-                {selectedExp ? selectedExp.label : 'Select Experience'}
+                {selectedExp ? selectedExp.label : 'Select experience'}
               </span>
               <svg className={`w-4 h-4 text-slate-400 transition-transform ${expOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -127,7 +127,7 @@ export default function HeroSection() {
                   onClick={() => { setExperience(''); setExpOpen(false) }}
                   className="w-full text-left px-4 py-2 text-sm text-slate-500 hover:bg-slate-50"
                 >
-                  Any Experience
+                  Any experience
                 </button>
                 {JOB_EXPERIENCE_LEVELS.map((lvl) => (
                   <button
@@ -143,19 +143,15 @@ export default function HeroSection() {
             )}
           </div>
 
-          <div className="hidden sm:block w-px bg-slate-200 self-stretch" />
+          <div className="hidden sm:block w-px bg-slate-200 self-center h-6" />
 
           {/* Location */}
-          <div className="flex items-center gap-2 px-4 py-3 flex-1 min-w-0">
-            <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+          <div className="flex items-center px-4 py-3 flex-1 min-w-0">
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter Location"
+              placeholder="Enter location"
               className="w-full text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none"
             />
           </div>
@@ -163,7 +159,7 @@ export default function HeroSection() {
           {/* Search Button */}
           <button
             type="submit"
-            className="bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-6 py-3 rounded-r-xl transition-colors sm:rounded-l-none rounded-xl sm:rounded-xl"
+            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-8 py-3 rounded-full transition-colors"
           >
             Search
           </button>

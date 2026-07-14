@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
 import SortDropdown from './SortDropdown'
-import PrivateFiltersPanel from './PrivateFiltersPanel'
+import FacetedFiltersPanel from './FacetedFiltersPanel'
 import { formatStipend, govMeta, parseInternshipMeta } from '@/lib/jobs/format'
 import { loadMoreJobsAction } from '@/lib/jobs/client-actions'
 
@@ -214,8 +214,8 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
           {/* Filters sidebar (desktop) */}
           <aside className="hidden lg:block">
             <div className="job-glass-panel rounded-2xl p-5 sticky top-24">
-              {pageConfig.id === 'private'
-                ? <PrivateFiltersPanel filters={filters} setFilter={setFilter} facets={facets} />
+              {pageConfig.id === 'private' || pageConfig.id === 'internship'
+                ? <FacetedFiltersPanel filters={filters} setFilter={setFilter} facets={facets} variant={pageConfig.id} />
                 : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
             </div>
           </aside>
@@ -302,8 +302,8 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
                 <h3 className="text-lg font-semibold">Filters</h3>
                 <button onClick={() => setFiltersOpen(false)} className="text-slate-500">Close</button>
               </div>
-              {pageConfig.id === 'private'
-                ? <PrivateFiltersPanel filters={filters} setFilter={setFilter} facets={facets} />
+              {pageConfig.id === 'private' || pageConfig.id === 'internship'
+                ? <FacetedFiltersPanel filters={filters} setFilter={setFilter} facets={facets} variant={pageConfig.id} />
                 : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
               <button onClick={() => setFiltersOpen(false)} className="mt-5 w-full py-3 rounded-xl bg-blue-700 text-white font-semibold">Show results</button>
             </div>
@@ -356,8 +356,9 @@ function renderExtras(pageId, job) {
   return null
 }
 
-function FiltersPanel({ filters, setFilter, pageConfig }) {
-  const showExperience = pageConfig.id !== 'internship'
+// Plain (non-faceted) panel — only reached by Government now that Private
+// and Internship both use FacetedFiltersPanel.
+function FiltersPanel({ filters, setFilter }) {
   return (
     <div className="space-y-5 text-sm">
       <div>
@@ -372,40 +373,34 @@ function FiltersPanel({ filters, setFilter, pageConfig }) {
         </div>
       </div>
 
-      {pageConfig.id !== 'internship' && (
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Job type</label>
-          <div className="flex flex-wrap gap-1.5">
-            {['full_time', 'part_time', 'contract'].map(t => (
-              <button key={t} onClick={() => setFilter({ job_type: filters.job_type === t ? '' : t })}
-                className={`text-xs px-3 py-1.5 rounded-full border transition ${filters.job_type === t ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300'}`}>
-                {t.replace('_', '-')}
-              </button>
-            ))}
-          </div>
+      <div>
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Job type</label>
+        <div className="flex flex-wrap gap-1.5">
+          {['full_time', 'part_time', 'contract'].map(t => (
+            <button key={t} onClick={() => setFilter({ job_type: filters.job_type === t ? '' : t })}
+              className={`text-xs px-3 py-1.5 rounded-full border transition ${filters.job_type === t ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300'}`}>
+              {t.replace('_', '-')}
+            </button>
+          ))}
         </div>
-      )}
-
-      {showExperience && (
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Experience (years)</label>
-          <div className="flex gap-2">
-            <input type="number" min={0} max={40} placeholder="Min" defaultValue={filters.exp_min || ''}
-              onBlur={(e) => setFilter({ exp_min: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
-            <input type="number" min={0} max={40} placeholder="Max" defaultValue={filters.exp_max || ''}
-              onBlur={(e) => setFilter({ exp_max: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
-          </div>
-        </div>
-      )}
+      </div>
 
       <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-          {pageConfig.id === 'internship' ? 'Min stipend (₹/mo)' : 'Min salary (₹/yr)'}
-        </label>
-        <input type="number" min={0} step={pageConfig.id === 'internship' ? 1000 : 50000}
-          placeholder={pageConfig.id === 'internship' ? 'e.g. 15000' : 'e.g. 1000000'}
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Experience (years)</label>
+        <div className="flex gap-2">
+          <input type="number" min={0} max={40} placeholder="Min" defaultValue={filters.exp_min || ''}
+            onBlur={(e) => setFilter({ exp_min: e.target.value })}
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
+          <input type="number" min={0} max={40} placeholder="Max" defaultValue={filters.exp_max || ''}
+            onBlur={(e) => setFilter({ exp_max: e.target.value })}
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Min salary (₹/yr)</label>
+        <input type="number" min={0} step={50000}
+          placeholder="e.g. 1000000"
           defaultValue={filters.sal_min || ''}
           onBlur={(e) => setFilter({ sal_min: e.target.value })}
           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />

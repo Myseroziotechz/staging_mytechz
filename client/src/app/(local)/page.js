@@ -1,4 +1,4 @@
-// Page Version: v2.0.0 | Last Updated: 2026-07-12
+// Page Version: v2.1.0 | Last Updated: 2026-07-14
 
 const SITE = 'https://mytechz.com'
 
@@ -21,7 +21,7 @@ export const metadata = {
 }
 
 import HeroSection            from '@/components/home/HeroSection'
-import JobSearchFeature       from '@/components/home/JobSearchFeature'
+import TrendingJobs           from '@/components/home/TrendingJobs'
 import VerifiedEmployersStrip from '@/components/home/VerifiedEmployersStrip'
 import JobCategories          from '@/components/home/JobCategories'
 import StatsBar               from '@/components/home/StatsBar'
@@ -100,8 +100,8 @@ export default function Home() {
       <JsonLd />
       <div>
         <HeroSection />
+        <TrendingJobs />
         <JobCategories />
-        <JobSearchFeature />
         <StatsBar />
         <HowItWorks />
         <VerifiedEmployersStrip />

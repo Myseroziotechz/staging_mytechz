@@ -161,8 +161,15 @@ function FilterModal({ title, options, selected, onToggle, onClose }) {
 
 const EMPTY_FACETS = { department: [], workMode: [], location: [], industry: [], education: [], company: [], salary: [], highlight: [] }
 
-export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY_FACETS }) {
+// Shared "All Filters" sidebar for Private and Internship listings — identical
+// sizes/fonts/colors/layout for both. Experience is skipped for internships:
+// students/freshers don't have a prior-experience requirement to filter on,
+// which is also why the internship page never sets exp_min/exp_max.
+export default function FacetedFiltersPanel({ filters, setFilter, facets = EMPTY_FACETS, variant = 'private' }) {
   const [modal, setModal] = useState(null)
+  const isInternship = variant === 'internship'
+  const salaryLabel = isInternship ? 'Stipend' : 'Salary'
+  const clearKeys = isInternship ? CLEAR_KEYS.filter(k => k !== 'exp_max') : CLEAR_KEYS
 
   const toggleArr = (key, value) => {
     const cur = filters[key] || []
@@ -170,17 +177,17 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
     setFilter({ [key]: next })
   }
 
-  const appliedCount = CLEAR_KEYS.reduce((n, k) => n + (filters[k]?.length || 0), 0) + (filters.exp_max ? 1 : 0)
+  const appliedCount = clearKeys.reduce((n, k) => n + (filters[k]?.length || 0), 0) + (!isInternship && filters.exp_max ? 1 : 0)
 
-  const clearAllPrivate = () => {
-    const reset = Object.fromEntries(CLEAR_KEYS.map(k => [k, []]))
-    setFilter({ ...reset, exp_max: '' })
+  const clearAllFacets = () => {
+    const reset = Object.fromEntries(clearKeys.map(k => [k, []]))
+    setFilter(isInternship ? reset : { ...reset, exp_max: '' })
   }
 
   const modalConfig = {
     department: { title: 'Department', options: facets.department, key: 'departments' },
     location:   { title: 'Location',   options: facets.location,   key: 'cities' },
-    salary:     { title: 'Salary',     options: facets.salary,     key: 'salaryBuckets' },
+    salary:     { title: salaryLabel,  options: facets.salary,     key: 'salaryBuckets' },
     industry:   { title: 'Industry',   options: facets.industry,   key: 'industries' },
     education:  { title: 'Education',  options: facets.education,  key: 'educations' },
     company:    { title: 'Top companies', options: facets.company, key: 'companyIds' },
@@ -191,7 +198,7 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
       <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-200">
         <h2 className="text-xl font-bold text-slate-900">All Filters</h2>
         {appliedCount > 0 && (
-          <button type="button" onClick={clearAllPrivate} className="text-sm font-semibold text-blue-700 hover:underline">
+          <button type="button" onClick={clearAllFacets} className="text-sm font-semibold text-blue-700 hover:underline">
             Applied ({appliedCount})
           </button>
         )}
@@ -205,15 +212,17 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
         <CheckboxList options={facets.workMode} selected={filters.work_modes || []} onToggle={(v) => toggleArr('work_modes', v)} limit={10} />
       </Section>
 
-      <Section title="Experience">
-        <ExperienceSlider value={filters.exp_max} onChange={(v) => setFilter({ exp_max: v })} />
-      </Section>
+      {!isInternship && (
+        <Section title="Experience">
+          <ExperienceSlider value={filters.exp_max} onChange={(v) => setFilter({ exp_max: v })} />
+        </Section>
+      )}
 
       <Section title="Location">
         <CheckboxList options={facets.location} selected={filters.cities || []} onToggle={(v) => toggleArr('cities', v)} onViewMore={() => setModal('location')} />
       </Section>
 
-      <Section title="Salary">
+      <Section title={salaryLabel}>
         <CheckboxList options={facets.salary} selected={filters.salaryBuckets || []} onToggle={(v) => toggleArr('salaryBuckets', v)} onViewMore={() => setModal('salary')} />
       </Section>
 
