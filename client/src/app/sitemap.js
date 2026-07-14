@@ -1,4 +1,5 @@
 import { getAllActiveJobsForSitemap } from '@/lib/jobs/queries'
+import { blogPosts } from '@/data/blog-posts'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
 
@@ -26,6 +27,15 @@ export default async function sitemap() {
     { url: `${SITE}/contact`,                        lastModified: now, priority: 0.55, changeFrequency: 'monthly' },
   ]
 
+  // Blog posts
+  const blogUrls = blogPosts.map((post) => ({
+    url: `${SITE}/blog/${post.slug}`,
+    lastModified: post.date,
+    priority: 0.75,
+    changeFrequency: 'monthly',
+  }))
+
+  // Dynamic job pages
   const jobs = await getAllActiveJobsForSitemap()
   const jobUrls = jobs.map((j) => ({
     url: `${SITE}/jobs/${j.category}/${j.slug}`,
@@ -34,5 +44,5 @@ export default async function sitemap() {
     changeFrequency: 'daily',
   }))
 
-  return [...staticPages, ...jobUrls]
+  return [...staticPages, ...blogUrls, ...jobUrls]
 }

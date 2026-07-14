@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { OpenPanelComponent } from '@openpanel/nextjs'
 import './globals.css'
 import ClarityInit from '@/components/ClarityInit'
 
@@ -57,8 +58,12 @@ export const metadata = {
     googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
   },
   verification: {
-    google: 'REPLACE_WITH_YOUR_GOOGLE_VERIFICATION_CODE',
-    other: { 'msvalidate.01': 'REPLACE_WITH_YOUR_BING_VERIFICATION_CODE' },
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || '',
+    other: {
+      ...(process.env.NEXT_PUBLIC_BING_VERIFICATION
+        ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION }
+        : {}),
+    },
   },
   manifest: '/manifest.json',
   icons: {
@@ -159,6 +164,7 @@ export default function RootLayout({ children }) {
                 { '@type': 'SiteNavigationElement', name: 'Smart Job Search', url: `${SITE}/ai-tools/smart-job-search` },
                 { '@type': 'SiteNavigationElement', name: 'About', url: `${SITE}/about` },
                 { '@type': 'SiteNavigationElement', name: 'Services', url: `${SITE}/services` },
+                { '@type': 'SiteNavigationElement', name: 'Blog', url: `${SITE}/blog` },
                 { '@type': 'SiteNavigationElement', name: 'Contact', url: `${SITE}/contact` },
               ],
             }),
@@ -167,6 +173,11 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-full flex flex-col">
         <ClarityInit />
+        <OpenPanelComponent
+          clientId={process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID}
+          trackScreenViews={true}
+          trackOutgoingLinks={true}
+        />
         {children}
       </body>
       <GoogleAnalytics gaId="G-FXKXL6XP9H" />
