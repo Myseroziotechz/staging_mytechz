@@ -1,6 +1,8 @@
 import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import LoginForm from '@/components/auth/LoginForm'
 import LoginShowcase from '@/components/auth/LoginShowcase'
 
@@ -10,7 +12,26 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function UserLoginPage() {
+export default async function UserLoginPage() {
+  // Redirect already-authenticated users to their dashboard
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role, onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      const role = profile?.role ?? 'candidate'
+      if (role === 'admin') redirect('/admin/dashboard')
+      else if (role === 'recruiter') redirect(profile?.onboarding_completed ? '/recruiter/dashboard' : '/recruiter/onboarding')
+      else redirect('/dashboard')
+    }
+  } catch (e) {
+    if (e?.digest?.startsWith('NEXT_REDIRECT')) throw e
+  }
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-3 lg:p-5 overflow-hidden">
       <div className="relative w-full max-w-[960px] h-[540px] max-h-[95vh] bg-white rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
