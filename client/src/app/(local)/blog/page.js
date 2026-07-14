@@ -1,28 +1,29 @@
-// Page Version: v1.0.0 | Last Updated: 2026-07-13
+// Page Version: v1.1.0 | Last Updated: 2026-07-14
 import Link from 'next/link'
+import { blogPosts } from '@/data/blog-posts'
 import ChangelogEntry from '@/components/blog/ChangelogEntry'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Blog & Changelog — Platform Updates, New Features & Tech Career Tips',
+  title: 'Blog — Resume Tips, Career Guides & Platform Updates',
   description:
-    'Stay up to date with MyTechZ platform updates, new feature releases, bug fixes, and tech career tips for Indian job seekers.',
+    'Expert resume tips, career guides for Indian IT freshers, government job preparation, ATS screening tips, and MyTechZ platform updates. Free resources to land your dream job.',
   keywords:
-    'MyTechZ blog, MyTechZ updates, changelog, tech job updates India, job portal news, career tips India, platform updates',
+    'MyTechZ blog, resume tips India, career guide freshers, ATS resume tips, government job resume, IT job tips India, TCS resume, Infosys resume, tech career blog',
   alternates: { canonical: `${SITE}/blog` },
   openGraph: {
-    title: 'Blog & Changelog — MyTechZ Platform Updates',
-    description: 'New features, improvements, and tech career tips from MyTechZ.',
+    title: 'Blog — Resume Tips, Career Guides & Updates | MyTechZ',
+    description: 'Expert resume tips, career guides, and platform updates for Indian job seekers.',
     url: `${SITE}/blog`,
     type: 'website',
     siteName: 'MyTechZ',
-    images: [{ url: `${SITE}/og-image.png`, width: 1200, height: 630, alt: 'MyTechZ Blog & Changelog' }],
+    images: [{ url: `${SITE}/og-image.png`, width: 1200, height: 630, alt: 'MyTechZ Blog' }],
   },
   twitter: { card: 'summary_large_image' },
 }
 
-const POSTS = [
+const CHANGELOG_POSTS = [
   {
     title: 'Job Cards Redesign & Load More — July 2026 Update',
     date: '2026-07-13',
@@ -55,15 +56,17 @@ function JsonLd() {
   const blogSchema = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'MyTechZ Blog & Changelog',
+    name: 'MyTechZ Blog',
     url: `${SITE}/blog`,
-    description: 'Platform updates, new features, and tech career tips from MyTechZ.',
+    description: 'Expert resume tips, career guides, and platform updates for Indian job seekers.',
     publisher: { '@type': 'Organization', name: 'MyTechZ', url: SITE },
-    blogPost: POSTS.map((p) => ({
+    blogPost: blogPosts.map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
+      description: p.description,
       datePublished: p.date,
       dateModified: p.date,
+      url: `${SITE}/blog/${p.slug}`,
       author: { '@type': 'Organization', name: 'MyTechZ' },
       publisher: { '@type': 'Organization', name: 'MyTechZ', url: SITE },
     })),
@@ -92,25 +95,68 @@ export default function BlogPage() {
         <div className="max-w-4xl">
           <div className="mb-10">
             <h1 className="text-4xl font-bold text-slate-900 mb-3">
-              Blog & <span className="text-blue-600">Changelog</span>
+              Blog & <span className="text-blue-600">Career Guides</span>
             </h1>
             <p className="text-lg text-slate-600 max-w-2xl">
-              What&apos;s new on MyTechZ — feature launches, improvements, and fixes. We ship fast and share openly.
+              Resume tips, career guides for Indian job seekers, ATS screening advice, and platform updates.
             </p>
           </div>
 
-          <div className="space-y-8">
-            {POSTS.map((post) => (
-              <ChangelogEntry key={post.date + post.version} {...post} />
-            ))}
+          {/* Blog Articles */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Latest Articles</h2>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {blogPosts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group block bg-white border border-slate-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-lg transition-all"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                      {post.category}
+                    </span>
+                    <span className="text-xs text-slate-400">{post.readTime}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors mb-2 line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 line-clamp-3 mb-3">
+                    {post.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <time className="text-xs text-slate-400" dateTime={post.date}>
+                      {new Date(post.date).toLocaleDateString('en-IN', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </time>
+                    <span className="text-xs font-semibold text-blue-600 group-hover:text-blue-800">
+                      Read More →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Changelog */}
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Changelog</h2>
+            <div className="space-y-8">
+              {CHANGELOG_POSTS.map((post) => (
+                <ChangelogEntry key={post.date + post.version} {...post} />
+              ))}
+            </div>
           </div>
 
           {/* CTA */}
           <div className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">Want to stay updated?</h2>
-            <p className="text-blue-100 text-sm mb-5">Get notified about new features, job alerts, and career tips — straight to your inbox.</p>
-            <Link href="/" className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-50 transition-all shadow-md">
-              Subscribe to Newsletter
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">Build Your Resume Now — It&apos;s Free</h2>
+            <p className="text-blue-100 text-sm mb-5">ATS-optimized templates designed for Indian freshers and professionals. No sign-up needed.</p>
+            <Link href="/ai-tools/resume-builder" className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-50 transition-all shadow-md">
+              Start Building Your Resume
             </Link>
           </div>
         </div>

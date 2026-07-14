@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
   title: 'Login to MyTechZ',
@@ -7,7 +9,28 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  // Redirect already-authenticated users to their dashboard
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role, onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      const role = profile?.role ?? 'candidate'
+      if (role === 'admin') redirect('/admin/dashboard')
+      else if (role === 'recruiter') redirect(profile?.onboarding_completed ? '/recruiter/dashboard' : '/recruiter/onboarding')
+      else redirect('/dashboard')
+    }
+  } catch (e) {
+    // NEXT_REDIRECT is thrown by redirect() — rethrow it
+    if (e?.digest?.startsWith('NEXT_REDIRECT')) throw e
+    // Otherwise ignore auth errors and show login page
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-4">
       <div className="w-full max-w-md">
