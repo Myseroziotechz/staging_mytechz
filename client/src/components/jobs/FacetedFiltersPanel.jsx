@@ -13,10 +13,10 @@ function ChevronIcon({ open }) {
   )
 }
 
-function Section({ title, defaultOpen = true, children }) {
+function Section({ id, title, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="border-b border-slate-200 py-5 first:pt-0 last:border-b-0">
+    <div id={id} className="border-b border-slate-200 py-5 first:pt-0 last:border-b-0 scroll-mt-28 target:ring-2 target:ring-blue-400 target:ring-offset-2 target:rounded-xl">
       <button type="button" onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between text-left">
         <span className="text-[17px] font-bold text-slate-900">{title}</span>
         <ChevronIcon open={open} />
@@ -165,9 +165,10 @@ const EMPTY_FACETS = { department: [], workMode: [], location: [], industry: [],
 // sizes/fonts/colors/layout for both. Experience is skipped for internships:
 // students/freshers don't have a prior-experience requirement to filter on,
 // which is also why the internship page never sets exp_min/exp_max.
-export default function FacetedFiltersPanel({ filters, setFilter, facets = EMPTY_FACETS, variant = 'private' }) {
+export default function FacetedFiltersPanel({ filters, setFilter, facets = EMPTY_FACETS, variant = 'private', idPrefix = '' }) {
   const [modal, setModal] = useState(null)
   const isInternship = variant === 'internship'
+  const sid = (name) => `${idPrefix}filter-${name}`
   const salaryLabel = isInternship ? 'Stipend' : 'Salary'
   const clearKeys = isInternship ? CLEAR_KEYS.filter(k => k !== 'exp_max') : CLEAR_KEYS
 
@@ -213,16 +214,16 @@ export default function FacetedFiltersPanel({ filters, setFilter, facets = EMPTY
       </Section>
 
       {!isInternship && (
-        <Section title="Experience">
+        <Section id={sid('experience')} title="Experience">
           <ExperienceSlider value={filters.exp_max} onChange={(v) => setFilter({ exp_max: v })} />
         </Section>
       )}
 
-      <Section title="Location">
+      <Section id={sid('location')} title="Location">
         <CheckboxList options={facets.location} selected={filters.cities || []} onToggle={(v) => toggleArr('cities', v)} onViewMore={() => setModal('location')} />
       </Section>
 
-      <Section title={salaryLabel}>
+      <Section id={sid('salary')} title={salaryLabel}>
         <CheckboxList options={facets.salary} selected={filters.salaryBuckets || []} onToggle={(v) => toggleArr('salaryBuckets', v)} onViewMore={() => setModal('salary')} />
       </Section>
 
@@ -230,7 +231,7 @@ export default function FacetedFiltersPanel({ filters, setFilter, facets = EMPTY
         <CheckboxList options={facets.industry} selected={filters.industries || []} onToggle={(v) => toggleArr('industries', v)} onViewMore={() => setModal('industry')} />
       </Section>
 
-      <Section title="Education">
+      <Section id={sid('education')} title="Education">
         <CheckboxList options={facets.education} selected={filters.educations || []} onToggle={(v) => toggleArr('educations', v)} onViewMore={() => setModal('education')} />
       </Section>
 

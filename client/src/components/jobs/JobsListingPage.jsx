@@ -68,6 +68,29 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
     setHasMore(initialJobs.length >= PER_PAGE)
   }, [initialJobs])
 
+  // Deep-link support for "#filter-*" anchors (used by the homepage's floating
+  // filter chips): the panel renders twice (desktop sidebar + mobile bottom
+  // sheet), each with its own id prefix (see `idPrefix` below) since ids must
+  // be unique. On mobile the sheet is unmounted by default, so a plain hash
+  // anchor can't scroll to it — open the sheet first, then scroll once the
+  // "m-"-prefixed target exists.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1)
+    if (!hash.startsWith('filter-')) return
+    const isMobile = window.innerWidth < 1024
+    if (isMobile) setFiltersOpen(true)
+    const targetId = isMobile ? `m-${hash}` : hash
+    const timer = setTimeout(() => {
+      const el = document.getElementById(targetId)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      if (isMobile && el) {
+        el.classList.add('ring-2', 'ring-blue-400', 'ring-offset-2', 'rounded-xl')
+        setTimeout(() => el.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2', 'rounded-xl'), 2000)
+      }
+    }, isMobile ? 150 : 0)
+    return () => clearTimeout(timer)
+  }, [])
+
   const handleLoadMore = async () => {
     setLoadingMore(true)
     const { jobs, hasMore: more } = await loadMoreJobsAction({
@@ -303,7 +326,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
                 <button onClick={() => setFiltersOpen(false)} className="text-slate-500">Close</button>
               </div>
               {pageConfig.id === 'private' || pageConfig.id === 'internship'
-                ? <FacetedFiltersPanel filters={filters} setFilter={setFilter} facets={facets} variant={pageConfig.id} />
+                ? <FacetedFiltersPanel filters={filters} setFilter={setFilter} facets={facets} variant={pageConfig.id} idPrefix="m-" />
                 : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
               <button onClick={() => setFiltersOpen(false)} className="mt-5 w-full py-3 rounded-xl bg-blue-700 text-white font-semibold">Show results</button>
             </div>

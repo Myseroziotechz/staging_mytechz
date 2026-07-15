@@ -182,49 +182,57 @@ export default function HeroSection() {
 
       </div>
 
-      {/* Robot Image pinned to bottom, flanked by small clickable tool boxes with connector lines */}
-      <div className="w-full flex justify-center items-end gap-6">
+      {/* Robot Image pinned to bottom, flanked by small clickable tool boxes with connector lines,
+          plus the table-edge divider below — grouped together so `justify-between` on the
+          section treats them as one bottom block and the divider stays flush against the image. */}
+      <div className="w-full">
+        <div className="w-full flex justify-center items-end gap-6">
 
-        {/* Left tool boxes */}
-        <div className="hidden lg:flex flex-col gap-6 mb-24">
-          {leftTools.map((tool) => (
-            <Link
-              key={tool.title}
-              href={tool.href}
-              className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
-            >
-              <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
-                {tool.icon}
-              </span>
-              <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
-            </Link>
-          ))}
+          {/* Left tool boxes */}
+          <div className="hidden lg:flex flex-col gap-6 mb-24">
+            {leftTools.map((tool) => (
+              <Link
+                key={tool.title}
+                href={tool.href}
+                className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
+              >
+                <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
+                  {tool.icon}
+                </span>
+                <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
+              </Link>
+            ))}
+          </div>
+
+          <Image
+            src="/robot_transparent_3.png"
+            alt="AI Robot"
+            width={490}
+            height={187}
+            className="relative z-10 object-contain object-bottom"
+            priority
+          />
+
+          {/* Right tool boxes */}
+          <div className="hidden lg:flex flex-col gap-6 mb-24">
+            {rightTools.map((tool) => (
+              <Link
+                key={tool.title}
+                href={tool.href}
+                className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
+              >
+                <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
+                  {tool.icon}
+                </span>
+                <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <Image
-          src="/robot_transparent_3.png"
-          alt="AI Robot"
-          width={490}
-          height={430}
-          className="relative z-10 object-contain object-bottom"
-          priority
-        />
-
-        {/* Right tool boxes */}
-        <div className="hidden lg:flex flex-col gap-6 mb-24">
-          {rightTools.map((tool) => (
-            <Link
-              key={tool.title}
-              href={tool.href}
-              className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
-            >
-              <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
-                {tool.icon}
-              </span>
-              <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
-            </Link>
-          ))}
-        </div>
+        {/* Table-edge divider — flush against the illustration (zero gap), extends the
+            desk line from the artwork into a full-width line in the same navy tone. */}
+        <div className="w-full h-[3px] bg-[#222a4f]" />
       </div>
     </section>
   )
