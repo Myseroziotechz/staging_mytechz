@@ -192,27 +192,6 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
           <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl">{pageConfig.subtitle}</p>
         </header>
 
-        {/* Search bar */}
-        <form onSubmit={(e) => e.preventDefault()} className="job-glass-panel rounded-2xl p-2 flex flex-col sm:flex-row gap-2 mb-4 shadow-xl shadow-blue-900/5">
-          <div className="flex-1 flex items-center px-3">
-            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input type="text" defaultValue={filters.q || ''}
-              onBlur={(e) => e.target.value !== (filters.q || '') && setFilter({ q: e.target.value })}
-              onKeyDown={(e) => e.key === 'Enter' && setFilter({ q: e.currentTarget.value })}
-              placeholder={pageConfig.placeholder}
-              className="w-full px-3 py-3 text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none" />
-          </div>
-          <div className="hidden sm:block w-px bg-slate-200" />
-          <div className="flex-1 flex items-center px-3">
-            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <input type="text" defaultValue={filters.location || ''}
-              onBlur={(e) => e.target.value !== (filters.location || '') && setFilter({ location: e.target.value })}
-              onKeyDown={(e) => e.key === 'Enter' && setFilter({ location: e.currentTarget.value })}
-              placeholder="Location"
-              className="w-full px-3 py-3 text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none" />
-          </div>
-        </form>
-
         {/* Active chips + sort */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
           <div className="flex flex-wrap gap-1.5">

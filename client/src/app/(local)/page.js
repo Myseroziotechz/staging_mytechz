@@ -24,7 +24,7 @@ import HeroSection            from '@/components/home/HeroSection'
 import TrendingJobs           from '@/components/home/TrendingJobs'
 import VerifiedEmployersStrip from '@/components/home/VerifiedEmployersStrip'
 import JobCategories          from '@/components/home/JobCategories'
-import StatsBar               from '@/components/home/StatsBar'
+import TopStartupsHiring      from '@/components/home/TopStartupsHiring'
 import HowItWorks             from '@/components/home/HowItWorks'
 import ForRecruiters          from '@/components/home/ForRecruiters'
 import FaqAccordion           from '@/components/home/FaqAccordion'
@@ -102,7 +102,7 @@ export default function Home() {
         <HeroSection />
         <TrendingJobs />
         <JobCategories />
-        <StatsBar />
+        <TopStartupsHiring />
         <HowItWorks />
         <VerifiedEmployersStrip />
         <ForRecruiters />

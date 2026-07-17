@@ -148,16 +148,7 @@ export default function JobCategories() {
   const cols = tab === 'category' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
 
   return (
-    <HomeSection id="categories" tone="light">
-      {/* Title card */}
-      <div className="text-center mb-8">
-        <div className="inline-block px-6 py-3 rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-100">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
-            Browse Jobs
-          </h2>
-        </div>
-      </div>
-
+    <HomeSection id="categories" tone="light" pad="pt-2 pb-16 sm:pt-4 sm:pb-20">
       {/* Tab Switcher */}
       <div className="flex justify-center mb-10">
         <div className="inline-flex bg-slate-100 border border-slate-200 rounded-xl p-1 gap-1">

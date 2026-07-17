@@ -12,7 +12,7 @@ export default async function TrendingJobs() {
   if (topJobs.length === 0) return null
 
   return (
-    <HomeSection tone="light" pad="pt-6 pb-16 sm:pt-8 sm:pb-20">
+    <HomeSection tone="light" pad="pt-6 pb-8 sm:pt-8 sm:pb-10">
       <div className="flex items-end justify-between mb-5">
         <div>
           <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Trending right now</h3>
