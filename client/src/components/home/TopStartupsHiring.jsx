@@ -54,7 +54,7 @@ export default function TopStartupsHiring() {
   const doubled = [...COMPANIES, ...COMPANIES]
 
   return (
-    <HomeSection tone="light" pad="py-10 sm:py-14">
+    <HomeSection tone="light" pad="pt-2 pb-10 sm:pt-4 sm:pb-14">
       <div className="flex items-center justify-center gap-3 mb-10">
         <ChevronDoubleLeft className="w-5 h-5 text-slate-300" />
         <div className="inline-flex items-center px-6 py-3 rounded-2xl bg-slate-100 border border-slate-200">

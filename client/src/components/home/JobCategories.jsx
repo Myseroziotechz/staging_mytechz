@@ -148,7 +148,7 @@ export default function JobCategories() {
   const cols = tab === 'category' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
 
   return (
-    <HomeSection id="categories" tone="light" pad="pt-2 pb-16 sm:pt-4 sm:pb-20">
+    <HomeSection id="categories" tone="light" pad="pt-2 pb-8 sm:pt-4 sm:pb-10">
       {/* Tab Switcher */}
       <div className="flex justify-center mb-10">
         <div className="inline-flex bg-slate-100 border border-slate-200 rounded-xl p-1 gap-1">

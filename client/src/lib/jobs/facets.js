@@ -113,6 +113,74 @@ function buildFacets(data, { buckets, bucketValue }) {
   }
 }
 
+const INDUSTRY_PANEL_SELECT = 'industry, company:companies ( id, name )'
+
+const BADGE_COLORS = [
+  '#4f46e5', '#0ea5e9', '#15803d', '#f97316',
+  '#ef4444', '#ec4899', '#0f172a', '#9333ea',
+]
+
+function initialsOf(name) {
+  const words = name.split(/\s+/).filter(Boolean)
+  const initials = words.slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+  return initials.length > 1 ? initials : name.slice(0, 2).toUpperCase()
+}
+
+// Deterministic pick so a given company always gets the same badge color.
+function colorFor(name) {
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  return BADGE_COLORS[hash % BADGE_COLORS.length]
+}
+
+// Live "who's hiring" panels for the homepage — active private-sector jobs
+// grouped by their real `industry` value, ranked by open-role count.
+export async function getIndustryHiringPanels(limit = 6) {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('jobs')
+      .select(INDUSTRY_PANEL_SELECT)
+      .eq('status', 'active')
+      .eq('category', 'private')
+      .limit(2000)
+
+    if (error || !data) {
+      console.warn('[getIndustryHiringPanels]', error?.message)
+      return []
+    }
+
+    const panels = new Map()
+    for (const job of data) {
+      if (!job.industry) continue
+      let panel = panels.get(job.industry)
+      if (!panel) {
+        panel = { industry: job.industry, count: 0, companies: new Map() }
+        panels.set(job.industry, panel)
+      }
+      panel.count += 1
+      if (job.company?.id) panel.companies.set(job.company.id, job.company.name)
+    }
+
+    return [...panels.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit)
+      .map((panel) => ({
+        industry: panel.industry,
+        count: panel.count,
+        companiesTotal: panel.companies.size,
+        companies: [...panel.companies.values()].slice(0, 4).map((name) => ({
+          name,
+          initials: initialsOf(name),
+          color: colorFor(name),
+        })),
+      }))
+  } catch (err) {
+    console.warn('[getIndustryHiringPanels] unexpected:', err?.message)
+    return []
+  }
+}
+
 export async function getPrivateJobFacets() {
   try {
     const supabase = await createClient()

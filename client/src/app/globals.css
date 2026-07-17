@@ -149,6 +149,18 @@ html {
 }
 
 /* ============================================================
+ * Hiring panels — scrollable row with hidden scrollbar
+ * ============================================================ */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================================
  * Job cards — glassmorphism + entrance + hover shimmer + tilt
  * ============================================================ */
 @keyframes job-card-enter {
