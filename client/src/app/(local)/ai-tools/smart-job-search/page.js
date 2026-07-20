@@ -19,6 +19,7 @@ export const metadata = {
     images: [{ url: `${SITE}/og-image.png`, width: 1200, height: 630, alt: 'MyTechZ Smart Job Search' }],
   },
   twitter: { card: 'summary_large_image' },
+  robots: { index: false, follow: true },
 }
 
 function JsonLd() {
