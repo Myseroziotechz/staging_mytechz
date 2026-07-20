@@ -145,7 +145,7 @@ const WORK_MODES = [
 export default function JobCategories() {
   const [tab, setTab] = useState('category')
   const items = tab === 'category' ? CATEGORIES : WORK_MODES
-  const cols = tab === 'category' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
+  const cols = 'grid-cols-3'
 
   return (
     <HomeSection id="categories" tone="light" pad="pt-2 pb-8 sm:pt-4 sm:pb-10">
@@ -176,15 +176,15 @@ export default function JobCategories() {
       </div>
 
       {/* Card Grid */}
-      <div className={`grid ${cols} gap-5`}>
+      <div className={`grid ${cols} gap-3 sm:gap-5`}>
         {items.map((item) => (
           <Link
             key={item.name}
             href={item.href}
-            className="bg-white border border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center gap-4 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+            className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-8 flex flex-col items-center justify-center gap-2.5 sm:gap-4 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
           >
-            <div className="text-slate-900">{item.icon}</div>
-            <h3 className="font-semibold text-slate-900 text-sm text-center leading-snug">{item.name}</h3>
+            <div className="text-slate-900 [&>svg]:w-7 [&>svg]:h-7 sm:[&>svg]:w-10 sm:[&>svg]:h-10">{item.icon}</div>
+            <h3 className="font-semibold text-slate-900 text-xs sm:text-sm text-center leading-snug">{item.name}</h3>
           </Link>
         ))}
       </div>

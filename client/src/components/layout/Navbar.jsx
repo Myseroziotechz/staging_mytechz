@@ -555,9 +555,14 @@ export default function Navbar() {
               {user ? (
                 <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
-                <Link href="/login/user">
-                  <Button size="sm">Get Started</Button>
-                </Link>
+                <>
+                  <Link href="/login/user">
+                    <Button size="sm">Register</Button>
+                  </Link>
+                  <Link href="/login/user">
+                    <Button size="sm" variant="secondary">Login</Button>
+                  </Link>
+                </>
               )}
             <button
               className="p-2 rounded-xl hover:bg-white/20 transition-colors"

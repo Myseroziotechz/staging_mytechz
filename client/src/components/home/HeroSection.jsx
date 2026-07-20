@@ -75,7 +75,7 @@ export default function HeroSection() {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-0 flex flex-col items-center text-center">
 
         {/* Heading */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
           Find Your Dream Career with <span className="text-blue-600">AI</span>
         </h1>
 
@@ -88,7 +88,7 @@ export default function HeroSection() {
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="mt-8 w-full max-w-2xl bg-white rounded-full shadow-lg shadow-slate-900/5 border border-slate-100 p-1.5 flex flex-col sm:flex-row items-stretch"
+          className="mt-8 w-full max-w-2xl bg-white rounded-full shadow-lg shadow-slate-900/5 border border-slate-100 p-1.5 flex flex-row items-stretch"
         >
           {/* Skills / Role */}
           <div className="flex items-center gap-2 pl-5 pr-3 py-3 flex-1 min-w-0">
@@ -106,8 +106,8 @@ export default function HeroSection() {
 
           <div className="hidden sm:block w-px bg-slate-200 self-center h-6" />
 
-          {/* Experience Dropdown */}
-          <div className="relative flex items-center px-4 py-3 min-w-[160px]">
+          {/* Experience Dropdown — desktop only, kept off the compact mobile bar */}
+          <div className="hidden sm:flex relative items-center px-4 py-3 min-w-[160px]">
             <button
               type="button"
               onClick={() => setExpOpen((o) => !o)}
@@ -145,8 +145,8 @@ export default function HeroSection() {
 
           <div className="hidden sm:block w-px bg-slate-200 self-center h-6" />
 
-          {/* Location */}
-          <div className="flex items-center px-4 py-3 flex-1 min-w-0">
+          {/* Location — desktop only, kept off the compact mobile bar */}
+          <div className="hidden sm:flex items-center px-4 py-3 flex-1 min-w-0">
             <input
               type="text"
               value={location}
@@ -156,12 +156,15 @@ export default function HeroSection() {
             />
           </div>
 
-          {/* Search Button */}
+          {/* Search Button — icon-only on mobile, labelled pill on desktop */}
           <button
             type="submit"
-            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-8 py-3 rounded-full transition-colors"
+            className="shrink-0 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors p-3 sm:px-8 sm:py-3"
           >
-            Search
+            <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="hidden sm:inline text-sm">Search</span>
           </button>
         </form>
 

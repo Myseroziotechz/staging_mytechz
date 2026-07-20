@@ -27,9 +27,9 @@ const ChevronDoubleRight = ({ className }) => (
 
 function StartupCard({ company }) {
   return (
-    <div className="shrink-0 w-56 sm:w-60 bg-white border border-slate-200 rounded-2xl px-6 py-7 flex flex-col items-center text-center shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
+    <div className="shrink-0 w-40 sm:w-56 bg-white border border-slate-200 rounded-2xl px-4 py-5 sm:px-6 sm:py-7 flex flex-col items-center text-center shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
       <div
-        className="w-16 h-16 rounded-full ring-4 ring-slate-100 flex items-center justify-center font-bold text-lg shrink-0"
+        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full ring-2 sm:ring-4 ring-slate-100 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0"
         style={
           company.outline
             ? { backgroundColor: '#fff', border: `2px solid ${company.outline}`, color: company.outline }
@@ -38,11 +38,11 @@ function StartupCard({ company }) {
       >
         {company.initials}
       </div>
-      <p className="mt-4 font-bold text-slate-900">{company.name}</p>
-      <p className="mt-0.5 text-sm text-slate-500">{company.category}</p>
+      <p className="mt-3 sm:mt-4 text-sm sm:text-base font-bold text-slate-900">{company.name}</p>
+      <p className="mt-0.5 text-xs sm:text-sm text-slate-500">{company.category}</p>
       <button
         type="button"
-        className="mt-5 px-5 py-1.5 rounded-lg border border-amber-200 bg-amber-50 text-sm font-semibold text-amber-900 hover:bg-amber-100 transition-colors duration-200"
+        className="mt-3 sm:mt-5 px-4 py-1 sm:px-5 sm:py-1.5 rounded-lg border border-amber-200 bg-amber-50 text-xs sm:text-sm font-semibold text-amber-900 hover:bg-amber-100 transition-colors duration-200"
       >
         View
       </button>
@@ -64,7 +64,7 @@ export default function TopStartupsHiring() {
       </div>
 
       <div className="relative overflow-hidden marquee-fade-edges">
-        <div className="marquee-track flex gap-6 w-max" style={{ animationDuration: '45s' }}>
+        <div className="marquee-track flex gap-4 sm:gap-6 w-max" style={{ animationDuration: '45s' }}>
           {doubled.map((company, i) => (
             <StartupCard key={`${company.name}-${i}`} company={company} />
           ))}
