@@ -52,8 +52,9 @@ function AuthCompleteInner() {
         const role = profile?.role || 'candidate'
         const onboardingCompleted = Boolean(profile?.onboarding_completed)
 
-        // Redirect
-        let destination = '/dashboard'
+        // Redirect — candidates land on the homepage, matching the primary
+        // callback route in auth/callback/route.js.
+        let destination = '/'
         if (role === 'admin') destination = '/admin/dashboard'
         else if (role === 'recruiter') destination = onboardingCompleted ? '/recruiter/dashboard' : '/recruiter/onboarding'
 
