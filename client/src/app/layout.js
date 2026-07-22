@@ -82,6 +82,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
+      style={{ colorScheme: 'light' }}
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <head>
@@ -171,7 +172,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-white text-gray-900">
         <ClarityInit />
         <OpenPanelComponent
           clientId={process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID}

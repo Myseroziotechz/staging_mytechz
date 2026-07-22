@@ -4,13 +4,13 @@ import Link from 'next/link'
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Browse Jobs — Private, Government & Internships in India',
+  title: 'Browse 50,000+ Jobs in India 2026 — Private, Government & Internships',
   description: 'Find verified tech jobs in India: private company jobs, UPSC/SSC government jobs, paid internships for students, and AI-personalized job matches. 50,000+ verified listings updated daily.',
   keywords:
-    'tech jobs India, private jobs India, government jobs 2024, paid internships India, IT jobs, software developer jobs India, verified job portal India',
+    'tech jobs India, private jobs India, government jobs 2026, paid internships India, IT jobs, software developer jobs India, verified job portal India',
   alternates: { canonical: `${SITE}/jobs` },
   openGraph: {
-    title: 'Browse Jobs — Private, Government & Internships in India',
+    title: 'Browse 50,000+ Jobs in India 2026 — Private, Government & Internships',
     description: 'Find 50,000+ verified tech jobs in India: private, government, internships, and AI-matched. Updated daily.',
     url: `${SITE}/jobs`,
     type: 'website',

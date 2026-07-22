@@ -11,6 +11,7 @@ const PRIVATE_PATHS = [
   '/my-applications',
   '/saved-jobs',
   '/settings',
+  '/ai-tools/resume-rank-checker/check',
 ]
 
 const AI_ALLOW_PATHS = [
@@ -25,6 +26,7 @@ const AI_ALLOW_PATHS = [
   '/ai-tools',
   '/ai-tools/resume-builder',
   '/ai-tools/resume-analyzer',
+  '/ai-tools/resume-rank-checker',
   '/ai-tools/smart-job-search',
   '/blog',
   '/blog/*',

@@ -6,6 +6,10 @@ const PROTECTED_PREFIXES = [
   '/my-applications',
   '/saved-jobs',
   '/settings',
+  '/ai-tools/resume-builder/create',
+  '/ai-tools/resume-builder/editor',
+  '/ai-tools/resume-builder/my-resumes',
+  '/ai-tools/resume-rank-checker/check',
 ]
 
 const PROTECTED_JOB_SUFFIXES = ['/apply', '/preparation']
@@ -51,5 +55,9 @@ export const config = {
     '/settings/:path*',
     '/jobs/:category/:slug/apply/:path*',
     '/jobs/:category/:slug/preparation/:path*',
+    '/ai-tools/resume-builder/create/:path*',
+    '/ai-tools/resume-builder/editor/:path*',
+    '/ai-tools/resume-builder/my-resumes/:path*',
+    '/ai-tools/resume-rank-checker/check/:path*',
   ],
 }
