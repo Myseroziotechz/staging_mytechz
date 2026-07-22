@@ -43,19 +43,11 @@ function JsonLd({ post }) {
     ],
   }
 
-  const wordCount = post.content
-    ? post.content.reduce((sum, block) => {
-        const text = block.text || (block.items ? block.items.join(' ') : '')
-        return sum + text.split(/\s+/).filter(Boolean).length
-      }, 0)
-    : undefined
-
   const article = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': 'Article',
     headline: post.title,
     description: post.description,
-    keywords: post.keywords,
     datePublished: post.date,
     dateModified: post.date,
     author: { '@type': 'Organization', name: 'MyTechZ', url: SITE },
@@ -67,8 +59,6 @@ function JsonLd({ post }) {
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE}/blog/${post.slug}` },
     image: post.image,
-    ...(wordCount ? { wordCount } : {}),
-    inLanguage: 'en-IN',
   }
 
   const faqSchema = post.faq?.length
