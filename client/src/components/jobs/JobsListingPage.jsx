@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
 import SortDropdown from './SortDropdown'
+import PrivateFiltersPanel from './PrivateFiltersPanel'
 import { formatStipend, govMeta, parseInternshipMeta } from '@/lib/jobs/format'
 import { loadMoreJobsAction } from '@/lib/jobs/client-actions'
 
@@ -15,6 +16,19 @@ function setOrDelete(params, key, value) {
   else if (Array.isArray(value)) params.set(key, value.join(','))
   else params.set(key, String(value))
 }
+
+// [stateKey, urlKey] — the private-only keys (dept/wmodes/city/ind/edu/co/sal/hl/exp_max)
+// are no-ops for Government/Internship since those pages never set them.
+const FILTER_KEYS = [
+  ['q', 'q'], ['location', 'loc'], ['work_mode', 'mode'], ['job_type', 'type'],
+  ['exp_min', 'exp_min'], ['exp_max', 'exp_max'], ['sal_min', 'sal_min'],
+  ['skills', 'skills'], ['sort', 'sort'],
+  ['departments', 'dept'], ['work_modes', 'wmodes'], ['cities', 'city'],
+  ['industries', 'ind'], ['educations', 'edu'], ['companyIds', 'co'],
+  ['salaryBuckets', 'sal'], ['highlight', 'hl'],
+]
+
+const PRIVATE_CLEAR_KEYS = ['departments', 'work_modes', 'cities', 'industries', 'educations', 'companyIds', 'salaryBuckets', 'highlight']
 
 /**
  * Shared listing page for Private / Government / Internship.
@@ -33,7 +47,7 @@ function setOrDelete(params, key, value) {
  *   }
  *   initialJobs, initialFilters, initialError
  */
-export default function JobsListingPage({ pageConfig, initialJobs, initialFilters, initialError }) {
+export default function JobsListingPage({ pageConfig, initialJobs, initialFilters, initialError, facets }) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
@@ -71,16 +85,8 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
 
   const updateUrl = (next) => {
     const sp = new URLSearchParams(searchParams.toString())
-    setOrDelete(sp, 'q',        next.q)
-    setOrDelete(sp, 'loc',      next.location)
-    setOrDelete(sp, 'mode',     next.work_mode)
-    setOrDelete(sp, 'type',     next.job_type)
-    setOrDelete(sp, 'exp_min',  next.exp_min)
-    setOrDelete(sp, 'exp_max',  next.exp_max)
-    setOrDelete(sp, 'sal_min',  next.sal_min)
-    setOrDelete(sp, 'skills',   next.skills)
-    setOrDelete(sp, 'sort',     next.sort)
-    setOrDelete(sp, 'page',     next.page && next.page > 1 ? next.page : null)
+    for (const [stateKey, urlKey] of FILTER_KEYS) setOrDelete(sp, urlKey, next[stateKey])
+    setOrDelete(sp, 'page', next.page && next.page > 1 ? next.page : null)
     startTransition(() => router.push(`${pathname}?${sp.toString()}`))
   }
 
@@ -99,16 +105,38 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
     if (filters.exp_min || filters.exp_max) out.push({ k: 'exp', label: `${filters.exp_min || 0}–${filters.exp_max || '∞'} yrs` })
     if (filters.sal_min)   out.push({ k: 'sal_min',  label: `≥ ₹${(filters.sal_min / 100000).toFixed(0)}L` })
     if (filters.skills?.length) out.push({ k: 'skills', label: filters.skills.join(', ') })
+
+    if (filters.departments?.length)  out.push({ k: 'departments',  label: filters.departments.join(', ') })
+    if (filters.work_modes?.length)   out.push({ k: 'work_modes',   label: filters.work_modes.join(', ') })
+    if (filters.cities?.length)       out.push({ k: 'cities',       label: filters.cities.join(', ') })
+    if (filters.industries?.length)   out.push({ k: 'industries',   label: filters.industries.join(', ') })
+    if (filters.educations?.length)   out.push({ k: 'educations',   label: filters.educations.join(', ') })
+    if (filters.highlight?.length)    out.push({ k: 'highlight',    label: filters.highlight.join(', ') })
+    if (filters.companyIds?.length) {
+      const names = filters.companyIds.map(id => facets?.company?.find(c => c.value === id)?.label || id)
+      out.push({ k: 'companyIds', label: names.join(', ') })
+    }
+    if (filters.salaryBuckets?.length) {
+      const labels = filters.salaryBuckets.map(k => facets?.salary?.find(s => s.value === k)?.label || k)
+      out.push({ k: 'salaryBuckets', label: labels.join(', ') })
+    }
+    if (pageConfig.id === 'private' && filters.exp_max) out.push({ k: 'exp_max', label: `up to ${filters.exp_max} yrs` })
+
     return out
-  }, [filters])
+  }, [filters, facets, pageConfig.id])
 
   const removeChip = (k) => {
     if (k === 'exp') setFilter({ exp_min: '', exp_max: '' })
+    else if (k === 'exp_max') setFilter({ exp_max: '' })
+    else if (PRIVATE_CLEAR_KEYS.includes(k)) setFilter({ [k]: [] })
     else if (k === 'skills') setFilter({ skills: [] })
     else setFilter({ [k]: '' })
   }
 
-  const clearAll = () => setFilter({ q: '', location: '', work_mode: '', job_type: '', exp_min: '', exp_max: '', sal_min: '', skills: [] })
+  const clearAll = () => setFilter({
+    q: '', location: '', work_mode: '', job_type: '', exp_min: '', exp_max: '', sal_min: '', skills: [],
+    ...Object.fromEntries(PRIVATE_CLEAR_KEYS.map(k => [k, []])),
+  })
 
   const sortOptions = [
     { value: 'newest',   label: 'Newest first',     hint: 'Recently posted on top' },
@@ -186,7 +214,9 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
           {/* Filters sidebar (desktop) */}
           <aside className="hidden lg:block">
             <div className="job-glass-panel rounded-2xl p-5 sticky top-24">
-              <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />
+              {pageConfig.id === 'private'
+                ? <PrivateFiltersPanel filters={filters} setFilter={setFilter} facets={facets} />
+                : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
             </div>
           </aside>
 
@@ -272,7 +302,9 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
                 <h3 className="text-lg font-semibold">Filters</h3>
                 <button onClick={() => setFiltersOpen(false)} className="text-slate-500">Close</button>
               </div>
-              <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />
+              {pageConfig.id === 'private'
+                ? <PrivateFiltersPanel filters={filters} setFilter={setFilter} facets={facets} />
+                : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
               <button onClick={() => setFiltersOpen(false)} className="mt-5 w-full py-3 rounded-xl bg-blue-700 text-white font-semibold">Show results</button>
             </div>
           </div>

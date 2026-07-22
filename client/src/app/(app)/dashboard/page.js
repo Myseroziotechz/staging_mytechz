@@ -125,12 +125,11 @@ export default async function CandidateDashboardPage() {
             badge="Free"
           />
           <ToolCard
-            href="/ai-tools/resume-rank-checker"
+            href="/ai-tools/resume-rank-checker/check"
             icon={chartIcon}
             title="Resume Rank Checker"
             description="Get your ATS score instantly and see exactly what keywords you are missing."
-            badge="Coming soon"
-            badgeColor="gray"
+            badge="Free"
           />
           <ToolCard
             href="/ai-tools/smart-job-search"

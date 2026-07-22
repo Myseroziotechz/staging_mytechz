@@ -4,14 +4,14 @@ import Link from 'next/link'
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Free Resume Builder — Create ATS-Friendly Resumes in Minutes',
+  title: 'Free Resume Builder 2026 — Create ATS-Friendly Resumes Instantly (No Sign-Up)',
   description:
     'Build a professional resume for free with MyTechZ AI Resume Builder. Choose from ATS-optimised templates, get AI-powered bullet points, and export as PDF — 100% free, no watermarks.',
   keywords:
     'free resume builder, free CV builder, best free resume builder India, AI resume builder, ATS resume builder, resume maker free, CV maker free, online resume builder India, resume builder no watermark',
   alternates: { canonical: `${SITE}/ai-tools/resume-builder` },
   openGraph: {
-    title: 'Free Resume Builder — ATS-Friendly, AI-Powered',
+    title: 'Free Resume Builder 2026 — ATS-Friendly, AI-Powered (No Sign-Up)',
     description: 'Create a recruiter-ready resume in minutes. Free templates, AI bullet points, PDF export — no watermarks, no paid plans.',
     url: `${SITE}/ai-tools/resume-builder`,
     type: 'website',
@@ -161,11 +161,11 @@ export default function ResumeBuilderPage() {
         {/* Hero */}
         <section className="py-12 sm:py-16">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-700 mb-5">
-              <svg className="w-3.5 h-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 border border-green-100 text-xs font-semibold text-green-700 mb-5">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1L12 2z" />
               </svg>
-              Coming Soon — Free for All Indian Job Seekers
+              Now Live — Free for All Indian Job Seekers
             </span>
 
             <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 leading-[1.1] tracking-tight mb-5">
@@ -179,10 +179,10 @@ export default function ResumeBuilderPage() {
 
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                href="/login"
+                href="/ai-tools/resume-builder/templates"
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3 rounded-xl shadow-lg shadow-blue-600/25 transition-all hover:-translate-y-0.5"
               >
-                Get Early Access — Free
+                Build Your Resume — Free
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -217,15 +217,15 @@ export default function ResumeBuilderPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Resume Builder is launching soon</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Resume Builder is Live</h2>
             <p className="text-slate-500 max-w-lg mx-auto mb-6">
-              We are putting the finishing touches on the editor and templates. Sign up now to get notified the moment it launches — and access it first, completely free.
+              Choose from 5 ATS-optimised templates, fill in your details (or let AI do it for you), and export your resume in seconds — PDF, DOCX, PNG, and more.
             </p>
             <Link
-              href="/login"
+              href="/ai-tools/resume-builder/templates"
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-all shadow-md"
             >
-              Notify Me When It Launches
+              Browse Templates & Get Started
             </Link>
           </div>
         </section>
