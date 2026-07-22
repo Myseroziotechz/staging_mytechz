@@ -18,6 +18,14 @@ function getLabel(score) {
   return 'Poor'
 }
 
+function getInterpretation(score) {
+  if (score >= 80) return 'Likely to pass most ATS filters. Strong keyword alignment.'
+  if (score >= 70) return 'Good chance of passing ATS. Minor improvements possible.'
+  if (score >= 50) return 'May pass some ATS filters. Add more relevant keywords.'
+  if (score >= 30) return 'Unlikely to pass ATS. Significant keyword gaps found.'
+  return 'Very low ATS compatibility. Resume needs major improvements.'
+}
+
 export default function ScoreGauge({ score = 0, source = 'local' }) {
   const color = getColor(score)
   const data = [
@@ -50,10 +58,13 @@ export default function ScoreGauge({ score = 0, source = 'local' }) {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
           <span className="text-4xl font-bold" style={{ color }}>{score}</span>
-          <span className="text-xs text-gray-500 font-medium">{getLabel(score)}</span>
+          <span className="text-xs font-semibold" style={{ color }}>{getLabel(score)}</span>
         </div>
       </div>
-      <span className="mt-3 text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+      <p className="mt-3 text-xs text-gray-500 text-center max-w-[220px]">
+        {getInterpretation(score)}
+      </p>
+      <span className="mt-2 text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
         {source === 'gemini' ? 'AI-Powered' : 'Rule-Based'} Analysis
       </span>
     </div>

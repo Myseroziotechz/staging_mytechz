@@ -33,7 +33,7 @@ export async function POST(req) {
 
   const start = Date.now()
 
-  // Always run local engine for categoryScores + warnings
+  // Always run local engine for categoryScores + warnings + new fields
   const localResult = analyzeResumeATS({
     resumeText: plainText,
     jobDescription: jobDescription || '',
@@ -52,7 +52,7 @@ export async function POST(req) {
     }
   }
 
-  // Merge results
+  // Merge results — ensure consistent structure for both paths
   let result
   if (geminiResult && typeof geminiResult.atsScore === 'number') {
     // Gemini succeeded — merge Gemini insights with local category scores + warnings
@@ -60,19 +60,21 @@ export async function POST(req) {
       source: 'gemini',
       atsScore: geminiResult.atsScore,
       categoryScores: localResult.categoryScores,
-      keywords: localResult.keywords,
+      keywords: localResult.keywords, // includes hardSkills, softSkills from local engine
+      keywordFrequency: localResult.keywordFrequency,
       missingKeywords: (geminiResult.missingKeywords || []).map((kw, i) => {
         if (typeof kw === 'string') {
-          return { keyword: kw, section: 'skills', suggestion: `Add "${kw}" to your resume`, priority: i < 5 ? 'high' : 'medium' }
+          return { keyword: kw, section: 'skills', skillType: 'hard', suggestion: `Add "${kw}" to your resume`, priority: i < 5 ? 'high' : 'medium' }
         }
-        return { ...kw, priority: kw.priority || (i < 5 ? 'high' : 'medium') }
+        return { ...kw, skillType: kw.skillType || 'hard', priority: kw.priority || (i < 5 ? 'high' : 'medium') }
       }),
       suggestedAdditions: geminiResult.suggestedAdditions || localResult.suggestedAdditions,
+      formattingChecklist: localResult.formattingChecklist,
       tips: geminiResult.tips || localResult.tips,
       warnings: localResult.warnings,
     }
   } else {
-    // Local engine only
+    // Local engine only — already has consistent structure
     result = localResult
   }
 

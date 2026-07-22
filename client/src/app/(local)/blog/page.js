@@ -25,6 +25,26 @@ export const metadata = {
 
 const CHANGELOG_POSTS = [
   {
+    title: 'ATS Resume Rank Checker v2 & Admin Analytics — July 2026',
+    date: '2026-07-23',
+    version: 'v1.3.0',
+    items: [
+      { type: 'new', text: 'ATS Rank Checker: Hard skills vs soft skills classification — see which type of keywords you\'re missing.' },
+      { type: 'new', text: 'ATS Rank Checker: Keyword frequency analysis chart — compare how often top keywords appear in your resume vs the job description.' },
+      { type: 'new', text: 'ATS Rank Checker: ATS Parsing Preview — see exactly what text ATS systems extract from your resume with matched keywords highlighted in green and missing ones underlined in red.' },
+      { type: 'new', text: 'ATS Rank Checker: Formatting checklist — pass/fail checks for email, phone, dates, sections, action verbs, and resume length.' },
+      { type: 'new', text: 'ATS Rank Checker: Scan history — view your last 5 ATS scores with a trend sparkline and score comparisons.' },
+      { type: 'new', text: 'Admin Analytics Dashboard — jobs trend, applications trend, category distribution, application status breakdown, and top performing jobs table.' },
+      { type: 'improvement', text: 'ATS Rank Checker: Smarter keyword matching — missing keywords now point to the correct resume section (skills, experience, or summary) instead of always defaulting to skills.' },
+      { type: 'improvement', text: 'ATS Rank Checker: JD keywords ranked by frequency — most-mentioned keywords in the job description are prioritized first.' },
+      { type: 'improvement', text: 'ATS Rank Checker: Score gauge now shows interpretation text explaining what your score means for ATS pass rates.' },
+      { type: 'improvement', text: 'ATS Rank Checker: Category bar chart shows weight percentages and detailed tooltips explaining each scoring category.' },
+      { type: 'improvement', text: 'ATS Rank Checker: Progressive disclosure — detailed analysis sections (frequency, preview, warnings) are collapsible for a cleaner results view.' },
+      { type: 'improvement', text: 'Consistent data structure between AI-powered (Gemini) and rule-based analysis — no more UI inconsistencies when switching modes.' },
+      { type: 'fix', text: 'Fixed missing keywords always showing "→ skills" section — now intelligently detects whether a keyword belongs in skills, experience, or summary.' },
+    ],
+  },
+  {
     title: 'Job Cards Redesign & Load More — July 2026 Update',
     date: '2026-07-13',
     version: 'v1.2.0',

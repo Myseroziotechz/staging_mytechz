@@ -119,6 +119,27 @@ const ROLE_ALIASES = {
   'security': 'cybersecurity', 'infosec': 'cybersecurity', 'security engineer': 'cybersecurity',
 }
 
+// Soft skills — commonly expected but not technical
+const SOFT_SKILLS = new Set([
+  'communication','leadership','teamwork','problem solving','problem-solving',
+  'collaboration','critical thinking','time management','adaptability','creativity',
+  'attention to detail','interpersonal','negotiation','presentation',
+  'decision making','decision-making','conflict resolution','mentoring',
+  'project management','strategic thinking','analytical','self-motivated',
+  'stakeholder','cross-functional','customer','data-driven','prioritization',
+  'roadmap','strategy','go-to-market','product lifecycle','user research',
+  'market research','competitive analysis','agile','scrum',
+])
+
+// Section detection patterns
+const SECTION_PATTERNS = {
+  summary: /(?:^|\n)\s*(?:summary|objective|profile|about\s*me|professional\s*summary)[:\s\-—]*([\s\S]*?)(?=\n\s*(?:experience|education|skills|projects|certifications|work\s*history|technical)|$)/i,
+  experience: /(?:^|\n)\s*(?:experience|employment|work\s*history|professional\s*experience)[:\s\-—]*([\s\S]*?)(?=\n\s*(?:education|skills|projects|certifications|summary)|$)/i,
+  education: /(?:^|\n)\s*(?:education|academic|qualifications|degree)[:\s\-—]*([\s\S]*?)(?=\n\s*(?:experience|skills|projects|certifications|summary|work\s*history)|$)/i,
+  skills: /(?:^|\n)\s*(?:skills|technologies|tech\s*stack|competencies|technical\s*skills|core\s*competencies)[:\s\-—]*([\s\S]*?)(?=\n\s*(?:experience|education|projects|certifications|summary|work\s*history)|$)/i,
+  projects: /(?:^|\n)\s*(?:projects|portfolio)[:\s\-—]*([\s\S]*?)(?=\n\s*(?:experience|education|skills|certifications|summary|work\s*history)|$)/i,
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function tokenize(text) {
@@ -157,6 +178,58 @@ function extractKeywords(text) {
   return keywords
 }
 
+/**
+ * Count occurrences of a keyword in text (case-insensitive).
+ * For bigrams, matches the exact phrase. For unigrams, matches word boundaries.
+ */
+function countOccurrences(text, keyword) {
+  const lower = text.toLowerCase()
+  if (keyword.includes(' ')) {
+    // Bigram — count exact phrase occurrences
+    let count = 0
+    let idx = 0
+    while ((idx = lower.indexOf(keyword, idx)) !== -1) {
+      count++
+      idx += keyword.length
+    }
+    return count
+  }
+  // Unigram — match via regex word boundary where possible, fallback to includes count
+  try {
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const matches = lower.match(new RegExp(`\\b${escaped}\\b`, 'g'))
+    return matches ? matches.length : 0
+  } catch {
+    // Fallback for keywords that break regex (e.g., c++)
+    let count = 0
+    let idx = 0
+    while ((idx = lower.indexOf(keyword, idx)) !== -1) {
+      count++
+      idx += keyword.length
+    }
+    return count
+  }
+}
+
+/**
+ * Extract keyword frequencies from JD text and rank by importance.
+ * Returns keywords sorted by frequency (highest first).
+ */
+function extractKeywordsWithFrequency(text) {
+  const keywords = extractKeywords(text)
+  const lower = text.toLowerCase()
+  const freqMap = []
+
+  for (const kw of keywords) {
+    const count = countOccurrences(lower, kw)
+    freqMap.push({ keyword: kw, jdCount: count })
+  }
+
+  // Sort by frequency descending — JD keywords that appear more often are more important
+  freqMap.sort((a, b) => b.jdCount - a.jdCount)
+  return freqMap
+}
+
 function resolveRole(targetRole) {
   if (!targetRole) return null
   const lower = targetRole.toLowerCase().trim()
@@ -172,6 +245,57 @@ function resolveRole(targetRole) {
   return null
 }
 
+/**
+ * Detect which resume section a keyword most likely belongs in.
+ * Scans resume sections and returns the section where the keyword fits best.
+ */
+function detectKeywordSection(keyword, resumeText) {
+  const lower = resumeText.toLowerCase()
+
+  // Check if it's a soft skill — belongs in summary or experience
+  if (SOFT_SKILLS.has(keyword.toLowerCase())) {
+    return 'summary'
+  }
+
+  // Parse sections from resume
+  const sectionContent = {}
+  for (const [section, pattern] of Object.entries(SECTION_PATTERNS)) {
+    const match = lower.match(pattern)
+    sectionContent[section] = match ? match[1] || '' : ''
+  }
+
+  // Check if keyword appears in any section context
+  // If it's a technical term and skills section exists, suggest skills
+  // If it relates to a tool/process and experience exists, suggest experience
+  // Otherwise default based on keyword type
+
+  // Technical keywords (contain dots, plus, hash, or are short acronyms) → skills
+  if (/[.+#]/.test(keyword) || (keyword.length <= 4 && /^[a-z]+$/i.test(keyword))) {
+    return 'skills'
+  }
+
+  // Multi-word phrases that sound like methodologies or processes → experience
+  if (keyword.includes(' ') && !SOFT_SKILLS.has(keyword)) {
+    // Check if it sounds like a tool/framework → skills, otherwise experience
+    const techBigrams = ['machine learning','deep learning','data analysis','unit test',
+      'data structures','state management','design system','tech stack','data visualization',
+      'data modeling','data cleaning','feature engineering','network security',
+      'threat modeling','risk assessment','user research','usability testing']
+    if (techBigrams.includes(keyword)) return 'skills'
+    return 'experience'
+  }
+
+  // Default: technical single words → skills
+  return 'skills'
+}
+
+/**
+ * Classify a keyword as hard skill or soft skill.
+ */
+function classifySkillType(keyword) {
+  return SOFT_SKILLS.has(keyword.toLowerCase()) ? 'soft' : 'hard'
+}
+
 // ── Scoring Functions ──────────────────────────────────────────────────────────
 
 function scoreKeywordMatch(resumeText, jobDescription, targetRole) {
@@ -180,25 +304,47 @@ function scoreKeywordMatch(resumeText, jobDescription, targetRole) {
   let targetKeywords = []
   let matched = []
   let missing = []
+  let keywordFrequency = {}
 
   if (jobDescription && jobDescription.trim().length > 20) {
-    // Extract keywords from JD
-    const jdKeywords = extractKeywords(jobDescription)
-    targetKeywords = [...jdKeywords].filter((k) => !STOP_WORDS.has(k) && k.length > 2)
+    // Extract keywords from JD, ranked by frequency
+    const ranked = extractKeywordsWithFrequency(jobDescription)
+    targetKeywords = ranked.slice(0, 30).map((r) => r.keyword)
+
+    // Build JD frequency map for top keywords
+    for (const r of ranked.slice(0, 30)) {
+      keywordFrequency[r.keyword] = { jdCount: r.jdCount, resumeCount: 0 }
+    }
   } else {
     // Use role-based keywords
     const role = resolveRole(targetRole)
     targetKeywords = role ? ROLE_KEYWORDS_MAP[role] : ROLE_KEYWORDS_MAP['software engineer']
+    targetKeywords = targetKeywords.slice(0, 30)
+
+    // Build frequency map for role keywords
+    for (const kw of targetKeywords) {
+      keywordFrequency[kw] = { jdCount: 1, resumeCount: 0 }
+    }
   }
 
-  // Limit to top 30 most relevant keywords
-  targetKeywords = targetKeywords.slice(0, 30)
+  // Classify and match
+  const hardSkills = { matched: [], missing: [] }
+  const softSkills = { matched: [], missing: [] }
 
   for (const kw of targetKeywords) {
-    if (resumeLower.includes(kw) || resumeTokens.has(kw)) {
+    const isMatch = resumeLower.includes(kw) || resumeTokens.has(kw)
+    const resumeCount = countOccurrences(resumeText, kw)
+    keywordFrequency[kw].resumeCount = resumeCount
+    const skillType = classifySkillType(kw)
+
+    if (isMatch) {
       matched.push(kw)
+      if (skillType === 'hard') hardSkills.matched.push(kw)
+      else softSkills.matched.push(kw)
     } else {
       missing.push(kw)
+      if (skillType === 'hard') hardSkills.missing.push(kw)
+      else softSkills.missing.push(kw)
     }
   }
 
@@ -206,7 +352,15 @@ function scoreKeywordMatch(resumeText, jobDescription, targetRole) {
     ? Math.round((matched.length / targetKeywords.length) * 100)
     : 50
 
-  return { score: Math.min(score, 100), matched, missing, targetKeywords }
+  return {
+    score: Math.min(score, 100),
+    matched,
+    missing,
+    targetKeywords,
+    hardSkills,
+    softSkills,
+    keywordFrequency,
+  }
 }
 
 function scoreSectionCompleteness(resumeText) {
@@ -364,6 +518,56 @@ function scoreContentDepth(resumeText) {
   return { score: Math.min(score, 100), issues }
 }
 
+/**
+ * Build formatting checklist — what ATS parsers look for.
+ */
+function buildFormattingChecklist(resumeText) {
+  const lower = resumeText.toLowerCase()
+  const checks = []
+
+  // Email
+  const hasEmail = /[\w.-]+@[\w.-]+\.\w{2,}/.test(resumeText)
+  checks.push({ label: 'Email address found', passed: hasEmail })
+
+  // Phone
+  const hasPhone = /(\+?\d[\d\s.-]{7,}\d)/.test(resumeText)
+  checks.push({ label: 'Phone number found', passed: hasPhone })
+
+  // Dates present
+  const hasDates = /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\s*\d{4}\b/i.test(resumeText) || /\b20\d{2}\b/.test(resumeText)
+  checks.push({ label: 'Date formats present', passed: hasDates })
+
+  // No excessive special characters
+  const unicodeCount = (resumeText.match(/[^\x00-\x7F]/g) || []).length
+  checks.push({ label: 'No excessive special characters', passed: unicodeCount <= 20 })
+
+  // Proper sections detected
+  const hasSections = /summary|objective|profile/i.test(lower) &&
+    /experience|employment|work history/i.test(lower) &&
+    /education|degree|university/i.test(lower)
+  checks.push({ label: 'Standard sections present', passed: hasSections })
+
+  // Action verbs used
+  const lines = resumeText.split('\n')
+  let actionVerbCount = 0
+  for (const line of lines) {
+    const trimmed = line.replace(/^[\s•\-●▪◦*]+/, '').trim()
+    const firstWord = trimmed.split(/\s/)[0]?.toLowerCase()
+    if (firstWord && ACTION_VERBS.has(firstWord)) actionVerbCount++
+  }
+  checks.push({ label: 'Action verbs used', passed: actionVerbCount >= 2 })
+
+  // Skills section
+  const hasSkills = /skills|technologies|tech stack|competencies/i.test(lower)
+  checks.push({ label: 'Skills section found', passed: hasSkills })
+
+  // Reasonable length
+  const wordCount = resumeText.split(/\s+/).length
+  checks.push({ label: 'Resume length OK (100-1500 words)', passed: wordCount >= 100 && wordCount <= 1500 })
+
+  return checks
+}
+
 // ── Main Export ─────────────────────────────────────────────────────────────────
 
 /**
@@ -377,9 +581,11 @@ export function analyzeResumeATS({ resumeText, jobDescription = '', targetRole =
       source: 'local',
       atsScore: 0,
       categoryScores: { keywordMatch: 0, sectionCompleteness: 0, formatting: 0, contentDepth: 0 },
-      keywords: { matched: [], missing: [] },
+      keywords: { matched: [], missing: [], hardSkills: { matched: [], missing: [] }, softSkills: { matched: [], missing: [] } },
+      keywordFrequency: {},
       missingKeywords: [],
       suggestedAdditions: [],
+      formattingChecklist: [],
       tips: ['Your resume appears to be empty or too short. Please provide more content.'],
       warnings: [{ level: 'critical', message: 'Resume text is too short to analyse', fix: 'Provide your full resume text for accurate scoring' }],
     }
@@ -390,6 +596,7 @@ export function analyzeResumeATS({ resumeText, jobDescription = '', targetRole =
   const sections = scoreSectionCompleteness(resumeText)
   const formatting = scoreFormatting(resumeText)
   const depth = scoreContentDepth(resumeText)
+  const formattingChecklist = buildFormattingChecklist(resumeText)
 
   // Weighted overall score
   const atsScore = Math.round(
@@ -399,20 +606,40 @@ export function analyzeResumeATS({ resumeText, jobDescription = '', targetRole =
     depth.score * 0.20
   )
 
-  // Build missing keywords with priority and suggestions
-  const missingKeywords = kw.missing.map((keyword, i) => ({
-    keyword,
-    section: 'skills',
-    suggestion: `Add "${keyword}" to your skills or experience section`,
-    priority: i < 5 ? 'high' : i < 15 ? 'medium' : 'low',
-  }))
+  // Build missing keywords with intelligent section detection and JD-frequency priority
+  const missingWithFreq = kw.missing.map((keyword) => {
+    const freq = kw.keywordFrequency[keyword]
+    return { keyword, jdCount: freq?.jdCount || 1 }
+  })
+  // Sort by JD frequency (most important keywords first)
+  missingWithFreq.sort((a, b) => b.jdCount - a.jdCount)
 
-  // Suggested additions
-  const suggestedAdditions = kw.missing.slice(0, 10).map((keyword) => ({
-    section: 'skills',
-    keyword,
-    suggestion: `Incorporate "${keyword}" into your resume — mention it in skills or describe relevant experience using this term`,
-  }))
+  const missingKeywords = missingWithFreq.map((item, i) => {
+    const section = detectKeywordSection(item.keyword, resumeText)
+    const skillType = classifySkillType(item.keyword)
+    return {
+      keyword: item.keyword,
+      section,
+      skillType,
+      suggestion: `Add "${item.keyword}" to your ${section} section`,
+      priority: i < 5 ? 'high' : i < 15 ? 'medium' : 'low',
+    }
+  })
+
+  // Suggested additions — with intelligent section mapping
+  const suggestedAdditions = missingWithFreq.slice(0, 10).map((item) => {
+    const section = detectKeywordSection(item.keyword, resumeText)
+    return {
+      section,
+      keyword: item.keyword,
+      suggestion: `Incorporate "${item.keyword}" into your ${section} section — ${
+        section === 'skills' ? 'list it as a core competency' :
+        section === 'experience' ? 'describe relevant experience using this term' :
+        section === 'summary' ? 'mention it in your professional summary' :
+        'add it to the relevant section'
+      }`,
+    }
+  })
 
   // Collect all warnings
   const warnings = [
@@ -427,6 +654,9 @@ export function analyzeResumeATS({ resumeText, jobDescription = '', targetRole =
   if (sections.score < 60) tips.push('Add missing resume sections (summary, experience, education, skills) for better ATS parsing.')
   if (formatting.score < 70) tips.push('Simplify formatting — avoid tables, columns, and special characters.')
   if (depth.score < 50) tips.push('Add quantified achievements and use action verbs to strengthen your content.')
+  if (kw.hardSkills.missing.length > kw.hardSkills.matched.length) {
+    tips.push('You are missing more technical skills than you have matched. Focus on adding the hard skills listed in the job description.')
+  }
   if (tips.length === 0) tips.push('Your resume looks well-structured. Keep tailoring it to specific job descriptions for the best results.')
 
   return {
@@ -438,9 +668,16 @@ export function analyzeResumeATS({ resumeText, jobDescription = '', targetRole =
       formatting: formatting.score,
       contentDepth: depth.score,
     },
-    keywords: { matched: kw.matched, missing: kw.missing },
+    keywords: {
+      matched: kw.matched,
+      missing: kw.missing,
+      hardSkills: kw.hardSkills,
+      softSkills: kw.softSkills,
+    },
+    keywordFrequency: kw.keywordFrequency,
     missingKeywords,
     suggestedAdditions,
+    formattingChecklist,
     tips,
     warnings,
   }

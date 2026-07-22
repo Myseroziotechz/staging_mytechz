@@ -94,11 +94,7 @@ export default async function AdminDashboardPage() {
           <AdminActionCard href="/admin/whitelist"  icon={mailIcon}     label="Admin Emails" />
           <AdminActionCard href="/admin/users"      icon={usersActionIcon} label="Users" />
           <AdminActionCard href="/admin/recruiters" icon={buildingActionIcon} label="Recruiters" />
-          <div className="flex flex-col items-center gap-1.5 p-4 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-center opacity-60">
-            <span className="w-7 h-7 flex items-center justify-center text-gray-400">{analyticsIcon}</span>
-            <span className="text-xs font-medium text-gray-500">Analytics</span>
-            <span className="text-[10px] text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded-full">Soon</span>
-          </div>
+          <AdminActionCard href="/admin/analytics" icon={analyticsIcon} label="Analytics" />
         </div>
       </section>
 

@@ -8,6 +8,11 @@ const PRIORITY_STYLES = {
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
 
+const SKILL_TYPE_BADGE = {
+  hard: 'bg-blue-100 text-blue-700',
+  soft: 'bg-purple-100 text-purple-700',
+}
+
 export default function MissingKeywords({ missingKeywords = [] }) {
   if (missingKeywords.length === 0) {
     return (
@@ -34,6 +39,11 @@ export default function MissingKeywords({ missingKeywords = [] }) {
           >
             <span>{item.keyword}</span>
             <span className="text-[10px] opacity-60">→ {item.section}</span>
+            {item.skillType && (
+              <span className={`text-[9px] font-bold uppercase px-1 py-0.5 rounded ${SKILL_TYPE_BADGE[item.skillType] || ''}`}>
+                {item.skillType}
+              </span>
+            )}
           </div>
         ))}
       </div>

@@ -6,25 +6,42 @@ import ResumeInput from '@/components/rank-checker/ResumeInput'
 import MissingKeywords from '@/components/rank-checker/MissingKeywords'
 import SuggestionsList from '@/components/rank-checker/SuggestionsList'
 import WarningsPanel from '@/components/rank-checker/WarningsPanel'
+import FormattingChecklist from '@/components/rank-checker/FormattingChecklist'
+import ParsedPreview from '@/components/rank-checker/ParsedPreview'
+import ScanHistory from '@/components/rank-checker/ScanHistory'
 
 // Lazy-load Recharts components (heavy) — only loaded after analysis
 const ScoreGauge = dynamic(() => import('@/components/rank-checker/ScoreGauge'), { ssr: false })
 const CategoryBarChart = dynamic(() => import('@/components/rank-checker/CategoryBarChart'), { ssr: false })
 const KeywordPieChart = dynamic(() => import('@/components/rank-checker/KeywordPieChart'), { ssr: false })
+const KeywordFrequencyChart = dynamic(() => import('@/components/rank-checker/KeywordFrequencyChart'), { ssr: false })
 
 export default function ResumeRankCheckerCheckPage() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState('')
+  const [resumeText, setResumeText] = useState('')
 
-  async function handleAnalyze({ mode, file, resumeText, jobDescription, targetRole }) {
+  // Collapsible section state
+  const [expandedSections, setExpandedSections] = useState({
+    frequency: false,
+    preview: false,
+    warnings: false,
+    suggestions: true,
+  })
+
+  function toggleSection(key) {
+    setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  async function handleAnalyze({ mode, file, resumeText: inputText, jobDescription, targetRole }) {
     setLoading(true)
     setError('')
     setResult(null)
 
     try {
-      let text = resumeText
+      let text = inputText
 
       // If file uploaded, parse it first
       if (mode === 'upload' && file) {
@@ -35,6 +52,7 @@ export default function ResumeRankCheckerCheckPage() {
         }
       }
 
+      setResumeText(text || '')
       setProgress('Analysing ATS compatibility...')
 
       const res = await fetch('/api/ai/resume/rank-check', {
@@ -70,6 +88,9 @@ export default function ResumeRankCheckerCheckPage() {
 
       {/* Input */}
       <ResumeInput onAnalyze={handleAnalyze} loading={loading} />
+
+      {/* Scan History — shows before results */}
+      {!result && !loading && <ScanHistory />}
 
       {/* Progress */}
       {loading && progress && (
@@ -113,13 +134,100 @@ export default function ResumeRankCheckerCheckPage() {
             <MissingKeywords missingKeywords={result.missingKeywords} />
           </div>
 
-          {/* Row 3: Warnings */}
-          <WarningsPanel warnings={result.warnings} />
+          {/* Row 3: Formatting Checklist */}
+          {result.formattingChecklist?.length > 0 && (
+            <FormattingChecklist checklist={result.formattingChecklist} />
+          )}
 
-          {/* Row 4: Suggestions */}
-          <SuggestionsList suggestedAdditions={result.suggestedAdditions} tips={result.tips} />
+          {/* Row 4: Keyword Frequency (collapsible) */}
+          {Object.keys(result.keywordFrequency || {}).length > 0 && (
+            <CollapsibleSection
+              title="Keyword Frequency Analysis"
+              subtitle="Compare keyword counts between your resume and the job description"
+              expanded={expandedSections.frequency}
+              onToggle={() => toggleSection('frequency')}
+            >
+              <KeywordFrequencyChart keywordFrequency={result.keywordFrequency} />
+            </CollapsibleSection>
+          )}
+
+          {/* Row 5: ATS Parsing Preview (collapsible) */}
+          {resumeText && (
+            <CollapsibleSection
+              title="ATS Parsing Preview"
+              subtitle="See exactly what text ATS systems extract from your resume"
+              expanded={expandedSections.preview}
+              onToggle={() => toggleSection('preview')}
+            >
+              <ParsedPreview resumeText={resumeText} keywords={result.keywords} />
+            </CollapsibleSection>
+          )}
+
+          {/* Row 6: Warnings (collapsible) */}
+          <CollapsibleSection
+            title={`Issues & Fixes ${result.warnings?.length ? `(${result.warnings.length})` : ''}`}
+            subtitle="Formatting and structural issues detected"
+            expanded={expandedSections.warnings}
+            onToggle={() => toggleSection('warnings')}
+            defaultBadge={result.warnings?.length === 0 ? 'All Clear' : result.warnings?.filter((w) => w.level === 'critical').length > 0 ? 'Has Critical' : 'Has Warnings'}
+            badgeTone={result.warnings?.length === 0 ? 'green' : result.warnings?.filter((w) => w.level === 'critical').length > 0 ? 'red' : 'amber'}
+          >
+            <WarningsPanel warnings={result.warnings} />
+          </CollapsibleSection>
+
+          {/* Row 7: Suggestions (always expanded by default) */}
+          <CollapsibleSection
+            title="Suggestions & Tips"
+            subtitle="Actionable steps to improve your score"
+            expanded={expandedSections.suggestions}
+            onToggle={() => toggleSection('suggestions')}
+          >
+            <SuggestionsList suggestedAdditions={result.suggestedAdditions} tips={result.tips} />
+          </CollapsibleSection>
         </div>
       )}
+    </div>
+  )
+}
+
+// ── Collapsible Section ─────────────────────────────────────────────────────────
+
+function CollapsibleSection({ title, subtitle, expanded, onToggle, children, defaultBadge, badgeTone }) {
+  const toneColors = {
+    green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
+    amber: 'bg-amber-100 text-amber-700',
+  }
+
+  return (
+    <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+      >
+        <div className="text-left">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+            {defaultBadge && !expanded && (
+              <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${toneColors[badgeTone] || toneColors.green}`}>
+                {defaultBadge}
+              </span>
+            )}
+          </div>
+          {subtitle && <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>}
+        </div>
+        <svg
+          className={`w-4 h-4 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {expanded && <div className="px-0">{children}</div>}
     </div>
   )
 }
