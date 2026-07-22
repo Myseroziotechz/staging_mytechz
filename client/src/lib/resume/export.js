@@ -2,7 +2,8 @@
 
 import { toPng, toJpeg, toSvg } from 'html-to-image'
 import { jsPDF } from 'jspdf'
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx'
+// docx is imported dynamically inside exportAsDOCX to avoid webpack SWC
+// compilation issues with the 'super' keyword in docx/dist/index.mjs
 
 /**
  * Export resume preview element to various formats.
@@ -76,6 +77,7 @@ export async function exportAsPDF(element, filename = 'resume.pdf') {
 }
 
 export async function exportAsDOCX(resumeData, filename = 'resume.docx') {
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = await import('docx')
   const children = []
 
   // Contact / Header
