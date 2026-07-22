@@ -15,10 +15,10 @@ export default async function sitemap() {
     { url: `${SITE}/jobs/internship`,                lastModified: now, priority: 0.9,  changeFrequency: 'hourly'  },
     { url: `${SITE}/jobs/ai`,                        lastModified: now, priority: 0.85, changeFrequency: 'hourly'  },
     // AI tools
-    { url: `${SITE}/ai-tools`,                       lastModified: now, priority: 0.8,  changeFrequency: 'weekly'  },
-    { url: `${SITE}/ai-tools/resume-builder`,        lastModified: now, priority: 0.85, changeFrequency: 'weekly'  },
-    { url: `${SITE}/ai-tools/resume-analyzer`,       lastModified: now, priority: 0.8,  changeFrequency: 'weekly'  },
-    { url: `${SITE}/ai-tools/smart-job-search`,      lastModified: now, priority: 0.75, changeFrequency: 'weekly'  },
+    { url: `${SITE}/ai-tools`,                       lastModified: now, priority: 0.85, changeFrequency: 'weekly'  },
+    { url: `${SITE}/ai-tools/resume-builder`,        lastModified: now, priority: 0.95, changeFrequency: 'weekly'  },
+    { url: `${SITE}/ai-tools/resume-builder/templates`, lastModified: now, priority: 0.9, changeFrequency: 'weekly' },
+    { url: `${SITE}/ai-tools/resume-rank-checker`,  lastModified: now, priority: 0.8,  changeFrequency: 'weekly'  },
     // Blog
     { url: `${SITE}/blog`,                            lastModified: now, priority: 0.7,  changeFrequency: 'weekly'  },
     // Informational pages

@@ -5,7 +5,7 @@ import { getJobs } from '@/lib/jobs/queries'
 import { getPrivateJobFacets } from '@/lib/jobs/facets'
 
 export const metadata = {
-  title: 'Private Tech Jobs — IT, Software, Startups, BFSI & MNC Openings in India',
+  title: 'Private Tech Jobs India 2026 — IT, Software, Startups & MNC Openings (Updated Daily)',
   description: 'Browse verified private-sector tech job openings across IT services, product companies, BFSI, high-growth startups, and MNCs. Updated daily. Apply now on MyTechZ.',
   keywords: 'private tech jobs India, IT jobs, software developer jobs, MNC jobs India, startup jobs, BFSI jobs, verified private jobs',
   alternates: { canonical: 'https://mytechz.com/jobs/private' },

@@ -31,8 +31,9 @@ export const APP_NAV = [
     icon: 'sparkles',
     defaultOpen: true,
     children: [
-      { label: 'Resume Builder',      href: '/ai-tools/resume-builder',      icon: 'document' },
-      { label: 'Resume Rank Checker', href: '/ai-tools/resume-rank-checker', icon: 'search' },
+      { label: 'Resume Builder',      href: '/ai-tools/resume-builder/templates', icon: 'document' },
+      { label: 'My Resumes',          href: '/ai-tools/resume-builder/my-resumes', icon: 'document' },
+      { label: 'Resume Rank Checker', href: '/ai-tools/resume-rank-checker/check', icon: 'search' },
       { label: 'Smart Job Search',    href: '/ai-tools/smart-job-search',    icon: 'list' },
     ],
   },

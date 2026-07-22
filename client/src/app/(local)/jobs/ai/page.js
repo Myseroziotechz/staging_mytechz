@@ -5,7 +5,7 @@ import { getJobs } from '@/lib/jobs/queries'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
-  title: 'AI-Matched Jobs — Personalised Tech Job Recommendations India',
+  title: 'AI-Matched Jobs India 2026 — Personalised Tech Job Recommendations (Free)',
   description: 'AI-ranked job matches personalized to your resume, skills, and ambitions. Find roles where you fit best — not just keyword matches. Free for all Indian job seekers.',
   keywords: 'AI matched jobs India, personalized job recommendations, AI job search, fit score jobs, resume-matched jobs India',
   alternates: { canonical: 'https://mytechz.com/jobs/ai' },

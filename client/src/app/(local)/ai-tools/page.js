@@ -4,7 +4,7 @@ import Link from 'next/link'
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Free AI Career Tools — Resume Builder, Analyzer & Smart Job Search',
+  title: 'Free AI Career Tools 2026 — Resume Builder, ATS Checker & Smart Job Search',
   description:
     'Free AI-powered career tools by MyTechZ: free resume builder, ATS resume analyzer, and smart job search — all free for Indian job seekers.',
   keywords:
