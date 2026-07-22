@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['docx'],
   serverExternalPackages: ['pdf-parse'],
   images: {
     remotePatterns: [
