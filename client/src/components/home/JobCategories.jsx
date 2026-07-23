@@ -81,6 +81,16 @@ const CATEGORIES = [
       </svg>
     ),
   },
+  {
+    name: 'Healthcare',
+    href: '/jobs/private?q=healthcare',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10">
+        <path d="M11.25 4.5a.75.75 0 01.75-.75h0a.75.75 0 01.75.75v6h6a.75.75 0 01.75.75v0a.75.75 0 01-.75.75h-6v6a.75.75 0 01-.75.75h0a.75.75 0 01-.75-.75v-6h-6a.75.75 0 01-.75-.75v0a.75.75 0 01.75-.75h6v-6z" />
+        <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM3.75 12a8.25 8.25 0 1116.5 0 8.25 8.25 0 01-16.5 0z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
 ]
 
 const WORK_MODES = [
@@ -145,19 +155,10 @@ const WORK_MODES = [
 export default function JobCategories() {
   const [tab, setTab] = useState('category')
   const items = tab === 'category' ? CATEGORIES : WORK_MODES
-  const cols = tab === 'category' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
+  const cols = 'grid-cols-3'
 
   return (
-    <HomeSection id="categories" tone="light">
-      {/* Title card */}
-      <div className="text-center mb-8">
-        <div className="inline-block px-6 py-3 rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-100">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
-            Browse Jobs
-          </h2>
-        </div>
-      </div>
-
+    <HomeSection id="categories" tone="light" pad="pt-2 pb-8 sm:pt-4 sm:pb-10">
       {/* Tab Switcher */}
       <div className="flex justify-center mb-10">
         <div className="inline-flex bg-slate-100 border border-slate-200 rounded-xl p-1 gap-1">
@@ -185,15 +186,15 @@ export default function JobCategories() {
       </div>
 
       {/* Card Grid */}
-      <div className={`grid ${cols} gap-5`}>
+      <div className={`grid ${cols} gap-3 sm:gap-5`}>
         {items.map((item) => (
           <Link
             key={item.name}
             href={item.href}
-            className="bg-white border border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center gap-4 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+            className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-8 flex flex-col items-center justify-center gap-2.5 sm:gap-4 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
           >
-            <div className="text-slate-900">{item.icon}</div>
-            <h3 className="font-semibold text-slate-900 text-sm text-center leading-snug">{item.name}</h3>
+            <div className="text-slate-900 [&>svg]:w-7 [&>svg]:h-7 sm:[&>svg]:w-10 sm:[&>svg]:h-10">{item.icon}</div>
+            <h3 className="font-semibold text-slate-900 text-xs sm:text-sm text-center leading-snug">{item.name}</h3>
           </Link>
         ))}
       </div>

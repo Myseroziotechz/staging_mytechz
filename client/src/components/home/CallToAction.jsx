@@ -12,7 +12,7 @@ export default function CallToAction() {
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            href="/login"
+            href="/login/user"
             className="inline-flex items-center justify-center px-8 py-3.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors shadow-lg shadow-blue-700/20"
           >
             Sign Up Now

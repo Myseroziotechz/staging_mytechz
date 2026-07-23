@@ -13,10 +13,10 @@ function ChevronIcon({ open }) {
   )
 }
 
-function Section({ title, defaultOpen = true, children }) {
+function Section({ id, title, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="border-b border-slate-200 py-5 first:pt-0 last:border-b-0">
+    <div id={id} className="border-b border-slate-200 py-5 first:pt-0 last:border-b-0 scroll-mt-28 target:ring-2 target:ring-blue-400 target:ring-offset-2 target:rounded-xl">
       <button type="button" onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between text-left">
         <span className="text-[17px] font-bold text-slate-900">{title}</span>
         <ChevronIcon open={open} />
@@ -161,8 +161,16 @@ function FilterModal({ title, options, selected, onToggle, onClose }) {
 
 const EMPTY_FACETS = { department: [], workMode: [], location: [], industry: [], education: [], company: [], salary: [], highlight: [] }
 
-export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY_FACETS }) {
+// Shared "All Filters" sidebar for Private and Internship listings — identical
+// sizes/fonts/colors/layout for both. Experience is skipped for internships:
+// students/freshers don't have a prior-experience requirement to filter on,
+// which is also why the internship page never sets exp_min/exp_max.
+export default function FacetedFiltersPanel({ filters, setFilter, facets = EMPTY_FACETS, variant = 'private', idPrefix = '' }) {
   const [modal, setModal] = useState(null)
+  const isInternship = variant === 'internship'
+  const sid = (name) => `${idPrefix}filter-${name}`
+  const salaryLabel = isInternship ? 'Stipend' : 'Salary'
+  const clearKeys = isInternship ? CLEAR_KEYS.filter(k => k !== 'exp_max') : CLEAR_KEYS
 
   const toggleArr = (key, value) => {
     const cur = filters[key] || []
@@ -170,17 +178,17 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
     setFilter({ [key]: next })
   }
 
-  const appliedCount = CLEAR_KEYS.reduce((n, k) => n + (filters[k]?.length || 0), 0) + (filters.exp_max ? 1 : 0)
+  const appliedCount = clearKeys.reduce((n, k) => n + (filters[k]?.length || 0), 0) + (!isInternship && filters.exp_max ? 1 : 0)
 
-  const clearAllPrivate = () => {
-    const reset = Object.fromEntries(CLEAR_KEYS.map(k => [k, []]))
-    setFilter({ ...reset, exp_max: '' })
+  const clearAllFacets = () => {
+    const reset = Object.fromEntries(clearKeys.map(k => [k, []]))
+    setFilter(isInternship ? reset : { ...reset, exp_max: '' })
   }
 
   const modalConfig = {
     department: { title: 'Department', options: facets.department, key: 'departments' },
     location:   { title: 'Location',   options: facets.location,   key: 'cities' },
-    salary:     { title: 'Salary',     options: facets.salary,     key: 'salaryBuckets' },
+    salary:     { title: salaryLabel,  options: facets.salary,     key: 'salaryBuckets' },
     industry:   { title: 'Industry',   options: facets.industry,   key: 'industries' },
     education:  { title: 'Education',  options: facets.education,  key: 'educations' },
     company:    { title: 'Top companies', options: facets.company, key: 'companyIds' },
@@ -191,7 +199,7 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
       <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-200">
         <h2 className="text-xl font-bold text-slate-900">All Filters</h2>
         {appliedCount > 0 && (
-          <button type="button" onClick={clearAllPrivate} className="text-sm font-semibold text-blue-700 hover:underline">
+          <button type="button" onClick={clearAllFacets} className="text-sm font-semibold text-blue-700 hover:underline">
             Applied ({appliedCount})
           </button>
         )}
@@ -205,15 +213,17 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
         <CheckboxList options={facets.workMode} selected={filters.work_modes || []} onToggle={(v) => toggleArr('work_modes', v)} limit={10} />
       </Section>
 
-      <Section title="Experience">
-        <ExperienceSlider value={filters.exp_max} onChange={(v) => setFilter({ exp_max: v })} />
-      </Section>
+      {!isInternship && (
+        <Section id={sid('experience')} title="Experience">
+          <ExperienceSlider value={filters.exp_max} onChange={(v) => setFilter({ exp_max: v })} />
+        </Section>
+      )}
 
-      <Section title="Location">
+      <Section id={sid('location')} title="Location">
         <CheckboxList options={facets.location} selected={filters.cities || []} onToggle={(v) => toggleArr('cities', v)} onViewMore={() => setModal('location')} />
       </Section>
 
-      <Section title="Salary">
+      <Section id={sid('salary')} title={salaryLabel}>
         <CheckboxList options={facets.salary} selected={filters.salaryBuckets || []} onToggle={(v) => toggleArr('salaryBuckets', v)} onViewMore={() => setModal('salary')} />
       </Section>
 
@@ -221,7 +231,7 @@ export default function PrivateFiltersPanel({ filters, setFilter, facets = EMPTY
         <CheckboxList options={facets.industry} selected={filters.industries || []} onToggle={(v) => toggleArr('industries', v)} onViewMore={() => setModal('industry')} />
       </Section>
 
-      <Section title="Education">
+      <Section id={sid('education')} title="Education">
         <CheckboxList options={facets.education} selected={filters.educations || []} onToggle={(v) => toggleArr('educations', v)} onViewMore={() => setModal('education')} />
       </Section>
 
