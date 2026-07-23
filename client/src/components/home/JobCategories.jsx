@@ -81,6 +81,16 @@ const CATEGORIES = [
       </svg>
     ),
   },
+  {
+    name: 'Healthcare',
+    href: '/jobs/private?q=healthcare',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10">
+        <path d="M11.25 4.5a.75.75 0 01.75-.75h0a.75.75 0 01.75.75v6h6a.75.75 0 01.75.75v0a.75.75 0 01-.75.75h-6v6a.75.75 0 01-.75.75h0a.75.75 0 01-.75-.75v-6h-6a.75.75 0 01-.75-.75v0a.75.75 0 01.75-.75h6v-6z" />
+        <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM3.75 12a8.25 8.25 0 1116.5 0 8.25 8.25 0 01-16.5 0z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
 ]
 
 const WORK_MODES = [
