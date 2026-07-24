@@ -36,7 +36,6 @@ Fill in the required keys in `.env.local`:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon/public key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server only) |
 | `NEXT_PUBLIC_SITE_URL` | Yes | `http://localhost:3000` for dev |
-| `NEXT_PUBLIC_DJANGO_API_URL` | Yes | `http://localhost:5010` for dev |
 | `GROQ_API_KEY` | Yes | For AI features (free at console.groq.com) |
 | `GEMINI_API_KEY` | Optional | Alternative AI provider |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Optional | For contact form emails |
@@ -46,24 +45,6 @@ Run the dev server:
 ```bash
 npm run dev
 # Opens at http://localhost:3000
-```
-
-### 3. Setup Backend (Django)
-
-```bash
-cd backend
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver 5010
-# Runs at http://localhost:5010
-```
-
-### 4. Docker (Alternative)
-
-```bash
-docker-compose up --build
-# Frontend: http://localhost:5173
-# Backend:  http://localhost:5010
 ```
 
 ---
@@ -86,11 +67,10 @@ docker-compose up --build
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Next.js 15, React 19, Tailwind CSS v4 |
-| Backend | Django, Python |
 | Database & Auth | Supabase (PostgreSQL + Auth) |
 | AI | Groq (Llama 3.3), Gemini |
 | Analytics | Google Analytics, Microsoft Clarity, OpenPanel |
-| Deployment | Netlify (frontend), Docker (backend) |
+| Deployment | Netlify |
 
 ---
 
@@ -108,10 +88,6 @@ staging_mytechz/
 │   ├── .env.example              # Environment variable template
 │   └── .env.local                # Your local env (not in git)
 │
-├── backend/                      # Django REST API
-│   └── job_portal/
-│
-├── docker-compose.yml
 ├── netlify.toml
 └── README.md
 ```
@@ -368,7 +344,6 @@ git push staging_intern <your-branch-name>
 | Service | Platform | Config |
 |---------|----------|--------|
 | Frontend | Netlify | `netlify.toml` |
-| Backend | Docker / Gunicorn | `docker-compose.yml` |
 | Database & Auth | Supabase | Cloud managed |
 
 ---
