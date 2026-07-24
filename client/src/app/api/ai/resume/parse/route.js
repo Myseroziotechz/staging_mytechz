@@ -12,10 +12,6 @@ export async function POST(req) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  if (!isGeminiConfigured()) {
-    return NextResponse.json({ error: 'AI service not configured' }, { status: 503 })
-  }
-
   const limited = await rateLimit(user.id)
   if (limited) return NextResponse.json({ error: 'Rate limit exceeded. Try again in a minute.' }, { status: 429 })
 
@@ -50,30 +46,51 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Could not extract enough text from the file' }, { status: 400 })
     }
 
-    const resumeData = await parseResumeWithGemini(text.slice(0, 8000))
+    // Try Gemini for structured parsing, fall back to raw text if it fails
+    let resumeData = null
+    let model = 'local'
 
-    await supabase.from('ai_generation_logs').insert({
-      user_id: user.id,
-      action_type: 'parse',
-      input_summary: `File: ${file.name} (${text.length} chars)`,
-      output_summary: JSON.stringify(resumeData).slice(0, 500),
-      model_used: 'gemini-2.0-flash',
-      duration_ms: Date.now() - start,
-      status: 'success',
-    })
+    if (isGeminiConfigured()) {
+      try {
+        resumeData = await parseResumeWithGemini(text.slice(0, 8000))
+        model = 'gemini-2.0-flash'
+      } catch (geminiErr) {
+        console.error('[resume/parse] Gemini failed, returning raw text:', geminiErr.message)
+        // Fall through — return raw text below
+      }
+    }
+
+    // If Gemini didn't work, return the raw extracted text
+    if (!resumeData) {
+      resumeData = { rawText: text }
+    }
+
+    try {
+      await supabase.from('ai_generation_logs').insert({
+        user_id: user.id,
+        action_type: 'parse',
+        input_summary: `File: ${file.name} (${text.length} chars)`,
+        output_summary: JSON.stringify(resumeData).slice(0, 500),
+        model_used: model,
+        duration_ms: Date.now() - start,
+        status: 'success',
+      })
+    } catch { /* non-critical */ }
 
     return NextResponse.json({ resumeData })
   } catch (err) {
     console.error('[resume/parse] Error:', err.message)
-    await supabase.from('ai_generation_logs').insert({
-      user_id: user.id,
-      action_type: 'parse',
-      input_summary: `File: ${file.name}`,
-      model_used: 'gemini-2.0-flash',
-      duration_ms: Date.now() - start,
-      status: 'error',
-      error_message: err.message?.slice(0, 500),
-    }).catch(() => {})
+    try {
+      await supabase.from('ai_generation_logs').insert({
+        user_id: user.id,
+        action_type: 'parse',
+        input_summary: `File: ${file.name}`,
+        model_used: 'unknown',
+        duration_ms: Date.now() - start,
+        status: 'error',
+        error_message: err.message?.slice(0, 500),
+      })
+    } catch { /* non-critical */ }
     return NextResponse.json({ error: err.message || 'Failed to parse resume file' }, { status: 500 })
   }
 }
