@@ -17,6 +17,7 @@ const PRIVATE_PATHS = [
 const AI_ALLOW_PATHS = [
   '/about',
   '/services',
+  '/services/redesign',
   '/contact',
   '/jobs',
   '/jobs/private',
