@@ -170,9 +170,8 @@ export async function GET(request) {
     }
   }
 
-  // 6. Redirect based on role — candidates land on the homepage (the new
-  //    design), not the old dashboard-as-landing-page behavior.
-  let destination = '/'
+  // 6. Redirect based on role
+  let destination = '/dashboard'
   if (role === 'admin') destination = '/admin/dashboard'
   else if (role === 'recruiter') destination = onboardingCompleted ? '/recruiter/dashboard' : '/recruiter/onboarding'
 
