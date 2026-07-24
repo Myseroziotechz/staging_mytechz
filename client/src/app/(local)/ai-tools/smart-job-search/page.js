@@ -1,16 +1,17 @@
+// Page Version: v1.1.0 | Last Updated: 2026-07-12
 import Link from 'next/link'
 
 const SITE = 'https://mytechz.com'
 
 export const metadata = {
-  title: 'Smart Job Search — AI-Powered Job Matching for Indian Professionals | MyTechZ',
+  title: 'Smart Job Search — AI-Powered Job Matching for Indian Professionals',
   description:
     'MyTechZ Smart Job Search uses AI to match you with jobs where you have the strongest fit — based on your resume, skills, and career preferences. Not just keyword hits. Coming soon.',
   keywords:
     'AI job matching India, smart job search, AI-powered job recommendations, personalized job search India, resume-based job matching, fit score job search',
   alternates: { canonical: `${SITE}/ai-tools/smart-job-search` },
   openGraph: {
-    title: 'Smart Job Search — AI-Powered Job Matching | MyTechZ',
+    title: 'Smart Job Search — AI-Powered Job Matching',
     description: 'AI reads your profile and matches you with roles ranked by fit score. Not just keywords — actual compatibility.',
     url: `${SITE}/ai-tools/smart-job-search`,
     type: 'website',
@@ -18,6 +19,7 @@ export const metadata = {
     images: [{ url: `${SITE}/og-image.png`, width: 1200, height: 630, alt: 'MyTechZ Smart Job Search' }],
   },
   twitter: { card: 'summary_large_image' },
+  robots: { index: false, follow: true },
 }
 
 function JsonLd() {
@@ -43,10 +45,33 @@ function JsonLd() {
     provider: { '@type': 'Organization', name: 'MyTechZ', url: SITE },
   }
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'How does MyTechZ Smart Job Search work?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Smart Job Search uses AI to read your resume, extract your skills and experience, then calculate a fit score for every job on the platform. Jobs are ranked by actual compatibility — not just keyword overlap.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is Smart Job Search free?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes — Smart Job Search will be completely free for all candidates. No premium tier, no hidden fees, no credit card required.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'When will Smart Job Search launch?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Smart Job Search is currently being trained on thousands of successful placements. It will launch soon. In the meantime, you can browse jobs manually across private, government, and internship categories.' },
+      },
+    ],
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApp) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     </>
   )
 }
