@@ -244,7 +244,7 @@ export default function FloatingAIChat() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open AI chat assistant"
-          className="fixed bottom-6 right-6 z-[60] flex h-14 w-14 items-center justify-center
+          className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[60] flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center
                      rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white
                      shadow-lg shadow-blue-700/30 transition hover:scale-105 hover:shadow-xl
                      ring-2 ring-white"

@@ -71,11 +71,11 @@ export default function HeroSection() {
   ]
 
   return (
-    <section className="bg-[#FDF6EC] -mt-20 min-h-screen flex flex-col items-center justify-between">
+    <section className="bg-white -mt-20 min-h-screen flex flex-col items-center justify-between">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-0 flex flex-col items-center text-center">
 
         {/* Heading */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
           Find Your Dream Career with <span className="text-blue-600">AI</span>
         </h1>
 
@@ -88,10 +88,10 @@ export default function HeroSection() {
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="mt-8 w-full max-w-2xl bg-white rounded-xl shadow-md border border-slate-200 flex flex-col sm:flex-row items-stretch"
+          className="mt-8 w-full max-w-2xl bg-white rounded-full shadow-lg shadow-slate-900/5 border border-slate-100 p-1.5 flex flex-row items-stretch"
         >
           {/* Skills / Role */}
-          <div className="flex items-center gap-2 px-4 py-3 flex-1 min-w-0">
+          <div className="flex items-center gap-2 pl-5 pr-3 py-3 flex-1 min-w-0">
             <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -99,22 +99,22 @@ export default function HeroSection() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter Skills/Role"
+              placeholder="Enter skills / designations / companies"
               className="w-full text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none"
             />
           </div>
 
-          <div className="hidden sm:block w-px bg-slate-200 self-stretch" />
+          <div className="hidden sm:block w-px bg-slate-200 self-center h-6" />
 
-          {/* Experience Dropdown */}
-          <div className="relative flex items-center px-4 py-3 min-w-[160px]">
+          {/* Experience Dropdown — desktop only, kept off the compact mobile bar */}
+          <div className="hidden sm:flex relative items-center px-4 py-3 min-w-[160px]">
             <button
               type="button"
               onClick={() => setExpOpen((o) => !o)}
               className="flex items-center gap-1 text-sm text-slate-500 w-full"
             >
               <span className="flex-1 text-left whitespace-nowrap">
-                {selectedExp ? selectedExp.label : 'Select Experience'}
+                {selectedExp ? selectedExp.label : 'Select experience'}
               </span>
               <svg className={`w-4 h-4 text-slate-400 transition-transform ${expOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -127,7 +127,7 @@ export default function HeroSection() {
                   onClick={() => { setExperience(''); setExpOpen(false) }}
                   className="w-full text-left px-4 py-2 text-sm text-slate-500 hover:bg-slate-50"
                 >
-                  Any Experience
+                  Any experience
                 </button>
                 {JOB_EXPERIENCE_LEVELS.map((lvl) => (
                   <button
@@ -143,29 +143,28 @@ export default function HeroSection() {
             )}
           </div>
 
-          <div className="hidden sm:block w-px bg-slate-200 self-stretch" />
+          <div className="hidden sm:block w-px bg-slate-200 self-center h-6" />
 
-          {/* Location */}
-          <div className="flex items-center gap-2 px-4 py-3 flex-1 min-w-0">
-            <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+          {/* Location — desktop only, kept off the compact mobile bar */}
+          <div className="hidden sm:flex items-center px-4 py-3 flex-1 min-w-0">
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter Location"
+              placeholder="Enter location"
               className="w-full text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none"
             />
           </div>
 
-          {/* Search Button */}
+          {/* Search Button — icon-only on mobile, labelled pill on desktop */}
           <button
             type="submit"
-            className="bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-6 py-3 rounded-r-xl transition-colors sm:rounded-l-none rounded-xl sm:rounded-xl"
+            className="shrink-0 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors p-3 sm:px-8 sm:py-3"
           >
-            Search
+            <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="hidden sm:inline text-sm">Search</span>
           </button>
         </form>
 
@@ -186,49 +185,57 @@ export default function HeroSection() {
 
       </div>
 
-      {/* Robot Image pinned to bottom, flanked by small clickable tool boxes with connector lines */}
-      <div className="w-full flex justify-center items-end gap-6">
+      {/* Robot Image pinned to bottom, flanked by small clickable tool boxes with connector lines,
+          plus the table-edge divider below — grouped together so `justify-between` on the
+          section treats them as one bottom block and the divider stays flush against the image. */}
+      <div className="w-full">
+        <div className="w-full flex justify-center items-end gap-6">
 
-        {/* Left tool boxes */}
-        <div className="hidden lg:flex flex-col gap-6 mb-24">
-          {leftTools.map((tool) => (
-            <Link
-              key={tool.title}
-              href={tool.href}
-              className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
-            >
-              <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
-                {tool.icon}
-              </span>
-              <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
-            </Link>
-          ))}
+          {/* Left tool boxes */}
+          <div className="hidden lg:flex flex-col gap-6 mb-24">
+            {leftTools.map((tool) => (
+              <Link
+                key={tool.title}
+                href={tool.href}
+                className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
+              >
+                <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
+                  {tool.icon}
+                </span>
+                <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
+              </Link>
+            ))}
+          </div>
+
+          <Image
+            src="/robot_transparent_3.png"
+            alt="AI Robot"
+            width={490}
+            height={187}
+            className="relative z-10 object-contain object-bottom"
+            priority
+          />
+
+          {/* Right tool boxes */}
+          <div className="hidden lg:flex flex-col gap-6 mb-24">
+            {rightTools.map((tool) => (
+              <Link
+                key={tool.title}
+                href={tool.href}
+                className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
+              >
+                <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
+                  {tool.icon}
+                </span>
+                <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <Image
-          src="/robot_transparent_3.png"
-          alt="AI Robot"
-          width={490}
-          height={430}
-          className="relative z-10 object-contain object-bottom"
-          priority
-        />
-
-        {/* Right tool boxes */}
-        <div className="hidden lg:flex flex-col gap-6 mb-24">
-          {rightTools.map((tool) => (
-            <Link
-              key={tool.title}
-              href={tool.href}
-              className={`${tool.float} group relative flex items-center gap-3 bg-white rounded-2xl shadow-lg border border-slate-100 px-4 py-3 w-48 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-200`}
-            >
-              <span className="shrink-0 w-9 h-9 rounded-full border border-slate-300 bg-white flex items-center justify-center">
-                {tool.icon}
-              </span>
-              <span className="text-sm font-semibold text-slate-800 leading-snug">{tool.title}</span>
-            </Link>
-          ))}
-        </div>
+        {/* Table-edge divider — flush against the illustration (zero gap), extends the
+            desk line from the artwork into a full-width line in the same navy tone. */}
+        <div className="w-full h-[3px] bg-[#222a4f]" />
       </div>
     </section>
   )
