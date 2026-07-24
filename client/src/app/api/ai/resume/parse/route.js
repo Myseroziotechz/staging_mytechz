@@ -64,6 +64,7 @@ export async function POST(req) {
 
     return NextResponse.json({ resumeData })
   } catch (err) {
+    console.error('[resume/parse] Error:', err.message)
     await supabase.from('ai_generation_logs').insert({
       user_id: user.id,
       action_type: 'parse',
@@ -72,7 +73,7 @@ export async function POST(req) {
       duration_ms: Date.now() - start,
       status: 'error',
       error_message: err.message?.slice(0, 500),
-    })
-    return NextResponse.json({ error: 'Failed to parse resume file' }, { status: 500 })
+    }).catch(() => {})
+    return NextResponse.json({ error: err.message || 'Failed to parse resume file' }, { status: 500 })
   }
 }
