@@ -60,8 +60,7 @@ const navItems = [
       { label: 'Smart Job Search',     href: '/ai-tools/smart-job-search', description: 'AI-powered job matching for you' },
     ],
   },
-  { label: 'Services', href: '/services' },
-  { label: 'Info', href: '/info' },
+  { label: 'Services', href: '/services/redesign' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
