@@ -1,376 +1,64 @@
-# MyTechZ — Technology Job Portal & AI Career Tools
-
-**MyTechZ** is a full-stack platform that connects tech professionals with job opportunities across India, and provides AI-powered career tools including a free resume builder, ATS rank checker, and smart job matching.
+# MyTechZ — AI-Powered Job Portal
 
 **Live:** [https://mytechz.com](https://mytechz.com)
 
----
-
-## Technology Stack
-
-### Frontend
-| Technology | Version | Purpose |
-|---|---|---|
-| Next.js | 16.2.3 | App Router, SSR, SSG |
-| React | 19.2.4 | UI framework |
-| Tailwind CSS | v4 | Styling |
-| Supabase JS | ^2.103.0 | Auth & database client |
-| Axios | ^1.15.0 | API requests |
-| pdf-parse | ^2.4.5 | PDF resume parsing |
-| pdfkit | ^0.18.0 | PDF generation |
-| docx | ^9.6.1 | DOCX export |
-| mammoth | ^1.12.0 | DOCX import/parsing |
-| nodemailer | ^8.0.5 | Email (server-side) |
-| Microsoft Clarity | ^1.0.2 | Session analytics |
-
-### Backend
-| Technology | Purpose |
-|---|---|
-| Django / Python | REST API, business logic |
-| Gunicorn | WSGI production server |
-| SQLite | Development database |
-| Supabase | Auth, production database |
-
-### Infrastructure
-| Tool | Purpose |
-|---|---|
-| Docker / Docker Compose | Containerised local development |
-| Netlify | Frontend deployment |
-| Supabase | Managed backend services |
+A job portal for tech professionals in India with AI career tools (resume builder, ATS checker, smart job search).
 
 ---
 
-## Project Structure
+## Quick Start
 
-```
-staging_mytechz/
-├── client/                          # Next.js 16 frontend (App Router)
-│   ├── src/
-│   │   ├── app/                     # Pages (file-system routing)
-│   │   │   ├── page.js              # Homepage (/)
-│   │   │   ├── about/               # About page
-│   │   │   ├── contact/             # Contact page
-│   │   │   ├── services/            # Services page
-│   │   │   ├── jobs/                # Jobs hub
-│   │   │   │   ├── page.js          # Jobs landing
-│   │   │   │   ├── private/         # Private tech jobs
-│   │   │   │   ├── government/      # Government jobs
-│   │   │   │   ├── internship/      # Paid internships
-│   │   │   │   ├── ai/              # AI-matched jobs
-│   │   │   │   └── [category]/
-│   │   │   │       └── [jobSlug]/
-│   │   │   │           ├── page.js        # Job detail
-│   │   │   │           ├── apply/         # Job application
-│   │   │   │           └── preparation/   # Interview prep
-│   │   │   ├── ai-tools/            # AI tools hub
-│   │   │   │   ├── page.js          # AI tools landing
-│   │   │   │   ├── resume-builder/
-│   │   │   │   │   ├── page.js      # Free resume builder
-│   │   │   │   │   ├── editor/      # Resume editor
-│   │   │   │   │   ├── my-resumes/  # Saved resumes
-│   │   │   │   │   └── templates/
-│   │   │   │   │       ├── page.js          # Template gallery
-│   │   │   │   │       └── [slug]/          # Template detail
-│   │   │   │   ├── resume-rank-checker/
-│   │   │   │   │   ├── page.js              # ATS score checker
-│   │   │   │   │   └── results/[id]/
-│   │   │   │   │       ├── page.js          # ATS results
-│   │   │   │   │       └── editor/          # Optimise resume from results
-│   │   │   │   └── smart-job-search/        # AI job matching
-│   │   │   ├── dashboard/           # User dashboard
-│   │   │   ├── profile/             # User profile
-│   │   │   ├── my-applications/     # Job applications tracker
-│   │   │   ├── saved-jobs/          # Saved jobs
-│   │   │   ├── settings/            # Account settings
-│   │   │   ├── login/               # Authentication
-│   │   │   ├── auth/
-│   │   │   │   ├── complete/        # OAuth callback
-│   │   │   │   └── error/           # Auth error handling
-│   │   │   ├── admin/               # Admin portal (protected)
-│   │   │   │   ├── dashboard/
-│   │   │   │   ├── applications/
-│   │   │   │   ├── jobs/
-│   │   │   │   ├── post-job/
-│   │   │   │   ├── recruiters/
-│   │   │   │   ├── users/
-│   │   │   │   └── whitelist/
-│   │   │   ├── recruiter/           # Recruiter portal (protected)
-│   │   │   │   ├── dashboard/
-│   │   │   │   ├── onboarding/
-│   │   │   │   ├── post-job/
-│   │   │   │   └── applicants/
-│   │   │   ├── layout.js            # Root layout
-│   │   │   ├── sitemap.js           # Dynamic XML sitemap
-│   │   │   └── robots.js            # Robots directives
-│   │   └── components/
-│   │       ├── Navbar.jsx
-│   │       ├── Footer.jsx
-│   │       ├── LayoutShell.jsx
-│   │       ├── DashboardSidebar.jsx
-│   │       ├── NewsletterSubscribe.jsx
-│   │       ├── ComingSoon.jsx
-│   │       ├── ClarityInit.js
-│   │       ├── resume/              # Resume builder components
-│   │       │   ├── ResumeEditor.jsx
-│   │       │   ├── ResumeUploader.jsx
-│   │       │   ├── AIContentPanel.jsx
-│   │       │   ├── VoiceInput.jsx
-│   │       │   ├── TemplateCard.jsx
-│   │       │   ├── TemplateGallery.jsx
-│   │       │   ├── TemplatePreview.jsx
-│   │       │   ├── steps/
-│   │       │   └── templates/
-│   │       ├── jobs/                # Job listing components
-│   │       │   ├── JobCard.jsx
-│   │       │   ├── JobForm.jsx
-│   │       │   ├── JobJsonLd.jsx
-│   │       │   ├── JobRoadmapView.jsx
-│   │       │   ├── JobsListingPage.jsx
-│   │       │   ├── JobsDashboardWidget.jsx
-│   │       │   ├── JobAssistantPanel.jsx
-│   │       │   ├── AiFeaturedJobsPage.jsx
-│   │       │   └── SortDropdown.jsx
-│   │       ├── admin/
-│   │       ├── ai/
-│   │       ├── auth/
-│   │       ├── common/
-│   │       ├── home/
-│   │       ├── recruiter/
-│   │       ├── saved-jobs/
-│   │       └── ui/
-│   └── package.json
-├── backend/                         # Django backend
-│   └── job_portal/                  # Django application
-├── docker-compose.yml               # Container orchestration
-├── netlify.toml                     # Netlify deployment config
-└── README.md
+### 1. Clone the repo
+
+```bash
+git clone git@github.com:rksamyak/Intern_staging_mytechz.git
+cd Intern_staging_mytechz
 ```
 
----
-
-## Frontend Page Architecture
-
-### Layout Hierarchy
-
-```
-layout.js  (Root Layout — wraps every page)
-│
-├── Navbar.jsx          ← top navigation bar
-├── LayoutShell.jsx     ← client shell (auth context, sidebar toggle)
-│   └── {page content}
-└── Footer.jsx          ← bottom footer
-```
-
-GA (G-FXKXL6XP9H) and Microsoft Clarity are injected in the root layout and fire on every page.
-
----
-
-### Page Tree
-
-```
-/  (Homepage — page.js)
-│
-├── /about
-├── /contact
-├── /services
-│
-├── /jobs                                  Jobs Hub
-│   ├── /jobs/private                      Private tech jobs
-│   ├── /jobs/government                   Government jobs
-│   ├── /jobs/internship                   Paid internships
-│   ├── /jobs/ai                           AI-matched jobs
-│   └── /jobs/[category]/[jobSlug]         Job detail (dynamic)
-│       ├── /apply                         Job application form
-│       └── /preparation                   Interview prep guide
-│
-├── /ai-tools                              AI Tools Hub
-│   ├── /ai-tools/resume-builder           ★ Primary conversion page
-│   │   ├── /templates                     Template gallery
-│   │   ├── /templates/[slug]              Template detail
-│   │   ├── /editor                        Resume editor (auth-gated)
-│   │   └── /my-resumes                    Saved resumes (auth-gated)
-│   ├── /ai-tools/resume-rank-checker      ATS score checker
-│   │   └── /results/[id]                  ATS results page
-│   │       └── /editor                    Optimise resume from results
-│   └── /ai-tools/smart-job-search         AI job matching (coming soon)
-│
-├── /login                                 Authentication entry point
-├── /dashboard                             User home (auth-gated)
-├── /profile                               User profile (auth-gated)
-├── /my-applications                       Applications tracker (auth-gated)
-├── /saved-jobs                            Saved jobs (auth-gated)
-├── /settings                              Account settings (auth-gated)
-│
-├── /auth/                                 Auth flow (not user-facing UI)
-│   ├── /callback                          OAuth / magic link callback
-│   ├── /complete                          Post-auth profile setup (new users)
-│   ├── /error                             Auth error display
-│   └── /sign-out                          Logout route
-│
-├── /recruiter/                            Recruiter Portal (own layout.js)
-│   ├── /onboarding                        Recruiter registration & verification
-│   ├── /dashboard                         Recruiter home
-│   ├── /post-job                          Create job listing
-│   └── /applicants                        View & filter applicants
-│
-└── /admin/                                Admin Panel (own layout.js)
-    ├── /dashboard
-    ├── /jobs
-    ├── /post-job
-    ├── /recruiters
-    ├── /users
-    ├── /whitelist
-    └── /applications
-```
-
----
-
-### API Routes (`/api/*` — Next.js Route Handlers)
-
-```
-/api/auth/send-otp              POST  — send email OTP
-/api/auth/set-intent            POST  — store pre-login redirect intent
-
-/api/resume/parse               POST  — extract text from PDF/DOCX upload
-/api/resume/generate            POST  — AI-generate resume content (Claude)
-/api/resume/export              POST  — export resume to PDF or DOCX
-/api/resume/[id]                GET / PUT / DELETE — CRUD a single resume
-
-/api/ats/upload                 POST  — upload resume for ATS analysis
-/api/ats/list                   GET   — list user's ATS checks
-/api/ats/job-roles              GET   — available job roles for scoring
-/api/ats/[id]                   GET   — full ATS result
-/api/ats/[id]/status            GET   — polling status (async processing)
-/api/ats/[id]/insights          GET   — improvement insights
-/api/ats/[id]/keywords          GET   — missing / matched keywords
-/api/ats/[id]/sections          GET   — section-by-section breakdown
-/api/ats/[id]/quick-fix         POST  — AI quick-fix suggestions
-/api/ats/[id]/editor-data       GET   — load resume into editor from ATS
-/api/ats/[id]/save-edit         POST  — save edits made via ATS editor
-
-/api/jobs/[jobId]/roadmap       GET   — AI learning roadmap for a job role
-/api/ai/chat                    POST  — general AI chat endpoint
-/api/skills/suggest             POST  — AI skill tag suggestions
-
-/api/contact                    POST  — contact form submission
-/api/exports/[scope]            GET   — data export (admin)
-```
-
----
-
-### User Journey Flow
-
-```
-VISITOR (not logged in)
-        │
-        ▼
-   [/]  Homepage
-        │
-   ┌────┴──────────────────────────────────────┐
-   ▼                                            ▼
-[/jobs]  Jobs Hub                  [/ai-tools]  AI Tools Hub
-   │                                            │
-   ├── /jobs/private                            ├── /ai-tools/resume-builder ★
-   ├── /jobs/government                         │       │
-   ├── /jobs/internship                         │   [Browse Templates]──► /templates/[slug]
-   ├── /jobs/ai                                 │       │
-   └── /jobs/:cat/:slug  (detail)               │   [Start Building]
-               │                                │       │
-           [Apply]─────► needs login ◄──────────┘  needs login
-                               │
-                               ▼
-                         [/login]
-                               │
-                    OTP / OAuth → /auth/callback
-                               │
-                    new user? → /auth/complete  (profile setup)
-                               │
-                               ▼
-                         [/dashboard]  ← user home after login
-                               │
-              ┌────────────────┼─────────────────┐
-              ▼                ▼                  ▼
-       [/profile]   [/my-applications]     [/saved-jobs]
-                                                  │
-                                         [/ai-tools/resume-builder/editor]
-                                         [/ai-tools/resume-builder/my-resumes]
-```
-
----
-
-### Key Architectural Patterns
-
-| Pattern | Detail |
-|---|---|
-| **Framework** | Next.js 15 App Router — file-system routing |
-| **Auth** | Supabase (OTP email + OAuth), cookie-based sessions |
-| **Server vs Client** | Pages are Server Components by default; interactive pages have a split `*Client.jsx` file (e.g. `EditorClient.jsx`, `ContactClient.jsx`) |
-| **Multiple layouts** | Root layout for public; `/admin` and `/recruiter` each have their own `layout.js` |
-| **API layer** | Next.js Route Handlers act as a BFF — proxy to Django backend or call AI directly |
-| **Auth-gated routes** | `editor`, `my-resumes`, `dashboard`, `profile`, `settings`, `my-applications`, `saved-jobs` all redirect to `/login?next=...` |
-| **Crawler access** | Public pages open to GPTBot, ClaudeBot, PerplexityBot; `/admin`, `/recruiter`, `/api`, `/auth/*`, `/dashboard`, `/profile`, `/settings` blocked in `robots.js` |
-
----
-
-## Features
-
-### Job Portal
-- **Private Tech Jobs** — Curated listings from technology companies
-- **Government Jobs** — Central and state government tech roles
-- **Paid Internships** — Internship opportunities for students and freshers
-- **AI-Matched Jobs** — Personalised job recommendations powered by AI
-- **Job Detail Pages** — Full job description, requirements, and application flow
-- **Interview Preparation** — Role-specific preparation guides per job listing
-
-### AI Career Tools
-- **Free Resume Builder** — Multi-step editor with professional templates, AI content suggestions, voice input, and export to PDF/DOCX
-- **ATS Resume Rank Checker** — Upload resume + job description to get an ATS compatibility score and actionable improvement suggestions
-- **Smart Job Search** *(coming soon)* — AI-powered job discovery and matching
-
-### User Features
-- Authentication via Supabase (email + OAuth)
-- Dashboard with application tracking
-- Save and manage jobs
-- Profile management
-
-### Recruiter Portal
-- Recruiter onboarding and verification
-- Post and manage job listings
-- View and filter applicants
-
-### Admin Portal
-- Full user, job, recruiter, and application management
-- Whitelist management for recruiter access
-
----
-
-## Getting Started
-
-### Prerequisites
-- Node.js v18+
-- Python 3.10+
-- Docker (optional, for containerised setup)
-
-### Frontend Setup
+### 2. Setup Frontend (Next.js)
 
 ```bash
 cd client
 npm install
-npm run dev
-# Runs at http://localhost:3000
 ```
 
-### Backend Setup
+Create `.env.local` from the example:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in the required keys in `.env.local`:
+
+| Key | Required | Description |
+|-----|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server only) |
+| `NEXT_PUBLIC_SITE_URL` | Yes | `http://localhost:3000` for dev |
+| `NEXT_PUBLIC_DJANGO_API_URL` | Yes | `http://localhost:5010` for dev |
+| `GROQ_API_KEY` | Yes | For AI features (free at console.groq.com) |
+| `GEMINI_API_KEY` | Optional | Alternative AI provider |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Optional | For contact form emails |
+
+Run the dev server:
+
+```bash
+npm run dev
+# Opens at http://localhost:3000
+```
+
+### 3. Setup Backend (Django)
 
 ```bash
 cd backend
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver 5010
 # Runs at http://localhost:5010
 ```
 
-### Docker Setup
+### 4. Docker (Alternative)
 
 ```bash
 docker-compose up --build
@@ -380,44 +68,309 @@ docker-compose up --build
 
 ---
 
-## Deployment
+## All Commands
 
-| Service | Platform | Notes |
-|---|---|---|
-| Frontend | Netlify | Config in `netlify.toml` |
-| Backend | Docker / Gunicorn | `gunicorn job_portal.wsgi:application` |
-| Database & Auth | Supabase | Managed cloud service |
+| Command | What it does |
+|---------|-------------|
+| `npm run dev` | Start dev server (hot reload) |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run tests (Vitest) |
+| `npm run test:watch` | Run tests in watch mode |
 
 ---
 
-## SEO & Analytics
+## Tech Stack
 
-- Dynamic XML sitemap at `/sitemap.xml`
-- Structured data (JSON-LD): BreadcrumbList, FAQPage, WebApplication, HowTo, Organization, ItemList, SoftwareApplication, Service
-- Open Graph and Twitter Card meta tags on all public pages
-- Google Analytics (`G-FXKXL6XP9H`)
-- Microsoft Clarity for session recording
-- AI crawler access enabled (GPTBot, ClaudeBot, PerplexityBot, Applebot)
-- Private routes blocked from indexing (`/admin`, `/recruiter`, `/api`, `/auth/`, `/dashboard`, `/profile`, `/settings`)
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15, React 19, Tailwind CSS v4 |
+| Backend | Django, Python |
+| Database & Auth | Supabase (PostgreSQL + Auth) |
+| AI | Groq (Llama 3.3), Gemini |
+| Analytics | Google Analytics, Microsoft Clarity, OpenPanel |
+| Deployment | Netlify (frontend), Docker (backend) |
+
+---
+
+## Project Structure
+
+```
+staging_mytechz/
+├── client/                       # Next.js frontend
+│   ├── src/
+│   │   ├── app/                  # All pages (file-system routing)
+│   │   ├── components/           # Reusable UI components
+│   │   └── lib/                  # Utilities, helpers, Supabase clients
+│   ├── public/                   # Static assets (images, icons)
+│   ├── package.json
+│   ├── .env.example              # Environment variable template
+│   └── .env.local                # Your local env (not in git)
+│
+├── backend/                      # Django REST API
+│   └── job_portal/
+│
+├── docker-compose.yml
+├── netlify.toml
+└── README.md
+```
+
+---
+
+## How Pages Are Organized (Route Groups)
+
+Next.js uses **route groups** — folders wrapped in `()` — to share layouts without affecting the URL. This project has **3 route groups**:
+
+```
+client/src/app/
+│
+├── page.js                  # Homepage (/) — uses public Navbar + Footer
+│
+├── (local)/                 # PUBLIC PAGES — Landing pages anyone can see
+│   ├── layout.js            # Smart layout: shows Navbar+Footer for visitors,
+│   │                        #   shows Sidebar for logged-in users
+│   ├── about/page.js        # /about
+│   ├── contact/page.js      # /contact
+│   ├── services/page.js     # /services
+│   ├── blog/page.js         # /blog
+│   ├── blog/[slug]/page.js  # /blog/:slug
+│   ├── info/page.js         # /info
+│   ├── login/               # /login, /login/user, /login/recruiter
+│   ├── jobs/                # All job listing pages
+│   │   ├── page.js          # /jobs
+│   │   ├── private/         # /jobs/private
+│   │   ├── government/      # /jobs/government
+│   │   ├── internship/      # /jobs/internship
+│   │   ├── ai/              # /jobs/ai
+│   │   └── [category]/
+│   │       └── [jobSlug]/   # /jobs/:category/:jobSlug (job detail)
+│   └── ai-tools/            # AI tools (public landing pages)
+│       ├── page.js          # /ai-tools
+│       ├── resume-builder/
+│       │   ├── page.js      # /ai-tools/resume-builder
+│       │   └── templates/   # /ai-tools/resume-builder/templates
+│       ├── resume-rank-checker/  # /ai-tools/resume-rank-checker
+│       └── smart-job-search/     # /ai-tools/smart-job-search
+│
+├── (app)/                   # LOGGED-IN PAGES — Requires authentication
+│   ├── layout.js            # Always shows Sidebar, redirects to /login if not authenticated
+│   ├── dashboard/page.js    # /dashboard — candidate home after login
+│   ├── profile/page.js      # /profile
+│   ├── my-applications/     # /my-applications
+│   ├── saved-jobs/          # /saved-jobs
+│   ├── notifications/       # /notifications
+│   ├── settings/            # /settings
+│   └── ai-tools/            # AI tools (auth-gated features)
+│       ├── resume-builder/
+│       │   ├── create/      # /ai-tools/resume-builder/create
+│       │   ├── editor/[id]/ # /ai-tools/resume-builder/editor/:id
+│       │   └── my-resumes/  # /ai-tools/resume-builder/my-resumes
+│       └── resume-rank-checker/
+│           └── check/       # /ai-tools/resume-rank-checker/check
+│
+├── admin/                   # ADMIN PANEL — own layout, admin role required
+│   ├── layout.js
+│   ├── dashboard/           # /admin/dashboard
+│   ├── jobs/                # /admin/jobs
+│   ├── post-job/            # /admin/post-job
+│   ├── users/               # /admin/users
+│   ├── recruiters/          # /admin/recruiters
+│   ├── whitelist/           # /admin/whitelist
+│   ├── applications/        # /admin/applications
+│   └── analytics/           # /admin/analytics
+│
+├── recruiter/               # RECRUITER PANEL — own layout, recruiter role required
+│   ├── layout.js
+│   ├── dashboard/           # /recruiter/dashboard
+│   ├── onboarding/          # /recruiter/onboarding
+│   ├── post-job/            # /recruiter/post-job
+│   ├── edit-job/[id]/       # /recruiter/edit-job/:id
+│   ├── applicants/          # /recruiter/applicants
+│   ├── preview/[id]/        # /recruiter/preview/:id
+│   └── profile/             # /recruiter/profile
+│
+├── auth/                    # AUTH ROUTES — handles login callbacks
+│   ├── callback/route.js    # OAuth/magic-link callback (server)
+│   ├── complete/page.js     # Fallback post-auth redirect (client)
+│   ├── error/page.js        # Auth error page
+│   └── sign-out/route.js    # Logout
+│
+└── api/                     # API ROUTES — backend endpoints
+    ├── auth/                # Auth helpers
+    ├── ai/                  # AI features (chat, resume generation)
+    ├── resumes/             # Resume CRUD + export
+    ├── contact/             # Contact form
+    ├── jobs/                # Job-related APIs
+    └── notifications/       # Notification APIs
+```
+
+---
+
+## Layout Diagram
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Root Layout (app/layout.js)                            │
+│  - Fonts, meta tags, analytics, JSON-LD                 │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  (local) Layout — Public Pages                    │  │
+│  │                                                   │  │
+│  │  Not logged in:  Navbar + Content + Footer        │  │
+│  │  Logged in:      Sidebar + Content (AppShell)     │  │
+│  │                                                   │  │
+│  │  Pages: /, /about, /jobs/*, /ai-tools/*, /login   │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  (app) Layout — Auth-Gated Pages                  │  │
+│  │                                                   │  │
+│  │  Not logged in:  Redirects to /login              │  │
+│  │  Logged in:      Sidebar + Content (AppShell)     │  │
+│  │                                                   │  │
+│  │  Pages: /dashboard, /profile, /saved-jobs, etc.   │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  ┌───────────────────────┐  ┌─────────────────────┐    │
+│  │  Admin Layout         │  │  Recruiter Layout   │    │
+│  │  /admin/*             │  │  /recruiter/*       │    │
+│  └───────────────────────┘  └─────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Login Flow
+
+```
+User clicks "Login" or "Get Started"
+        │
+        ▼
+    /login page
+        │
+        ├── Google OAuth ──► Supabase ──► /auth/callback
+        │                                      │
+        └── Email OTP ──► Supabase ──► /auth/callback
+                                               │
+                                               ▼
+                                    Exchange code for session
+                                               │
+                                    Check user_profiles table
+                                               │
+                              ┌────────────────┼────────────────┐
+                              │                │                │
+                         New User         Existing User    Admin Whitelist
+                              │                │                │
+                        Create profile    Read role         Set role=admin
+                              │                │                │
+                              ▼                ▼                ▼
+                     ┌─────────────────────────────────────────────┐
+                     │           Redirect based on role            │
+                     │                                             │
+                     │  candidate ──► /dashboard                   │
+                     │  recruiter ──► /recruiter/dashboard         │
+                     │                (or /recruiter/onboarding)   │
+                     │  admin     ──► /admin/dashboard             │
+                     └─────────────────────────────────────────────┘
+```
 
 ---
 
 ## User Roles
 
-| Role | Access |
-|---|---|
-| **Visitor** | Public pages, job listings, AI tools |
-| **User** | Dashboard, applications, saved jobs, resume builder |
-| **Recruiter** | Post jobs, manage listings, view applicants |
-| **Admin** | Full platform management |
+| Role | After Login | Access |
+|------|-------------|--------|
+| **Visitor** | — | Public pages, job listings, AI tools landing pages |
+| **Candidate** | `/dashboard` | Dashboard, profile, applications, saved jobs, resume editor |
+| **Recruiter** | `/recruiter/dashboard` | Post jobs, manage listings, view applicants |
+| **Admin** | `/admin/dashboard` | Full platform management, analytics, user/recruiter management |
 
 ---
 
-## Contact
+## Components
 
-- **Website:** [https://mytechz.com](https://mytechz.com)
-- **Company:** MyTechZ
+```
+client/src/components/
+├── layout/              # App shell, navbar, footer, sidebar
+├── home/                # Homepage sections (hero, how-it-works, etc.)
+├── jobs/                # Job cards, listings, filters
+├── resume-builder/      # Resume editor, templates, steps
+├── rank-checker/        # ATS rank checker components
+├── ai/                  # Floating AI chat
+├── auth/                # Login forms, OAuth buttons
+├── admin/               # Admin panel components
+├── recruiter/           # Recruiter panel components
+├── dashboard/           # Dashboard widgets (search bar, stats)
+├── blog/                # Blog components
+├── common/              # Shared components (breadcrumbs, etc.)
+├── saved-jobs/          # Saved jobs components
+└── ui/                  # Base UI components (buttons, inputs, etc.)
+```
 
 ---
 
-*Proprietary software — MyTechZ. All rights reserved.*
+## API Routes
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/auth/send-otp` | POST | Send email OTP |
+| `/api/auth/set-intent` | POST | Store pre-login role intent |
+| `/api/auth/switch-role` | POST | Switch user role |
+| `/api/ai/chat` | POST | AI chat |
+| `/api/ai/resume/parse` | POST | Parse uploaded resume |
+| `/api/ai/resume/generate` | POST | AI-generate resume content |
+| `/api/ai/resume/autofill` | POST | Auto-fill resume from parsed data |
+| `/api/ai/resume/keywords` | POST | Extract keywords |
+| `/api/ai/resume/rank-check` | POST | ATS rank check |
+| `/api/ai/resume/rank-history` | GET | Past rank checks |
+| `/api/ai/resume/rewrite` | POST | AI rewrite resume sections |
+| `/api/resumes` | GET/POST | List or create resumes |
+| `/api/resumes/[id]` | GET/PUT/DELETE | Single resume CRUD |
+| `/api/resumes/[id]/export` | GET | Export to PDF/DOCX |
+| `/api/contact` | POST | Contact form |
+| `/api/jobs/[jobId]/roadmap` | GET | AI learning roadmap |
+| `/api/notifications` | GET/POST | User notifications |
+| `/api/admin/analytics` | GET | Admin analytics data |
+
+---
+
+## Git Workflow
+
+**Remotes:**
+- `staging_intern` → `git@github.com:rksamyak/Intern_staging_mytechz.git` (fork)
+- `origin` → `https://github.com/Myseroziotechz/staging_mytechz.git` (main repo)
+
+**Branch protection on main:** Requires 1 PR approval before merge.
+
+**How to push changes:**
+
+```bash
+# 1. Make your changes
+# 2. Commit
+git add <files>
+git commit -m "Your commit message"
+
+# 3. Push to your fork
+git push staging_intern <your-branch-name>
+
+# 4. Open PR on GitHub:
+#    From: rksamyak/Intern_staging_mytechz:<your-branch>
+#    To:   Myseroziotechz/staging_mytechz:main
+
+# 5. Owner reviews and merges
+```
+
+---
+
+## Deployment
+
+| Service | Platform | Config |
+|---------|----------|--------|
+| Frontend | Netlify | `netlify.toml` |
+| Backend | Docker / Gunicorn | `docker-compose.yml` |
+| Database & Auth | Supabase | Cloud managed |
+
+---
+
+*MyTechZ. All rights reserved.*
