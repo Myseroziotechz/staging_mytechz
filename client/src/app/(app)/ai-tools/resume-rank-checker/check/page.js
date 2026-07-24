@@ -249,10 +249,7 @@ async function parseFile(file) {
     const formData = new FormData()
     formData.append('file', file)
     const res = await fetch('/api/ai/resume/parse', { method: 'POST', body: formData })
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}))
-      throw new Error(errData.error || `Failed to parse file (${res.status})`)
-    }
+    if (!res.ok) throw new Error('Failed to parse file')
     const data = await res.json()
     // The parse endpoint returns structured data; build plain text from it
     return buildTextFromParsed(data.resumeData || data)
