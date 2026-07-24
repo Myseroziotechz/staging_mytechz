@@ -264,6 +264,7 @@ async function parseFile(file) {
 
 function buildTextFromParsed(data) {
   if (typeof data === 'string') return data
+  if (data.rawText) return data.rawText
   const parts = []
   if (data.contact) {
     const c = data.contact
