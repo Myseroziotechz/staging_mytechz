@@ -31,6 +31,7 @@ import FloatingAIChat         from '@/components/ai/FloatingAIChat'
 import HeroSection            from '@/components/home/HeroSection'
 import TrendingJobs           from '@/components/home/TrendingJobs'
 import JobCategories          from '@/components/home/JobCategories'
+import BasedOnSkills          from '@/components/home/BasedOnSkills'
 import TopStartupsHiring      from '@/components/home/TopStartupsHiring'
 import TopCompaniesHiring     from '@/components/home/TopCompaniesHiring'
 import HowItWorks             from '@/components/home/HowItWorks'
@@ -111,6 +112,7 @@ export default function Home() {
         <div>
           <HeroSection />
           <TrendingJobs />
+          <BasedOnSkills />
           <JobCategories />
           <TopStartupsHiring />
           <HowItWorks />
