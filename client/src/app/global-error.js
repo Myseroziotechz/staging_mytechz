@@ -44,6 +44,10 @@ export default function GlobalError({ error, reset }) {
               >
                 Try Again
               </button>
+              {/* Intentionally a raw <a>, not next/link: global-error replaces the
+                  root layout and renders when the router itself may be broken, so a
+                  full document reload is the reliable recovery path. */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a
                 href="/"
                 style={{
