@@ -69,12 +69,20 @@ export async function POST(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
+  const t0 = Date.now()
   const { section: raw } = await params
   const section = resolveSection(raw)
   if (!section) return fail(`Unknown profile section "${raw}".`, 404)
 
+  // Diagnostic trace added while investigating a reported Save timeout.
+  // Route-entered is logged before requireUser() specifically so a hang in
+  // auth (Supabase's getUser() round-trip) is distinguishable from a hang in
+  // the database write that follows it.
+  console.log(`[api/profile PUT ${section}] route entered`)
+
   const { supabase, user, response } = await requireUser()
   if (response) return response
+  console.log(`[api/profile PUT ${section}] +${Date.now() - t0}ms auth resolved (user=${user.id})`)
 
   const { body, response: badBody } = await readJson(request)
   if (badBody) return badBody
@@ -86,12 +94,18 @@ export async function PUT(request, { params }) {
 
   const errors = VALIDATORS[section](entries)
   if (!isValid(errors)) return validationFailed(errors)
+  console.log(`[api/profile PUT ${section}] +${Date.now() - t0}ms validation passed (${entries.length} entries)`)
 
   try {
+    console.log(`[api/profile PUT ${section}] +${Date.now() - t0}ms database write starting`)
     const { rows, stats } = await replaceSection(supabase, section, user.id, entries)
+    console.log(`[api/profile PUT ${section}] +${Date.now() - t0}ms database write complete`, stats)
     return ok({ [section]: rows, stats })
   } catch (error) {
+    console.log(`[api/profile PUT ${section}] +${Date.now() - t0}ms database write threw`, error?.message)
     return fromDbError(error)
+  } finally {
+    console.log(`[api/profile PUT ${section}] +${Date.now() - t0}ms handler returning`)
   }
 }
 

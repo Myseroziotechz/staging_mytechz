@@ -84,8 +84,28 @@ function describeFetchFailure(err, callerSignal) {
   }
 }
 
+// Request-lifecycle tracing for /api/profile/* calls. Diagnostic aid added
+// while investigating a reported Save timeout that couldn't be reproduced —
+// every attempt to hang the request (bad auth cookie, cold dev-server compile,
+// missing await audit) resolved in under 3s here. If a real hang recurs, these
+// four lines pinpoint exactly which side of the network it's stuck on: no
+// "received" line means the browser never got a response (server or network);
+// a "received" line followed by a slow "parsed" line means the response body
+// itself was slow to arrive or decode.
+function traceRequest(id, event, detail) {
+  const elapsed = typeof window !== 'undefined' && window.performance
+    ? Math.round(window.performance.now())
+    : Date.now()
+  console.log(`[profile-api ${id}] +${elapsed}ms ${event}`, detail ?? '')
+}
+
+let requestCounter = 0
+
 async function request(path, { method = 'GET', body, signal: callerSignal } = {}) {
+  const id = `${method}${path}#${++requestCounter}`
   const { signal, cleanup } = withTimeout(callerSignal, REQUEST_TIMEOUT_MS)
+
+  traceRequest(id, 'sending', { url: `/api/profile${path}`, method })
 
   let response
   try {
@@ -95,7 +115,9 @@ async function request(path, { method = 'GET', body, signal: callerSignal } = {}
       headers: body ? { 'Content-Type': 'application/json' } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     })
+    traceRequest(id, 'received', { status: response.status })
   } catch (err) {
+    traceRequest(id, 'failed-before-response', { name: err?.name, message: err?.message })
     const { abort, error } = describeFetchFailure(err, callerSignal)
     if (abort) throw err
     throw error
@@ -106,8 +128,10 @@ async function request(path, { method = 'GET', body, signal: callerSignal } = {}
   let payload = null
   try {
     payload = await response.json()
-  } catch {
+    traceRequest(id, 'parsed', { ok: payload?.ok })
+  } catch (err) {
     // A non-JSON body (proxy error page, empty 204) leaves payload null.
+    traceRequest(id, 'parse-failed', { message: err?.message })
   }
 
   if (!response.ok || payload?.ok === false) {
