@@ -24,6 +24,7 @@ const AI_ALLOW_PATHS = [
   '/jobs/government',
   '/jobs/internship',
   '/jobs/ai',
+  '/jobs/bangalore-jobs',
   '/ai-tools',
   '/ai-tools/resume-builder',
   '/ai-tools/resume-analyzer',
