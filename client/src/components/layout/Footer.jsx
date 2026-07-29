@@ -27,7 +27,7 @@ const linkColumns = [
     heading: 'Company',
     links: [
       { label: 'About Us', href: '/about' },
-      { label: 'Services', href: '/services' },
+      { label: 'Services', href: '/services/redesign' },
       { label: 'Blog', href: '/blog' },
       { label: 'Contact Us', href: '/contact' },
       { label: 'Login / Sign Up', href: '/login' },

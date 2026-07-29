@@ -129,10 +129,10 @@ function NavLink({ href, icon, label, isChild = false, iconOnly = false }) {
       href={href}
       className={`
         flex items-center gap-3 rounded-xl transition-all duration-150
-        ${isChild ? 'py-2 px-3 text-xs' : 'py-2.5 px-3 text-sm font-medium'}
+        ${isChild ? 'py-2 px-3 text-[13px]' : 'py-2.5 px-3 text-[15px] font-medium'}
         ${isActive
           ? 'bg-blue-600 text-white shadow-sm'
-          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          : 'text-slate-800 hover:bg-slate-100 hover:text-slate-900'
         }
       `}
     >
@@ -180,11 +180,11 @@ function NavCategory({ item, iconOnly = false }) {
       <button
         onClick={() => setOpen((o) => !o)}
         className={`
-          w-full flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm font-medium
+          w-full flex items-center gap-3 py-2.5 px-3 rounded-xl text-[15px] font-medium
           transition-all duration-150
           ${isAnyChildActive
             ? 'text-blue-700 bg-blue-50'
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            : 'text-slate-800 hover:bg-slate-100 hover:text-slate-900'
           }
         `}
       >

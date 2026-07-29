@@ -14,6 +14,7 @@ export default async function sitemap() {
     { url: `${SITE}/jobs/government`,                lastModified: now, priority: 0.95, changeFrequency: 'hourly'  },
     { url: `${SITE}/jobs/internship`,                lastModified: now, priority: 0.9,  changeFrequency: 'hourly'  },
     { url: `${SITE}/jobs/ai`,                        lastModified: now, priority: 0.85, changeFrequency: 'hourly'  },
+    { url: `${SITE}/jobs/bangalore-jobs`,            lastModified: now, priority: 0.85, changeFrequency: 'hourly'  },
     // AI tools
     { url: `${SITE}/ai-tools`,                       lastModified: now, priority: 0.85, changeFrequency: 'weekly'  },
     { url: `${SITE}/ai-tools/resume-builder`,        lastModified: now, priority: 0.95, changeFrequency: 'weekly'  },
@@ -23,6 +24,7 @@ export default async function sitemap() {
     { url: `${SITE}/blog`,                            lastModified: now, priority: 0.7,  changeFrequency: 'weekly'  },
     // Informational pages
     { url: `${SITE}/services`,                       lastModified: now, priority: 0.65, changeFrequency: 'monthly' },
+    { url: `${SITE}/services/redesign`,              lastModified: now, priority: 0.65, changeFrequency: 'monthly' },
     { url: `${SITE}/about`,                          lastModified: now, priority: 0.6,  changeFrequency: 'monthly' },
     { url: `${SITE}/contact`,                        lastModified: now, priority: 0.55, changeFrequency: 'monthly' },
   ]

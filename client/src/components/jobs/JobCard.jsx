@@ -96,7 +96,7 @@ export default function JobCard({
   return (
     <article
       className={[
-        'job-card group relative',
+        'job-card group relative h-full',
         radius, padding,
         'flex flex-col gap-3',
         isFeatured ? 'ring-2 ring-amber-300/60' : accentRing,
@@ -141,8 +141,25 @@ export default function JobCard({
           </div>
         </div>
 
-        <div className="shrink-0 flex items-center gap-1.5">
-          {!isMini && job.status === 'pending_approval' && (
+        {!isMini && onSaveToggle && (
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSaveToggle(job) }}
+            aria-label={isSaved ? 'Remove from saved' : 'Save job'}
+            className={[
+              'shrink-0 p-1.5 rounded-lg transition',
+              isSaved ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-50',
+            ].join(' ')}
+          >
+            {ICON.bookmark(isSaved)}
+          </button>
+        )}
+      </header>
+
+      {/* Status badges — own row so they never squeeze the title/company column above */}
+      {!isMini && (job.status === 'pending_approval' || job.status === 'closed' || isFeatured || (isNew && deadline?.expired !== true)) && (
+        <div className="relative z-[2] flex flex-wrap items-center gap-1.5">
+          {job.status === 'pending_approval' && (
             variant === 'recruiter'
               ? <Link href={`/recruiter/preview/${job.id}`} className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition" title="Click to preview — awaiting admin approval">
                   Pending review ↗
@@ -151,32 +168,19 @@ export default function JobCard({
                   Pending review
                 </span>
           )}
-          {!isMini && job.status === 'closed' && (
+          {job.status === 'closed' && (
             <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
               Closed
             </span>
           )}
-          {isFeatured && !isMini && (
+          {isFeatured && (
             <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Featured</span>
           )}
-          {!isMini && isNew && deadline?.expired !== true && job.status !== 'pending_approval' && (
+          {isNew && deadline?.expired !== true && job.status !== 'pending_approval' && (
             <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">New</span>
           )}
-          {!isMini && onSaveToggle && (
-            <button
-              type="button"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSaveToggle(job) }}
-              aria-label={isSaved ? 'Remove from saved' : 'Save job'}
-              className={[
-                'p-1.5 rounded-lg transition',
-                isSaved ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-50',
-              ].join(' ')}
-            >
-              {ICON.bookmark(isSaved)}
-            </button>
-          )}
         </div>
-      </header>
+      )}
 
       {/* Meta row */}
       {!isMini && (
@@ -227,7 +231,7 @@ export default function JobCard({
 
       {/* Actions */}
       {!isMini && (
-        <div className="relative z-[2] mt-1 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="relative z-[2] mt-auto pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             {variant === 'admin' ? (
               <>

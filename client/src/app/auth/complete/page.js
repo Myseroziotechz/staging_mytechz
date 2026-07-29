@@ -52,7 +52,7 @@ function AuthCompleteInner() {
         const role = profile?.role || 'candidate'
         const onboardingCompleted = Boolean(profile?.onboarding_completed)
 
-        // Redirect
+        // Redirect — candidates land on the dashboard after login.
         let destination = '/dashboard'
         if (role === 'admin') destination = '/admin/dashboard'
         else if (role === 'recruiter') destination = onboardingCompleted ? '/recruiter/dashboard' : '/recruiter/onboarding'

@@ -1,4 +1,9 @@
-// Page Version: v2.0.0 | Last Updated: 2026-07-12
+// Page Version: v2.2.0 | Last Updated: 2026-07-21
+// Lives outside the (local) route group on purpose: the homepage must always
+// render with the public Navbar/Footer, even for logged-in users returning
+// from login — (local)/layout.js would otherwise wrap it in the dashboard
+// AppShell/sidebar. Navbar itself already knows how to show the right
+// logged-in/out state client-side, so this needs no auth check of its own.
 
 const SITE = 'https://mytechz.com'
 
@@ -20,11 +25,15 @@ export const metadata = {
   twitter: { card: 'summary_large_image' },
 }
 
+import Navbar                 from '@/components/layout/Navbar'
+import Footer                 from '@/components/layout/Footer'
+import FloatingAIChat         from '@/components/ai/FloatingAIChat'
 import HeroSection            from '@/components/home/HeroSection'
-import JobSearchFeature       from '@/components/home/JobSearchFeature'
-import VerifiedEmployersStrip from '@/components/home/VerifiedEmployersStrip'
+import TrendingJobs           from '@/components/home/TrendingJobs'
 import JobCategories          from '@/components/home/JobCategories'
-import StatsBar               from '@/components/home/StatsBar'
+import BasedOnSkills          from '@/components/home/BasedOnSkills'
+import TopStartupsHiring      from '@/components/home/TopStartupsHiring'
+import TopCompaniesHiring     from '@/components/home/TopCompaniesHiring'
 import HowItWorks             from '@/components/home/HowItWorks'
 import ForRecruiters          from '@/components/home/ForRecruiters'
 import FaqAccordion           from '@/components/home/FaqAccordion'
@@ -96,20 +105,26 @@ function JsonLd() {
 
 export default function Home() {
   return (
-    <main className="bg-white">
-      <JsonLd />
-      <div>
-        <HeroSection />
-        <JobCategories />
-        <JobSearchFeature />
-        <StatsBar />
-        <HowItWorks />
-        <VerifiedEmployersStrip />
-        <ForRecruiters />
-        <FaqAccordion />
-        <NewsletterSection />
-        <CallToAction />
-      </div>
-    </main>
+    <>
+      <Navbar />
+      <main className="bg-white pt-20">
+        <JsonLd />
+        <div>
+          <HeroSection />
+          <TrendingJobs />
+          <BasedOnSkills />
+          <JobCategories />
+          <TopStartupsHiring />
+          <HowItWorks />
+          <TopCompaniesHiring />
+          <ForRecruiters />
+          <FaqAccordion />
+          <NewsletterSection />
+          <CallToAction />
+        </div>
+      </main>
+      <Footer />
+      <FloatingAIChat />
+    </>
   )
 }
