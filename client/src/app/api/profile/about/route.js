@@ -18,13 +18,17 @@ import { ok, fail, requireUser, readJson, fromDbError } from '../_lib/handlers'
  * to know the DB column is named differently.
  */
 
-const EDITABLE = ['full_name', 'phone', 'location', 'headline', 'about', 'linkedin_url']
+const EDITABLE = [
+  'full_name', 'phone', 'location', 'headline', 'about',
+  'linkedin_url', 'github_url', 'portfolio_url',
+]
 
 const COLUMN_ALIAS = { about: 'profile_summary' }
 const dbColumn = (key) => COLUMN_ALIAS[key] ?? key
 
 const SELECT =
-  'id, full_name, phone, location, headline, about:profile_summary, linkedin_url, avatar_url, email, role, created_at, updated_at'
+  'id, full_name, phone, location, headline, about:profile_summary, ' +
+  'linkedin_url, github_url, portfolio_url, avatar_url, email, role, created_at, updated_at'
 
 export async function GET() {
   const { supabase, user, response } = await requireUser()
@@ -105,6 +109,8 @@ export async function DELETE() {
         headline: null,
         [dbColumn('about')]: null,
         linkedin_url: null,
+        github_url: null,
+        portfolio_url: null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)

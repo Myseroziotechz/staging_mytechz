@@ -5,6 +5,7 @@ import {
   validateProjects,
   validateInternships,
   validateLanguages,
+  validateCertifications,
   validateSkills,
   validateAbout,
   isValid,
@@ -15,9 +16,11 @@ import {
   normaliseEducation,
   normaliseProject,
   normaliseLanguage,
+  normaliseCertification,
   isBlankEntry,
   createEmptyLanguage,
   createEmptyEducation,
+  createEmptyCertification,
 } from '@/app/(app)/profile/lib/entries'
 
 import {
@@ -149,6 +152,42 @@ describe('language validation', () => {
   })
 })
 
+describe('certification validation', () => {
+  it('requires a name and issue year', () => {
+    const errors = validateCertifications([{ name: '', issue_year: '' }])
+    expect(errors[0].name).toBeTruthy()
+    expect(errors[0].issue_year).toBeTruthy()
+  })
+
+  it('accepts a complete non-expiring credential', () => {
+    const errors = validateCertifications([
+      { name: 'AWS Certified Developer', issue_year: '2024', does_not_expire: true },
+    ])
+    expect(isValid(errors)).toBe(true)
+  })
+
+  it('does not require an expiration date when it does not expire', () => {
+    const errors = validateCertifications([
+      { name: 'X', issue_year: '2024', does_not_expire: true, expiration_month: '', expiration_year: '' },
+    ])
+    expect(isValid(errors)).toBe(true)
+  })
+
+  it('rejects an expiration before the issue date', () => {
+    const errors = validateCertifications([
+      { name: 'X', issue_year: '2024', expiration_year: '2020' },
+    ])
+    expect(errors[0].expiration_year).toBeTruthy()
+  })
+
+  it('rejects an invalid credential url', () => {
+    const errors = validateCertifications([
+      { name: 'X', issue_year: '2024', credential_url: 'not-a-url' },
+    ])
+    expect(errors[0].credential_url).toBeTruthy()
+  })
+})
+
 describe('skills validation', () => {
   it('rejects more than 50 skills', () => {
     expect(validateSkills(Array.from({ length: 51 }, (_, i) => `s${i}`))).toBeTruthy()
@@ -187,6 +226,23 @@ describe('about validation', () => {
   it('rejects an implausible phone number', () => {
     expect(validateAbout({ full_name: 'A', phone: '123' }).phone).toBeTruthy()
     expect(validateAbout({ full_name: 'A', phone: '+91 9876543210' }).phone).toBeUndefined()
+  })
+
+  it('rejects a non-github url in the github field', () => {
+    const errors = validateAbout({ full_name: 'A', github_url: 'https://gitlab.com/x' })
+    expect(errors.github_url).toBeTruthy()
+  })
+
+  it('accepts a valid github url', () => {
+    expect(validateAbout({ full_name: 'A', github_url: 'https://github.com/x' }).github_url)
+      .toBeUndefined()
+  })
+
+  it('rejects a malformed portfolio url but accepts a valid one', () => {
+    expect(validateAbout({ full_name: 'A', portfolio_url: 'not-a-url' }).portfolio_url)
+      .toBeTruthy()
+    expect(validateAbout({ full_name: 'A', portfolio_url: 'https://example.com' }).portfolio_url)
+      .toBeUndefined()
   })
 })
 
@@ -294,6 +350,35 @@ describe('DB -> form round trip (normalise* after toWritablePayload)', () => {
     expect(normaliseProject({ id: '1', skills_used: [] }).skills_used).toBe('')
     expect(normaliseProject({ id: '1', skills_used: null }).skills_used).toBe('')
   })
+
+  it('certifications: issue_/expiration_ integer columns round-trip through toWritablePayload', () => {
+    const payload = toWritablePayload(SECTIONS.CERTIFICATIONS, {
+      name: 'AWS Certified Developer', issuing_organization: 'AWS',
+      issue_month: 'June', issue_year: '2024',
+      expiration_month: '', expiration_year: '',
+      does_not_expire: true, credential_id: 'ABC123', credential_url: '',
+    })
+    expect(payload.issue_month).toBe(6)
+    expect(payload.issue_year).toBe(2024)
+    expect(payload.expiration_month).toBeNull()
+    expect(payload.does_not_expire).toBe(true)
+
+    const row = normaliseCertification({
+      id: 'row-1', name: 'AWS Certified Developer', issuing_organization: 'AWS',
+      issue_month: 6, issue_year: 2024, expiration_month: null, expiration_year: null,
+      does_not_expire: true, credential_id: 'ABC123', credential_url: null,
+    })
+    expect(row.issue_month).toBe('June')
+    expect(row.issue_year).toBe('2024')
+    expect(row.does_not_expire).toBe(true)
+    expect(row.credential_url).toBe('')
+  })
+
+  it('certifications: a freshly added row is blank even with the does_not_expire default', () => {
+    expect(isBlankEntry(SECTIONS.CERTIFICATIONS, createEmptyCertification())).toBe(true)
+    expect(isBlankEntry(SECTIONS.CERTIFICATIONS, { ...createEmptyCertification(), name: 'X' }))
+      .toBe(false)
+  })
 })
 
 describe('isBlankEntry', () => {
@@ -362,6 +447,29 @@ describe('formatting', () => {
 
   it('splits and de-duplicates comma-separated tokens', () => {
     expect(splitTokens('React, node.js , React,, Vue')).toEqual(['React', 'node.js', 'Vue'])
+  })
+
+  it('formats and sorts by custom date field names (certifications)', () => {
+    const fields = {
+      startMonth: 'issue_month', startYear: 'issue_year',
+      endMonth: 'expiration_month', endYear: 'expiration_year',
+    }
+
+    expect(formatDateRange(
+      { issue_month: 'June', issue_year: '2024', does_not_expire: true },
+      { ongoingFlag: 'does_not_expire', ongoingLabel: 'No Expiration', fields },
+    )).toBe('June 2024 – No Expiration')
+
+    const sorted = sortByRecency(
+      [
+        { id: 'expired', expiration_year: '2020' },
+        { id: 'never-expires', does_not_expire: true },
+        { id: 'expires-later', expiration_year: '2030' },
+      ],
+      'does_not_expire',
+      fields,
+    )
+    expect(sorted.map((e) => e.id)).toEqual(['never-expires', 'expires-later', 'expired'])
   })
 
   it('builds initials from a name', () => {

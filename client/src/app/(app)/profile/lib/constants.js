@@ -61,6 +61,7 @@ export const SECTIONS = {
   PROJECTS: 'projects',
   INTERNSHIPS: 'internships',
   LANGUAGES: 'languages',
+  CERTIFICATIONS: 'certifications',
   SKILLS: 'skills',
 }
 
@@ -68,14 +69,15 @@ export const SECTIONS = {
  * Maps a section key to its Supabase table.
  *
  * `education` is an existing production table (singular, no `user_` prefix) —
- * `projects`, `internships` and `languages` were created to match that same
- * convention rather than introducing a second naming scheme.
+ * `projects`, `internships`, `languages` and `certifications` were created to
+ * match that same convention rather than introducing a second naming scheme.
  */
 export const SECTION_TABLES = {
   [SECTIONS.EDUCATION]: 'education',
   [SECTIONS.PROJECTS]: 'projects',
   [SECTIONS.INTERNSHIPS]: 'internships',
   [SECTIONS.LANGUAGES]: 'languages',
+  [SECTIONS.CERTIFICATIONS]: 'certifications',
 }
 
 /**
@@ -101,6 +103,11 @@ export const SECTION_COLUMNS = {
     'currently_working', 'description',
   ],
   [SECTIONS.LANGUAGES]: ['language', 'proficiency'],
+  [SECTIONS.CERTIFICATIONS]: [
+    'name', 'issuing_organization',
+    'issue_month', 'issue_year', 'expiration_month', 'expiration_year',
+    'does_not_expire', 'credential_id', 'credential_url',
+  ],
 }
 
 /**
@@ -109,7 +116,7 @@ export const SECTION_COLUMNS = {
  * string<->DB-type conversion in entries.js, which happens only at the API
  * boundary — every component and hook works with plain strings.
  *
- *   year_int    integer, NOT NULL for start_year, nullable for end_year
+ *   year_int    integer, NOT NULL for start_year/issue_year, nullable otherwise
  *   month_int   integer, nullable — stored as 1-12, shown as a month name
  *   numeric     numeric, nullable (education.cgpa)
  *   boolean     boolean
@@ -121,19 +128,15 @@ export const COLUMN_TYPES = {
   end_year: 'year_int',
   start_month: 'month_int',
   end_month: 'month_int',
+  issue_year: 'year_int',
+  issue_month: 'month_int',
+  expiration_year: 'year_int',
+  expiration_month: 'month_int',
   cgpa: 'numeric',
   currently_studying: 'boolean',
   currently_working: 'boolean',
+  does_not_expire: 'boolean',
   skills_used: 'text_array',
-}
-
-/** Columns that are NOT NULL with no default at the DB level — must be
- * present and non-empty for an insert/update to succeed. */
-export const REQUIRED_COLUMNS = {
-  [SECTIONS.EDUCATION]: ['degree', 'institution', 'start_year'],
-  [SECTIONS.PROJECTS]: ['title', 'start_year'],
-  [SECTIONS.INTERNSHIPS]: ['company', 'role', 'start_year'],
-  [SECTIONS.LANGUAGES]: ['language'],
 }
 
 export const MAX_HEADLINE_LENGTH = 120

@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import SectionCard from './shared/SectionCard'
-import { EmptyState } from './shared/Feedback'
 import { EditActions } from './shared/Actions'
 import { TextInput, TextArea } from './shared/Fields'
 import { saveAbout } from '../lib/profile-api'
@@ -15,7 +14,10 @@ const ICON = (
   </svg>
 )
 
-const FIELDS = ['full_name', 'headline', 'about', 'phone', 'location', 'linkedin_url']
+const FIELDS = [
+  'full_name', 'headline', 'about', 'phone', 'location',
+  'linkedin_url', 'github_url', 'portfolio_url',
+]
 
 function toForm(profile) {
   const form = {}
@@ -138,10 +140,6 @@ export default function AboutSection({ userId, initialProfile }) {
     }
   }
 
-  const hasAnyDetail =
-    profile?.about || profile?.headline || profile?.phone ||
-    profile?.location || profile?.linkedin_url
-
   return (
     <SectionCard
       title="About"
@@ -209,33 +207,51 @@ export default function AboutSection({ userId, initialProfile }) {
             onChange={(e) => setField('linkedin_url', e.target.value)}
           />
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <TextInput
+              label="GitHub URL"
+              type="url"
+              placeholder="https://github.com/your-username"
+              value={form.github_url}
+              error={fieldErrors.github_url}
+              onChange={(e) => setField('github_url', e.target.value)}
+            />
+            <TextInput
+              label="Portfolio URL"
+              type="url"
+              placeholder="https://your-portfolio.com"
+              value={form.portfolio_url}
+              error={fieldErrors.portfolio_url}
+              onChange={(e) => setField('portfolio_url', e.target.value)}
+            />
+          </div>
+
           <EditActions onSave={save} onCancel={cancelEditing} saving={saving} />
         </div>
-      ) : !hasAnyDetail ? (
-        <EmptyState
-          message="Tell recruiters about yourself — add a headline, summary and contact details."
-          actionLabel="Add Details"
-          onAction={startEditing}
-        />
       ) : (
+        // Every About field is always visible in view mode too — no
+        // "Add Details" teaser gating them behind an extra click.
         <div className="space-y-4">
-          {profile.headline && (
+          <h3 className="text-base font-semibold text-gray-900">
+            {profile?.full_name || 'Your name'}
+          </h3>
+          {profile?.headline && (
             <p className="text-sm font-medium text-gray-800">{profile.headline}</p>
           )}
-          {profile.about && (
+          {profile?.about ? (
             <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
               {profile.about}
             </p>
+          ) : (
+            <p className="text-sm text-gray-400">No summary added yet.</p>
           )}
 
           <dl className="space-y-2 pt-1">
-            <DetailRow label="Phone" value={profile.phone} />
-            <DetailRow label="Location" value={profile.location} />
-            <DetailRow
-              label="LinkedIn"
-              value={profile.linkedin_url}
-              href={profile.linkedin_url}
-            />
+            <DetailRow label="Phone" value={profile?.phone} />
+            <DetailRow label="City" value={profile?.location} />
+            <DetailRow label="LinkedIn" value={profile?.linkedin_url} href={profile?.linkedin_url} />
+            <DetailRow label="GitHub" value={profile?.github_url} href={profile?.github_url} />
+            <DetailRow label="Portfolio" value={profile?.portfolio_url} href={profile?.portfolio_url} />
           </dl>
         </div>
       )}

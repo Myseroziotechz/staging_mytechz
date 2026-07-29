@@ -8,14 +8,26 @@
 
 import { MONTH_INDEX } from './constants'
 
+const DEFAULT_FIELDS = {
+  startMonth: 'start_month',
+  startYear: 'start_year',
+  endMonth: 'end_month',
+  endYear: 'end_year',
+}
+
 /**
  * Renders a start/end pair as "March 2023 – Present" / "2021 – May 2024".
  * Returns '' when there's nothing meaningful to show.
+ *
+ * `fields` lets a section with differently-named date columns (certifications
+ * use issue- and expiration-prefixed columns, not start/end) reuse this
+ * instead of every caller re-implementing the same formatting.
  */
-export function formatDateRange(entry, { ongoingFlag, ongoingLabel = 'Present' } = {}) {
-  const start = joinMonthYear(entry.start_month, entry.start_year)
+export function formatDateRange(entry, { ongoingFlag, ongoingLabel = 'Present', fields } = {}) {
+  const f = { ...DEFAULT_FIELDS, ...fields }
+  const start = joinMonthYear(entry[f.startMonth], entry[f.startYear])
   const ongoing = ongoingFlag ? entry[ongoingFlag] === true : false
-  const end = ongoing ? ongoingLabel : joinMonthYear(entry.end_month, entry.end_year)
+  const end = ongoing ? ongoingLabel : joinMonthYear(entry[f.endMonth], entry[f.endYear])
 
   if (start && end) return `${start} – ${end}`
   if (start) return ongoing ? `${start} – ${ongoingLabel}` : start
@@ -34,18 +46,19 @@ function joinMonthYear(month, year) {
  * Sort key: most recent first. Ongoing entries sort above everything, then by
  * end date, then start date. Missing values sort last rather than to the top.
  */
-function sortValue(entry, ongoingFlag) {
+function sortValue(entry, ongoingFlag, fields) {
   if (ongoingFlag && entry[ongoingFlag] === true) return Number.MAX_SAFE_INTEGER
-  const y = parseInt(entry.end_year, 10)
-  if (!Number.isNaN(y)) return y * 100 + (MONTH_INDEX[entry.end_month] ?? 0)
-  const sy = parseInt(entry.start_year, 10)
-  if (!Number.isNaN(sy)) return sy * 100 + (MONTH_INDEX[entry.start_month] ?? 0)
+  const y = parseInt(entry[fields.endYear], 10)
+  if (!Number.isNaN(y)) return y * 100 + (MONTH_INDEX[entry[fields.endMonth]] ?? 0)
+  const sy = parseInt(entry[fields.startYear], 10)
+  if (!Number.isNaN(sy)) return sy * 100 + (MONTH_INDEX[entry[fields.startMonth]] ?? 0)
   return -1
 }
 
 /** Returns a new array sorted newest-first. Does not mutate the input. */
-export function sortByRecency(entries, ongoingFlag) {
-  return [...entries].sort((a, b) => sortValue(b, ongoingFlag) - sortValue(a, ongoingFlag))
+export function sortByRecency(entries, ongoingFlag, fields) {
+  const f = { ...DEFAULT_FIELDS, ...fields }
+  return [...entries].sort((a, b) => sortValue(b, ongoingFlag, f) - sortValue(a, ongoingFlag, f))
 }
 
 /** Splits a comma-separated string into trimmed, de-duplicated tokens. */

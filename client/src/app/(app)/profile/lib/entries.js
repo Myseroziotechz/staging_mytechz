@@ -201,6 +201,40 @@ export function normaliseLanguage(row) {
   }
 }
 
+// ─── Certifications ──────────────────────────────────────────────────────────
+
+export function createEmptyCertification() {
+  return {
+    id: null,
+    name: '',
+    issuing_organization: '',
+    issue_month: '',
+    issue_year: '',
+    expiration_month: '',
+    expiration_year: '',
+    does_not_expire: false,
+    credential_id: '',
+    credential_url: '',
+    _key: makeKey(),
+  }
+}
+
+export function normaliseCertification(row) {
+  return {
+    id: row.id ?? null,
+    name: str(row.name),
+    issuing_organization: str(row.issuing_organization),
+    issue_month: fromDbValue('issue_month', row.issue_month),
+    issue_year: fromDbValue('issue_year', row.issue_year),
+    expiration_month: fromDbValue('expiration_month', row.expiration_month),
+    expiration_year: fromDbValue('expiration_year', row.expiration_year),
+    does_not_expire: bool(row.does_not_expire),
+    credential_id: str(row.credential_id),
+    credential_url: str(row.credential_url),
+    _key: row.id ?? makeKey(),
+  }
+}
+
 // ─── Generic ─────────────────────────────────────────────────────────────────
 
 export const NORMALISERS = {
@@ -208,6 +242,7 @@ export const NORMALISERS = {
   [SECTIONS.PROJECTS]: normaliseProject,
   [SECTIONS.INTERNSHIPS]: normaliseInternship,
   [SECTIONS.LANGUAGES]: normaliseLanguage,
+  [SECTIONS.CERTIFICATIONS]: normaliseCertification,
 }
 
 export const FACTORIES = {
@@ -215,6 +250,7 @@ export const FACTORIES = {
   [SECTIONS.PROJECTS]: createEmptyProject,
   [SECTIONS.INTERNSHIPS]: createEmptyInternship,
   [SECTIONS.LANGUAGES]: createEmptyLanguage,
+  [SECTIONS.CERTIFICATIONS]: createEmptyCertification,
 }
 
 /**

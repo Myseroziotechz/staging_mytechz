@@ -6,6 +6,7 @@ import ProjectsSection from './components/ProjectsSection'
 import InternshipsSection from './components/InternshipsSection'
 import SkillsSection from './components/SkillsSection'
 import LanguagesSection from './components/LanguagesSection'
+import CertificationsSection from './components/CertificationsSection'
 
 /**
  * Orchestrates the profile sections. Each one owns its own fetch, view/edit
@@ -26,6 +27,7 @@ export default function ProfileForm({ userId, profile }) {
       <ProjectsSection userId={userId} />
       <InternshipsSection userId={userId} />
       <LanguagesSection userId={userId} />
+      <CertificationsSection userId={userId} />
     </div>
   )
 }

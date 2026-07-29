@@ -22,8 +22,11 @@ import { sortByRecency } from '../lib/format'
  * @param {string}   options.section     - one of SECTIONS (education, projects, …)
  * @param {string}   options.userId      - current user's UUID; refetches when it changes
  * @param {string}   [options.ongoingFlag] - field name used for recency sorting
+ * @param {Object}   [options.dateFields] - overrides for sections whose date
+ *   columns aren't named start_month/start_year/end_month/end_year
+ *   (certifications uses issue_ and expiration_ prefixed columns instead)
  */
-export default function useProfileSection({ section, userId, ongoingFlag }) {
+export default function useProfileSection({ section, userId, ongoingFlag, dateFields }) {
   const [entries, setEntries] = useState([])
   const [original, setOriginal] = useState([])
   const [isEditing, setIsEditing] = useState(false)
@@ -41,6 +44,9 @@ export default function useProfileSection({ section, userId, ongoingFlag }) {
   const validate = VALIDATORS[section]
 
   // ── Fetch ──────────────────────────────────────────────────────────────
+  // A section with nothing saved yet opens directly into edit mode with one
+  // blank row, so the user never has to click "Add" just to see the first
+  // form — only needed for a second-or-later entry.
   const load = useCallback(
     (signal) => {
       setLoading(true)
@@ -49,9 +55,15 @@ export default function useProfileSection({ section, userId, ongoingFlag }) {
         .then((rows) => {
           if (signal?.aborted) return
           const list = (Array.isArray(rows) ? rows : []).map(normalise)
-          const sorted = ongoingFlag ? sortByRecency(list, ongoingFlag) : list
-          setEntries(sorted)
+          const sorted = ongoingFlag ? sortByRecency(list, ongoingFlag, dateFields) : list
           setOriginal(sorted)
+          if (sorted.length === 0) {
+            setEntries([createEmpty()])
+            setIsEditing(true)
+          } else {
+            setEntries(sorted)
+            setIsEditing(false)
+          }
         })
         .catch((err) => {
           if (signal?.aborted || err?.name === 'AbortError') return
@@ -61,7 +73,7 @@ export default function useProfileSection({ section, userId, ongoingFlag }) {
           if (!signal?.aborted) setLoading(false)
         })
     },
-    [section, normalise, ongoingFlag],
+    [section, normalise, ongoingFlag, dateFields, createEmpty],
   )
 
   useEffect(() => {
@@ -102,12 +114,19 @@ export default function useProfileSection({ section, userId, ongoingFlag }) {
   }, [entries, createEmpty])
 
   const cancelEditing = useCallback(() => {
-    setEntries(original.map((e) => ({ ...e })))
-    setIsEditing(false)
+    if (original.length === 0) {
+      // Nothing saved yet — "Cancel" clears what was typed rather than
+      // hiding the form, since this section must always show one.
+      setEntries([createEmpty()])
+      setIsEditing(true)
+    } else {
+      setEntries(original.map((e) => ({ ...e })))
+      setIsEditing(false)
+    }
     setError(null)
     setSuccessMsg(null)
     setFieldErrors({})
-  }, [original])
+  }, [original, createEmpty])
 
   const save = useCallback(async () => {
     // Rows the user added but left untouched are dropped rather than rejected —
@@ -129,10 +148,17 @@ export default function useProfileSection({ section, userId, ongoingFlag }) {
     try {
       const rows = await saveSection(section, meaningful)
       const list = (Array.isArray(rows) ? rows : []).map(normalise)
-      const sorted = ongoingFlag ? sortByRecency(list, ongoingFlag) : list
-      setEntries(sorted)
+      const sorted = ongoingFlag ? sortByRecency(list, ongoingFlag, dateFields) : list
       setOriginal(sorted)
-      setIsEditing(false)
+      if (sorted.length === 0) {
+        // Saved with nothing filled in — keep a blank form up rather than
+        // dropping to the "click Add to see a form" state.
+        setEntries([createEmpty()])
+        setIsEditing(true)
+      } else {
+        setEntries(sorted)
+        setIsEditing(false)
+      }
       flashSuccess('Saved successfully.')
       return true
     } catch (err) {
@@ -142,7 +168,7 @@ export default function useProfileSection({ section, userId, ongoingFlag }) {
     } finally {
       setSaving(false)
     }
-  }, [entries, validate, section, normalise, ongoingFlag, flashSuccess, flashError])
+  }, [entries, validate, section, normalise, ongoingFlag, dateFields, createEmpty, flashSuccess, flashError])
 
   // ── Entry mutations ────────────────────────────────────────────────────
   const addEntry = useCallback(() => {

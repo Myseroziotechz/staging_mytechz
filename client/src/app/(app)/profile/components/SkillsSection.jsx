@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import SectionCard from './shared/SectionCard'
-import { EmptyState } from './shared/Feedback'
 import { EditActions, Chip } from './shared/Actions'
 import { fetchSkills, saveSkills } from '../lib/profile-api'
 import { validateSkills } from '../lib/validation'
@@ -118,6 +117,8 @@ export default function SkillsSection({ userId }) {
   const successTimer = useRef(null)
   const errorTimer = useRef(null)
 
+  // No skills saved yet -> open straight into the editor, so the input is
+  // there to type into immediately rather than behind an "Add" click.
   useEffect(() => {
     const controller = new AbortController()
     setLoading(true)
@@ -125,8 +126,9 @@ export default function SkillsSection({ userId }) {
       .then((list) => {
         if (controller.signal.aborted) return
         const safe = Array.isArray(list) ? list : []
-        setSkills(safe)
         setOriginal(safe)
+        setSkills(safe)
+        setIsEditing(safe.length === 0)
       })
       .catch((err) => {
         if (controller.signal.aborted || err?.name === 'AbortError') return
@@ -167,7 +169,7 @@ export default function SkillsSection({ userId }) {
 
   const cancelEditing = () => {
     setSkills([...original])
-    setIsEditing(false)
+    setIsEditing(original.length > 0 ? false : true)
     setError(null)
     setSuccessMsg(null)
   }
@@ -185,9 +187,9 @@ export default function SkillsSection({ userId }) {
     try {
       const saved = await saveSkills(skills)
       const safe = Array.isArray(saved) ? saved : skills
-      setSkills(safe)
       setOriginal([...safe])
-      setIsEditing(false)
+      setSkills(safe)
+      setIsEditing(safe.length === 0)
       flashSuccess('Skills saved successfully.')
     } catch (err) {
       flashError(err.message || 'Save failed. Please try again.')
@@ -211,12 +213,6 @@ export default function SkillsSection({ userId }) {
           <SkillsEditor skills={skills} onChange={setSkills} />
           <EditActions onSave={save} onCancel={cancelEditing} saving={saving} />
         </div>
-      ) : skills.length === 0 ? (
-        <EmptyState
-          message="No skills added yet."
-          actionLabel="Add Skills"
-          onAction={startEditing}
-        />
       ) : (
         <div className="flex flex-wrap gap-2">
           {skills.map((skill) => (

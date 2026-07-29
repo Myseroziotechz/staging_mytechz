@@ -21,6 +21,7 @@ import { EditActions, AddButton, EntryCard } from './Actions'
  * @param {string}   props.entryNoun     - singular label, e.g. "Education"
  * @param {string}   props.emptyMessage
  * @param {string}   [props.ongoingFlag] - field driving recency sort
+ * @param {Object}   [props.dateFields]  - date column overrides (see useProfileSection)
  * @param {Function} props.renderView    - (entry) => ReactNode
  * @param {Function} props.renderEdit    - ({ entry, index, errors, onChange }) => ReactNode
  */
@@ -32,6 +33,7 @@ export default function EntryListSection({
   entryNoun,
   emptyMessage,
   ongoingFlag,
+  dateFields,
   renderView,
   renderEdit,
 }) {
@@ -49,7 +51,7 @@ export default function EntryListSection({
     addEntry,
     removeEntry,
     updateEntry,
-  } = useProfileSection({ section, userId, ongoingFlag })
+  } = useProfileSection({ section, userId, ongoingFlag, dateFields })
 
   return (
     <SectionCard

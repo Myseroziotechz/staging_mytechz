@@ -157,6 +157,45 @@ export function validateLanguages(entries) {
   return errors
 }
 
+// ─── Certifications ──────────────────────────────────────────────────────────
+
+/**
+ * Certifications use issue_year/expiration_year rather than start_year/
+ * end_year, and "does it expire" rather than "is it ongoing" — different
+ * enough from validateDateRange's field names that reusing it would mean
+ * threading four field-name parameters through, so this is its own check.
+ */
+export function validateCertifications(entries) {
+  const errors = {}
+  entries.forEach((entry, i) => {
+    const row = {}
+    if (isBlank(entry.name)) row.name = 'Certification name is required.'
+    if (isBlank(entry.issue_year)) row.issue_year = 'Issue year is required.'
+
+    const expires = entry.does_not_expire !== true
+    if (expires) {
+      if (entry.expiration_month && !entry.expiration_year) {
+        row.expiration_year = 'Select an expiration year.'
+      }
+      const iy = parseInt(entry.issue_year, 10)
+      const ey = parseInt(entry.expiration_year, 10)
+      if (!Number.isNaN(iy) && !Number.isNaN(ey)) {
+        const im = MONTH_INDEX[entry.issue_month]
+        const em = MONTH_INDEX[entry.expiration_month]
+        const coherent = iy !== ey ? iy < ey : !im || !em || im <= em
+        if (!coherent) row.expiration_year = 'Expiration must be after the issue date.'
+      }
+    }
+
+    if (!isValidUrl(entry.credential_url)) {
+      row.credential_url = 'Enter a valid URL starting with http:// or https://'
+    }
+
+    if (Object.keys(row).length) errors[i] = row
+  })
+  return errors
+}
+
 // ─── Skills ──────────────────────────────────────────────────────────────────
 
 export function validateSkills(skills) {
@@ -198,6 +237,14 @@ export function validateAbout(values) {
     errors.linkedin_url = 'Enter a valid LinkedIn URL.'
   }
 
+  if (!isValidUrl(values.github_url, { requireHost: 'github.com' })) {
+    errors.github_url = 'Enter a valid GitHub URL.'
+  }
+
+  if (!isValidUrl(values.portfolio_url)) {
+    errors.portfolio_url = 'Enter a valid URL starting with http:// or https://'
+  }
+
   return errors
 }
 
@@ -206,6 +253,7 @@ export const VALIDATORS = {
   projects: validateProjects,
   internships: validateInternships,
   languages: validateLanguages,
+  certifications: validateCertifications,
 }
 
 /** True when a validator result contains no row errors. */
