@@ -262,7 +262,7 @@ export default function ServicesPage() {
               ))}
             </ul>
             <Link
-              href="/login"
+              href="/login/user"
               className="mt-8 inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-700/20 transition-all hover:-translate-y-0.5"
             >
               Get Started Free

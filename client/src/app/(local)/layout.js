@@ -4,7 +4,9 @@
  * - Logged-in users  → AppShell with sidebar (correct nav per role)
  * - Public users     → Navbar + Footer
  *
- * Pages: homepage, about, services, login, jobs/*, ai-tools/*, contact
+ * Pages: about, services, login, jobs/*, ai-tools/*, contact
+ * (The homepage lives at the top-level src/app/page.js instead, so it always
+ * renders with the public Navbar/Footer regardless of auth state.)
  */
 import { createClient } from '@/lib/supabase/server'
 import AppShell from '@/components/layout/AppShell'
