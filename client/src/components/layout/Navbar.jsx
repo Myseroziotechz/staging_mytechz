@@ -33,6 +33,11 @@ const NAV_ICONS = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
     </svg>
   ),
+  Info: (
+    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
 }
 
 const navItems = [
@@ -55,7 +60,7 @@ const navItems = [
       { label: 'Smart Job Search',     href: '/ai-tools/smart-job-search', description: 'AI-powered job matching for you' },
     ],
   },
-  { label: 'Services', href: '/services' },
+  { label: 'Services', href: '/services/redesign' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -488,14 +493,14 @@ export default function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[16px] font-semibold transition-all duration-200 ${
                       pathname === item.href || pathname?.startsWith(item.href + '/')
                         ? overFooter
                           ? 'text-blue-400 bg-white/10'
                           : 'text-blue-600 bg-blue-50/50'
                         : overFooter
                         ? 'text-gray-200 hover:text-white hover:bg-white/10'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-white/30'
+                        : 'text-slate-900 hover:text-blue-600 hover:bg-white/30'
                     }`}
                   >
                     {NAV_ICONS[item.label]}
@@ -529,10 +534,10 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login/recruiter"
-                    className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                    className={`px-4 py-2 rounded-xl text-[15px] font-semibold border transition-all duration-200 ${
                       overFooter
                         ? 'border-blue-400/60 text-blue-300 hover:bg-blue-500/10'
-                        : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                        : 'border-blue-700 text-blue-700 hover:bg-blue-50'
                     }`}
                   >
                     For Recruiters
@@ -549,9 +554,14 @@ export default function Navbar() {
               {user ? (
                 <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
-                <Link href="/login/user">
-                  <Button size="sm">Get Started</Button>
-                </Link>
+                <>
+                  <Link href="/login/user">
+                    <Button size="sm">Register</Button>
+                  </Link>
+                  <Link href="/login/user">
+                    <Button size="sm" variant="secondary">Login</Button>
+                  </Link>
+                </>
               )}
             <button
               className="p-2 rounded-xl hover:bg-white/20 transition-colors"

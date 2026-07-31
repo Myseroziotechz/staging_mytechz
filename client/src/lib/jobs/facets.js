@@ -8,6 +8,16 @@ const SALARY_BUCKETS = [
   { value: '25+',   label: '25 LPA+',     min: 2500000,  max: Infinity },
 ]
 
+// Internship pay is shown per month (see formatStipend), so bucket ranges
+// are month-scale rather than the LPA buckets used for full-time salaries.
+const STIPEND_BUCKETS = [
+  { value: '0-5k',   label: '0 – 5K / mo',   min: 0,     max: 5000 },
+  { value: '5-10k',  label: '5 – 10K / mo',  min: 5000,  max: 10000 },
+  { value: '10-20k', label: '10 – 20K / mo', min: 10000, max: 20000 },
+  { value: '20-30k', label: '20 – 30K / mo', min: 20000, max: 30000 },
+  { value: '30k+',   label: '30K+ / mo',     min: 30000, max: Infinity },
+]
+
 // Canonical department taxonomy shown in the filter regardless of how many
 // jobs currently use each one — keeps the list stable as the catalog grows.
 const DEPARTMENT_TAXONOMY = [
@@ -36,6 +46,8 @@ const EMPTY_FACETS = {
   education: [], company: [], salary: [], highlight: [],
 }
 
+const FACET_SELECT = 'department, work_mode, location_city, industry, qualifications, salary_min, salary_max, salary_period, is_featured, is_urgent, company:companies ( id, name )'
+
 function bump(map, key) {
   if (!key) return
   map.set(key, (map.get(key) || 0) + 1)
@@ -47,12 +59,134 @@ function toOptions(map) {
     .sort((a, b) => b.count - a.count)
 }
 
+function buildFacets(data, { buckets, bucketValue }) {
+  const department = new Map(DEPARTMENT_TAXONOMY.map((d) => [d, 0]))
+  const workMode    = new Map()
+  const location    = new Map()
+  const industry    = new Map()
+  const education   = new Map()
+  const companies   = new Map()
+  const salary      = new Map(buckets.map((b) => [b.value, 0]))
+  let featuredCount = 0
+  let urgentCount   = 0
+
+  for (const job of data) {
+    bump(department, job.department)
+    bump(workMode, job.work_mode)
+    bump(location, job.location_city)
+    bump(industry, job.industry)
+    for (const q of job.qualifications || []) bump(education, q)
+
+    if (job.company?.id) {
+      const cur = companies.get(job.company.id) || { name: job.company.name, count: 0 }
+      cur.count += 1
+      companies.set(job.company.id, cur)
+    }
+
+    const value = bucketValue(job)
+    if (value != null) {
+      const bucket = buckets.find((b) => value >= b.min && value <= b.max)
+      if (bucket) salary.set(bucket.value, salary.get(bucket.value) + 1)
+    }
+
+    if (job.is_featured) featuredCount += 1
+    if (job.is_urgent) urgentCount += 1
+  }
+
+  const highlight = []
+  if (featuredCount > 0) highlight.push({ value: 'featured', label: 'Featured', count: featuredCount })
+  if (urgentCount > 0) highlight.push({ value: 'urgent', label: 'Urgent hiring', count: urgentCount })
+
+  return {
+    department: toOptions(department),
+    workMode: toOptions(workMode),
+    location: toOptions(location),
+    industry: toOptions(industry),
+    education: toOptions(education),
+    company: [...companies.entries()]
+      .map(([value, { name, count }]) => ({ value, label: name, count }))
+      .sort((a, b) => b.count - a.count),
+    salary: buckets
+      .map((b) => ({ value: b.value, label: b.label, count: salary.get(b.value) || 0 }))
+      .filter((b) => b.count > 0),
+    highlight,
+  }
+}
+
+const INDUSTRY_PANEL_SELECT = 'industry, company:companies ( id, name )'
+
+const BADGE_COLORS = [
+  '#4f46e5', '#0ea5e9', '#15803d', '#f97316',
+  '#ef4444', '#ec4899', '#0f172a', '#9333ea',
+]
+
+function initialsOf(name) {
+  const words = name.split(/\s+/).filter(Boolean)
+  const initials = words.slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+  return initials.length > 1 ? initials : name.slice(0, 2).toUpperCase()
+}
+
+// Deterministic pick so a given company always gets the same badge color.
+function colorFor(name) {
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  return BADGE_COLORS[hash % BADGE_COLORS.length]
+}
+
+// Live "who's hiring" panels for the homepage — active private-sector jobs
+// grouped by their real `industry` value, ranked by open-role count.
+export async function getIndustryHiringPanels(limit = 6) {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('jobs')
+      .select(INDUSTRY_PANEL_SELECT)
+      .eq('status', 'active')
+      .eq('category', 'private')
+      .limit(2000)
+
+    if (error || !data) {
+      console.warn('[getIndustryHiringPanels]', error?.message)
+      return []
+    }
+
+    const panels = new Map()
+    for (const job of data) {
+      if (!job.industry) continue
+      let panel = panels.get(job.industry)
+      if (!panel) {
+        panel = { industry: job.industry, count: 0, companies: new Map() }
+        panels.set(job.industry, panel)
+      }
+      panel.count += 1
+      if (job.company?.id) panel.companies.set(job.company.id, job.company.name)
+    }
+
+    return [...panels.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit)
+      .map((panel) => ({
+        industry: panel.industry,
+        count: panel.count,
+        companiesTotal: panel.companies.size,
+        companies: [...panel.companies.values()].slice(0, 4).map((name) => ({
+          name,
+          initials: initialsOf(name),
+          color: colorFor(name),
+        })),
+      }))
+  } catch (err) {
+    console.warn('[getIndustryHiringPanels] unexpected:', err?.message)
+    return []
+  }
+}
+
 export async function getPrivateJobFacets() {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
       .from('jobs')
-      .select('department, work_mode, location_city, industry, qualifications, salary_min, salary_max, is_featured, is_urgent, company:companies ( id, name )')
+      .select(FACET_SELECT)
       .eq('status', 'active')
       .eq('category', 'private')
       .limit(2000)
@@ -62,59 +196,46 @@ export async function getPrivateJobFacets() {
       return EMPTY_FACETS
     }
 
-    const department = new Map(DEPARTMENT_TAXONOMY.map((d) => [d, 0]))
-    const workMode    = new Map()
-    const location    = new Map()
-    const industry    = new Map()
-    const education   = new Map()
-    const companies   = new Map()
-    const salary      = new Map(SALARY_BUCKETS.map((b) => [b.value, 0]))
-    let featuredCount = 0
-    let urgentCount   = 0
-
-    for (const job of data) {
-      bump(department, job.department)
-      bump(workMode, job.work_mode)
-      bump(location, job.location_city)
-      bump(industry, job.industry)
-      for (const q of job.qualifications || []) bump(education, q)
-
-      if (job.company?.id) {
-        const cur = companies.get(job.company.id) || { name: job.company.name, count: 0 }
-        cur.count += 1
-        companies.set(job.company.id, cur)
-      }
-
-      const salaryValue = job.salary_max ?? job.salary_min
-      if (salaryValue != null) {
-        const bucket = SALARY_BUCKETS.find((b) => salaryValue >= b.min && salaryValue <= b.max)
-        if (bucket) salary.set(bucket.value, salary.get(bucket.value) + 1)
-      }
-
-      if (job.is_featured) featuredCount += 1
-      if (job.is_urgent) urgentCount += 1
-    }
-
-    const highlight = []
-    if (featuredCount > 0) highlight.push({ value: 'featured', label: 'Featured', count: featuredCount })
-    if (urgentCount > 0) highlight.push({ value: 'urgent', label: 'Urgent hiring', count: urgentCount })
-
-    return {
-      department: toOptions(department),
-      workMode: toOptions(workMode),
-      location: toOptions(location),
-      industry: toOptions(industry),
-      education: toOptions(education),
-      company: [...companies.entries()]
-        .map(([value, { name, count }]) => ({ value, label: name, count }))
-        .sort((a, b) => b.count - a.count),
-      salary: SALARY_BUCKETS
-        .map((b) => ({ value: b.value, label: b.label, count: salary.get(b.value) || 0 }))
-        .filter((b) => b.count > 0),
-      highlight,
-    }
+    return buildFacets(data, {
+      buckets: SALARY_BUCKETS,
+      bucketValue: (job) => job.salary_max ?? job.salary_min,
+    })
   } catch (err) {
     console.warn('[getPrivateJobFacets] unexpected:', err?.message)
+    return EMPTY_FACETS
+  }
+}
+
+// Same shape as getPrivateJobFacets, scoped to job_type = 'internship' and
+// bucketed by monthly stipend instead of annual salary. Department, work
+// mode, location, industry, education, highlights and top companies all
+// carry over unchanged — those facets are just as meaningful for internship
+// listings as they are for private-sector ones.
+export async function getInternshipJobFacets() {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('jobs')
+      .select(FACET_SELECT)
+      .eq('status', 'active')
+      .eq('job_type', 'internship')
+      .limit(2000)
+
+    if (error || !data) {
+      console.warn('[getInternshipJobFacets]', error?.message)
+      return EMPTY_FACETS
+    }
+
+    return buildFacets(data, {
+      buckets: STIPEND_BUCKETS,
+      bucketValue: (job) => {
+        const raw = job.salary_max ?? job.salary_min
+        if (raw == null) return null
+        return job.salary_period === 'year' ? Math.round(raw / 12) : raw
+      },
+    })
+  } catch (err) {
+    console.warn('[getInternshipJobFacets] unexpected:', err?.message)
     return EMPTY_FACETS
   }
 }

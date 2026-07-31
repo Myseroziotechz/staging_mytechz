@@ -30,11 +30,6 @@ html {
   66% { transform: translate(-20px, 25px) scale(0.95); }
 }
 
-@keyframes hero-float {
-  0%, 100% { transform: translateY(0) var(--tw-rotate, rotate(0)); }
-  50% { transform: translateY(-12px) var(--tw-rotate, rotate(0)); }
-}
-
 @keyframes hero-gradient-pan {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -64,9 +59,6 @@ html {
 .hero-blob-delay { animation: hero-blob 18s ease-in-out infinite; animation-delay: -4s; }
 .hero-blob-slow  { animation: hero-blob 22s ease-in-out infinite; animation-delay: -9s; }
 
-.hero-float-a { animation: hero-float 6s ease-in-out infinite; }
-.hero-float-b { animation: hero-float 7s ease-in-out infinite; animation-delay: -2s; }
-.hero-float-c { animation: hero-float 8s ease-in-out infinite; animation-delay: -4s; }
 
 .hero-grid {
   background-image:
@@ -116,7 +108,6 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-blob, .hero-blob-delay, .hero-blob-slow,
-  .hero-float-a, .hero-float-b, .hero-float-c,
   .hero-grid, .hero-gradient-text,
   .hero-fade-up, .hero-fade-up-d1, .hero-fade-up-d2, .hero-fade-up-d3, .hero-fade-up-d4,
   .showcase-card-enter, .marquee-track {
@@ -156,6 +147,18 @@ html {
     #000 90%,
     transparent 100%
   );
+}
+
+/* ============================================================
+ * Hiring panels — scrollable row with hidden scrollbar
+ * ============================================================ */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* ============================================================

@@ -1,8 +1,9 @@
-// Page Version: v1.1.0 | Last Updated: 2026-07-12
+// Page Version: v1.2.0 | Last Updated: 2026-07-14
 import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
 import InternshipInfoSections from '@/components/jobs/InternshipInfoSections'
 import { getJobs } from '@/lib/jobs/queries'
+import { getInternshipJobFacets } from '@/lib/jobs/facets'
 
 const YEAR = new Date().getFullYear()
 
@@ -33,21 +34,33 @@ const PAGE_CONFIG = {
   placeholder: 'Role, college, or skill',
 }
 
+function csv(v) {
+  return v ? String(v).split(',').map(s => s.trim()).filter(Boolean) : []
+}
+
+// Same faceted filter keys as the Private page (dept/wmodes/city/ind/edu/co/sal/hl) —
+// exp_min/exp_max are intentionally left out: internships don't carry a prior-experience
+// requirement, so there's no Experience filter for students/freshers to use.
 function parseFilters(sp) {
-  const skills = sp?.skills ? String(sp.skills).split(',').map(s => s.trim()).filter(Boolean) : []
   return {
     q: sp?.q || '', location: sp?.loc || '',
     work_mode: sp?.mode || '', job_type: 'internship',
     exp_min: '', exp_max: '',
-    sal_min: sp?.sal_min || '', skills,
+    sal_min: sp?.sal_min || '', skills: csv(sp?.skills),
     sort: sp?.sort || 'newest', page: Number(sp?.page) || 1,
+    departments: csv(sp?.dept), work_modes: csv(sp?.wmodes), cities: csv(sp?.city),
+    industries: csv(sp?.ind), educations: csv(sp?.edu), companyIds: csv(sp?.co),
+    salaryBuckets: csv(sp?.sal), highlight: csv(sp?.hl),
   }
 }
 
 export default async function InternshipsPage({ searchParams }) {
   const sp = await searchParams
   const filters = parseFilters(sp)
-  const { jobs, error } = await getJobs({ ...filters, job_type: 'internship' })
+  const [{ jobs, error }, facets] = await Promise.all([
+    getJobs({ ...filters, job_type: 'internship' }),
+    getInternshipJobFacets(),
+  ])
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -63,7 +76,7 @@ export default async function InternshipsPage({ searchParams }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <Suspense fallback={<JobsLoadingGrid />}>
-        <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} />
+        <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} facets={facets} />
       </Suspense>
       <InternshipInfoSections />
     </>

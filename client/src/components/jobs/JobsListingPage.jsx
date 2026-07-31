@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
 import SortDropdown from './SortDropdown'
-import PrivateFiltersPanel from './PrivateFiltersPanel'
+import FacetedFiltersPanel from './FacetedFiltersPanel'
 import { formatStipend, govMeta, parseInternshipMeta } from '@/lib/jobs/format'
 import { loadMoreJobsAction } from '@/lib/jobs/client-actions'
 
@@ -67,6 +67,29 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
     setLoadPage(2)
     setHasMore(initialJobs.length >= PER_PAGE)
   }, [initialJobs])
+
+  // Deep-link support for "#filter-*" anchors (used by the homepage's floating
+  // filter chips): the panel renders twice (desktop sidebar + mobile bottom
+  // sheet), each with its own id prefix (see `idPrefix` below) since ids must
+  // be unique. On mobile the sheet is unmounted by default, so a plain hash
+  // anchor can't scroll to it — open the sheet first, then scroll once the
+  // "m-"-prefixed target exists.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1)
+    if (!hash.startsWith('filter-')) return
+    const isMobile = window.innerWidth < 1024
+    if (isMobile) setFiltersOpen(true)
+    const targetId = isMobile ? `m-${hash}` : hash
+    const timer = setTimeout(() => {
+      const el = document.getElementById(targetId)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      if (isMobile && el) {
+        el.classList.add('ring-2', 'ring-blue-400', 'ring-offset-2', 'rounded-xl')
+        setTimeout(() => el.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2', 'rounded-xl'), 2000)
+      }
+    }, isMobile ? 150 : 0)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleLoadMore = async () => {
     setLoadingMore(true)
@@ -169,27 +192,6 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
           <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl">{pageConfig.subtitle}</p>
         </header>
 
-        {/* Search bar */}
-        <form onSubmit={(e) => e.preventDefault()} className="job-glass-panel rounded-2xl p-2 flex flex-col sm:flex-row gap-2 mb-4 shadow-xl shadow-blue-900/5">
-          <div className="flex-1 flex items-center px-3">
-            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input type="text" defaultValue={filters.q || ''}
-              onBlur={(e) => e.target.value !== (filters.q || '') && setFilter({ q: e.target.value })}
-              onKeyDown={(e) => e.key === 'Enter' && setFilter({ q: e.currentTarget.value })}
-              placeholder={pageConfig.placeholder}
-              className="w-full px-3 py-3 text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none" />
-          </div>
-          <div className="hidden sm:block w-px bg-slate-200" />
-          <div className="flex-1 flex items-center px-3">
-            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <input type="text" defaultValue={filters.location || ''}
-              onBlur={(e) => e.target.value !== (filters.location || '') && setFilter({ location: e.target.value })}
-              onKeyDown={(e) => e.key === 'Enter' && setFilter({ location: e.currentTarget.value })}
-              placeholder="Location"
-              className="w-full px-3 py-3 text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none" />
-          </div>
-        </form>
-
         {/* Active chips + sort */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
           <div className="flex flex-wrap gap-1.5">
@@ -214,8 +216,8 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
           {/* Filters sidebar (desktop) */}
           <aside className="hidden lg:block">
             <div className="job-glass-panel rounded-2xl p-5 sticky top-24">
-              {pageConfig.id === 'private'
-                ? <PrivateFiltersPanel filters={filters} setFilter={setFilter} facets={facets} />
+              {pageConfig.id === 'private' || pageConfig.id === 'internship'
+                ? <FacetedFiltersPanel filters={filters} setFilter={setFilter} facets={facets} variant={pageConfig.id} />
                 : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
             </div>
           </aside>
@@ -302,8 +304,8 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
                 <h3 className="text-lg font-semibold">Filters</h3>
                 <button onClick={() => setFiltersOpen(false)} className="text-slate-500">Close</button>
               </div>
-              {pageConfig.id === 'private'
-                ? <PrivateFiltersPanel filters={filters} setFilter={setFilter} facets={facets} />
+              {pageConfig.id === 'private' || pageConfig.id === 'internship'
+                ? <FacetedFiltersPanel filters={filters} setFilter={setFilter} facets={facets} variant={pageConfig.id} idPrefix="m-" />
                 : <FiltersPanel filters={filters} setFilter={setFilter} pageConfig={pageConfig} />}
               <button onClick={() => setFiltersOpen(false)} className="mt-5 w-full py-3 rounded-xl bg-blue-700 text-white font-semibold">Show results</button>
             </div>
@@ -356,8 +358,9 @@ function renderExtras(pageId, job) {
   return null
 }
 
-function FiltersPanel({ filters, setFilter, pageConfig }) {
-  const showExperience = pageConfig.id !== 'internship'
+// Plain (non-faceted) panel — only reached by Government now that Private
+// and Internship both use FacetedFiltersPanel.
+function FiltersPanel({ filters, setFilter }) {
   return (
     <div className="space-y-5 text-sm">
       <div>
@@ -372,40 +375,34 @@ function FiltersPanel({ filters, setFilter, pageConfig }) {
         </div>
       </div>
 
-      {pageConfig.id !== 'internship' && (
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Job type</label>
-          <div className="flex flex-wrap gap-1.5">
-            {['full_time', 'part_time', 'contract'].map(t => (
-              <button key={t} onClick={() => setFilter({ job_type: filters.job_type === t ? '' : t })}
-                className={`text-xs px-3 py-1.5 rounded-full border transition ${filters.job_type === t ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300'}`}>
-                {t.replace('_', '-')}
-              </button>
-            ))}
-          </div>
+      <div>
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Job type</label>
+        <div className="flex flex-wrap gap-1.5">
+          {['full_time', 'part_time', 'contract'].map(t => (
+            <button key={t} onClick={() => setFilter({ job_type: filters.job_type === t ? '' : t })}
+              className={`text-xs px-3 py-1.5 rounded-full border transition ${filters.job_type === t ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300'}`}>
+              {t.replace('_', '-')}
+            </button>
+          ))}
         </div>
-      )}
-
-      {showExperience && (
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Experience (years)</label>
-          <div className="flex gap-2">
-            <input type="number" min={0} max={40} placeholder="Min" defaultValue={filters.exp_min || ''}
-              onBlur={(e) => setFilter({ exp_min: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
-            <input type="number" min={0} max={40} placeholder="Max" defaultValue={filters.exp_max || ''}
-              onBlur={(e) => setFilter({ exp_max: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
-          </div>
-        </div>
-      )}
+      </div>
 
       <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-          {pageConfig.id === 'internship' ? 'Min stipend (₹/mo)' : 'Min salary (₹/yr)'}
-        </label>
-        <input type="number" min={0} step={pageConfig.id === 'internship' ? 1000 : 50000}
-          placeholder={pageConfig.id === 'internship' ? 'e.g. 15000' : 'e.g. 1000000'}
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Experience (years)</label>
+        <div className="flex gap-2">
+          <input type="number" min={0} max={40} placeholder="Min" defaultValue={filters.exp_min || ''}
+            onBlur={(e) => setFilter({ exp_min: e.target.value })}
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
+          <input type="number" min={0} max={40} placeholder="Max" defaultValue={filters.exp_max || ''}
+            onBlur={(e) => setFilter({ exp_max: e.target.value })}
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Min salary (₹/yr)</label>
+        <input type="number" min={0} step={50000}
+          placeholder="e.g. 1000000"
           defaultValue={filters.sal_min || ''}
           onBlur={(e) => setFilter({ sal_min: e.target.value })}
           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900" />
