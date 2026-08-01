@@ -38,7 +38,7 @@ export default async function AiFeaturedPage({ searchParams }) {
   const filters = parseFilters(sp)
 
   // Auth + resume check (so the page shows the right CTA)
-  let isAuthed = false, hasResume = false
+  let isAuthed = false, hasResume = false, savedJobUrls = []
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -46,6 +46,8 @@ export default async function AiFeaturedPage({ searchParams }) {
       isAuthed = true
       const { data: resume } = await supabase.from('resumes').select('id').eq('user_id', user.id).limit(1).maybeSingle()
       hasResume = !!resume
+      const { data: saved } = await supabase.from('saved_jobs').select('job_url').eq('user_id', user.id)
+      savedJobUrls = (saved || []).map((row) => row.job_url)
     }
   } catch { /* table may not exist yet */ }
 
@@ -80,6 +82,7 @@ export default async function AiFeaturedPage({ searchParams }) {
           initialError={error}
           isAuthed={isAuthed}
           hasResume={hasResume}
+          savedJobUrls={savedJobUrls}
         />
       </Suspense>
     </>

@@ -2,6 +2,7 @@
 import { Suspense } from 'react'
 import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingPage'
 import { getJobs } from '@/lib/jobs/queries'
+import { fetchSavedJobUrls } from '@/lib/jobs/savedJobs'
 
 const YEAR = new Date().getFullYear()
 
@@ -46,7 +47,10 @@ function parseFilters(sp) {
 export default async function GovernmentJobsPage({ searchParams }) {
   const sp = await searchParams
   const filters = parseFilters(sp)
-  const { jobs, error } = await getJobs({ ...filters, category: 'government' })
+  const [{ jobs, error }, savedJobUrls] = await Promise.all([
+    getJobs({ ...filters, category: 'government' }),
+    fetchSavedJobUrls(),
+  ])
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -62,7 +66,7 @@ export default async function GovernmentJobsPage({ searchParams }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <Suspense fallback={<JobsLoadingGrid />}>
-        <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} />
+        <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} savedJobUrls={savedJobUrls} />
       </Suspense>
     </>
   )

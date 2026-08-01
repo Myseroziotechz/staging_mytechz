@@ -40,10 +40,6 @@ export default async function CandidateDashboardPage() {
   const filledFields = profileFields.filter(Boolean).length
   const profilePercent = Math.round((filledFields / profileFields.length) * 100)
 
-  const memberSince = profile?.created_at
-    ? new Date(profile.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
-    : null
-
   const [{ count: applicationsCount }, { count: savedJobsCount }] = await Promise.all([
     supabase.from('job_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
     supabase.from('saved_jobs').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
@@ -71,7 +67,6 @@ export default async function CandidateDashboardPage() {
         <div>
           <p className="text-sm text-gray-500">Welcome back,</p>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{greetingName}</h1>
-          {memberSince && <p className="text-xs text-gray-400 mt-0.5">Member since {memberSince}</p>}
         </div>
       </header>
 

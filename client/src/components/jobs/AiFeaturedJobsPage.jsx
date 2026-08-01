@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
+import { jobUrl } from '@/lib/jobs/format'
 
 const PRESETS = [
   { label: 'Roles I match 80%+',          fields: { match_min: 80 } },
@@ -22,11 +23,12 @@ function setOrDelete(params, key, value) {
  * No faceted sidebar; instead a chat-style prompt + preset chips drive filtering.
  * Match scores are surfaced as the primary signal on every card.
  */
-export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initialError, isAuthed = false, hasResume = false }) {
+export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initialError, isAuthed = false, hasResume = false, savedJobUrls = [] }) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
+  const savedUrlSet = useMemo(() => new Set(savedJobUrls), [savedJobUrls])
 
   const [filters, setFilters] = useState(initialFilters)
   const [prompt, setPrompt]   = useState(initialFilters.prompt || '')
@@ -161,13 +163,14 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
             </div>
           </div>
         ) : (
-          <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {initialJobs.map((job, i) => (
+          <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 gap-5">
+            {initialJobs.map((job) => (
               <JobCard
                 key={job.id}
                 job={job}
                 accent="amber"
-                matchScore={job._match_score ?? Math.max(60, 95 - i * 4)}
+                matchScore={job._match_score}
+                initialSaved={savedUrlSet.has(jobUrl(job))}
               />
             ))}
           </div>
@@ -179,7 +182,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
 
 export function AiLoadingGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       {Array.from({ length: 6 }).map((_, i) => <JobCardSkeleton key={i} />)}
     </div>
   )

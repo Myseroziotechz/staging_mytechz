@@ -542,9 +542,7 @@ export default function Navbar() {
                   >
                     For Recruiters
                   </Link>
-                  <Link href="/login/user">
-                    <Button size="sm">Get Started</Button>
-                  </Link>
+                  <Button as={Link} href="/login/user" size="sm">Get Started</Button>
                 </>
               )}
             </div>
@@ -555,12 +553,8 @@ export default function Navbar() {
                 <ProfileDropdown user={user} userRole={userRole} onSignOut={handleSignOut} />
               ) : (
                 <>
-                  <Link href="/login/user">
-                    <Button size="sm">Register</Button>
-                  </Link>
-                  <Link href="/login/user">
-                    <Button size="sm" variant="secondary">Login</Button>
-                  </Link>
+                  <Button as={Link} href="/login/user" size="sm">Register</Button>
+                  <Button as={Link} href="/login/user" size="sm" variant="secondary">Login</Button>
                 </>
               )}
             <button

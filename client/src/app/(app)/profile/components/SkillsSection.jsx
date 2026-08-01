@@ -95,7 +95,7 @@ function SkillsEditor({ skills, onChange }) {
           onPaste={handlePaste}
           onBlur={commit}
           placeholder={skills.length === 0 ? 'Type a skill and press Enter…' : 'Add another…'}
-          className="flex-1 min-w-[140px] border-0 outline-none text-sm bg-transparent py-1 placeholder-gray-400"
+          className="flex-1 min-w-[140px] border-0 outline-none text-sm font-semibold bg-transparent py-1 placeholder-gray-400 placeholder:font-normal"
         />
       </div>
       <p className="text-xs text-gray-400">

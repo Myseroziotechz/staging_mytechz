@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
 // IMPORTANT: this file must live at src/middleware.js, not at the project
 // root. This app's routes live under src/app, and Next.js only auto-detects
@@ -47,30 +48,72 @@ function isProtected(pathname) {
   return false
 }
 
-export function middleware(request) {
+// Copies any Set-Cookie the Supabase client queued on `refreshed` (i.e. a
+// rotated access/refresh token pair) onto whatever response we actually
+// return, including redirects — otherwise a token refreshed mid-request
+// would be discarded and the browser would keep sending the now-stale cookie.
+function withRefreshedCookies(target, refreshed) {
+  refreshed.cookies.getAll().forEach((cookie) => target.cookies.set(cookie))
+  return target
+}
+
+export async function middleware(request) {
   const { pathname } = request.nextUrl
 
-  // Check for any active Supabase session cookie.
-  // Full JWT verification happens in the server components (ensure-session.js).
-  const hasSession = request.cookies.getAll().some(
-    (c) => c.name.startsWith('sb-') && c.name.includes('auth-token')
+  // `refreshed` starts as a pass-through response; Supabase's `setAll` below
+  // rewrites it (and the request) whenever it rotates the session tokens.
+  let refreshed = NextResponse.next({ request })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          refreshed = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            refreshed.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
   )
 
-  if (hasSession && matchesPrefix(pathname, AUTH_ONLY_PREFIXES)) {
-    return NextResponse.redirect(new URL('/', request.url))
+  // This is the ONLY place in the app that can both refresh an expired
+  // access token (via the refresh token) AND persist the rotated cookies
+  // back to the browser — Server Components can read cookies but cannot
+  // set them, so without this call a session silently stops working the
+  // moment its access token expires (~1h), even though the user never
+  // logged out. That was the actual cause of "can't access /profile":
+  // this file used to only regex-match for a cookie *name*, never
+  // verifying or refreshing the session it pointed to.
+  let user = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (!error) user = data.user
+  } catch (err) {
+    console.error('[middleware] Supabase auth check failed:', err.message)
+  }
+
+  if (user && matchesPrefix(pathname, AUTH_ONLY_PREFIXES)) {
+    return withRefreshedCookies(NextResponse.redirect(new URL('/', request.url)), refreshed)
   }
 
   if (!isProtected(pathname)) {
-    return NextResponse.next()
+    return refreshed
   }
 
-  if (!hasSession) {
+  if (!user) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('returnTo', pathname)
-    return NextResponse.redirect(loginUrl)
+    return withRefreshedCookies(NextResponse.redirect(loginUrl), refreshed)
   }
 
-  return NextResponse.next()
+  return refreshed
 }
 
 export const config = {

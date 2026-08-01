@@ -11,7 +11,10 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function RecruiterLoginPage() {
+export default async function RecruiterLoginPage({ searchParams }) {
+  const sp = await searchParams
+  const query = sp?.returnTo ? `?returnTo=${encodeURIComponent(sp.returnTo)}` : ''
+
   // Redirect already-authenticated users to their dashboard
   try {
     const supabase = await createClient()
@@ -36,7 +39,7 @@ export default async function RecruiterLoginPage() {
       <div className="relative w-full max-w-[960px] h-[540px] max-h-[95vh] bg-white rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
         {/* Back button (mobile) */}
         <Link
-          href="/login"
+          href={`/login${query}`}
           aria-label="Back"
           className="lg:hidden absolute top-3 left-3 z-20 w-8 h-8 rounded-full bg-gray-100/80 backdrop-blur-md border border-gray-200/60 flex items-center justify-center text-gray-500 hover:bg-gray-200/80 hover:text-gray-700 transition-all duration-200"
         >
@@ -101,7 +104,7 @@ export default async function RecruiterLoginPage() {
               {/* Switch to job seeker */}
               <p className="text-center text-xs text-gray-400">
                 Looking for a job?{' '}
-                <Link href="/login/user" className="text-blue-600 font-semibold hover:underline">
+                <Link href={`/login/user${query}`} className="text-blue-600 font-semibold hover:underline">
                   Sign in as Job Seeker
                 </Link>
               </p>

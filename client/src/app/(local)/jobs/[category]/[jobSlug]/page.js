@@ -3,11 +3,13 @@ import Link from 'next/link'
 import { getJobBySlug, getSimilarJobs } from '@/lib/jobs/queries'
 import {
   formatSalary, formatLocation, formatExperience, formatPostedAgo,
-  formatDeadline, jobTypeLabel, workModeLabel, companyInitials,
+  formatDeadline, jobTypeLabel, workModeLabel, companyInitials, jobUrl,
 } from '@/lib/jobs/format'
+import { fetchSavedJobUrls } from '@/lib/jobs/savedJobs'
 import JobJsonLd from '@/components/jobs/JobJsonLd'
 import JobAssistantPanel from '@/components/jobs/JobAssistantPanel'
 import JobCard from '@/components/jobs/JobCard'
+import SaveJobButton from '@/components/jobs/SaveJobButton'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
 
@@ -58,7 +60,11 @@ export default async function JobDetailPage({ params, searchParams }) {
   const job = await getJobBySlug(category, jobSlug)
   if (!job) notFound()
 
-  const similar = await getSimilarJobs(job.id, job.category, job.skills || [], 6)
+  const [similar, savedJobUrls] = await Promise.all([
+    getSimilarJobs(job.id, job.category, job.skills || [], 6),
+    fetchSavedJobUrls(),
+  ])
+  const savedUrlSet = new Set(savedJobUrls)
 
   const isApplied = sp.applied === '1'
   const salary    = formatSalary(job)
@@ -164,6 +170,13 @@ export default async function JobDetailPage({ params, searchParams }) {
                 Visit website
               </a>
             )}
+
+            <SaveJobButton
+              jobUrl={jobUrl(job)}
+              jobTitle={job.title}
+              companyName={compName}
+              initialSaved={savedUrlSet.has(jobUrl(job))}
+            />
 
             <JobAssistantPanel job={job} />
           </div>
@@ -277,7 +290,7 @@ export default async function JobDetailPage({ params, searchParams }) {
           <section className="mt-10">
             <h2 className="text-xl font-bold text-slate-900 mb-4">Similar jobs</h2>
             <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {similar.map(j => <JobCard key={j.id} job={j} variant="compact" />)}
+              {similar.map(j => <JobCard key={j.id} job={j} variant="compact" initialSaved={savedUrlSet.has(jobUrl(j))} />)}
             </div>
           </section>
         )}
