@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
 import { templateAutofill, parseResumeWithGemini, isGeminiConfigured } from '@/lib/ai/gemini'
+import { extractPdfText } from '@/lib/ai/pdf-text'
 
 // POST /api/ai/resume/autofill — template-aware auto-fill from uploaded resume
 export async function POST(req) {
@@ -43,10 +44,7 @@ export async function POST(req) {
     let text = ''
 
     if (fileType === 'pdf') {
-      const { PDFParse } = await import('pdf-parse')
-      const parser = new PDFParse({ data: buffer })
-      const parsed = await parser.getText()
-      text = parsed.text
+      text = await extractPdfText(buffer)
     } else if (fileType === 'docx' || fileType === 'doc') {
       const mammoth = await import('mammoth')
       const result = await mammoth.extractRawText({ buffer })

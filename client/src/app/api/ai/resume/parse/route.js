@@ -5,6 +5,9 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
 import { parseResumeWithGemini, isGeminiConfigured } from '@/lib/ai/gemini'
+import { extractPdfText } from '@/lib/ai/pdf-text'
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB — matches the client-side FileUpload limit
 
 // POST /api/ai/resume/parse — upload file text → extract structured data
 export async function POST(req) {
@@ -15,25 +18,31 @@ export async function POST(req) {
   const limited = await rateLimit(user.id)
   if (limited) return NextResponse.json({ error: 'Rate limit exceeded. Try again in a minute.' }, { status: 429 })
 
-  const formData = await req.formData()
+  let formData
+  try {
+    formData = await req.formData()
+  } catch {
+    return NextResponse.json({ error: 'Invalid upload request' }, { status: 400 })
+  }
+
   const file = formData.get('file')
   if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+
+  if (file.size > MAX_FILE_SIZE) {
+    return NextResponse.json({ error: 'File size must be under 5MB' }, { status: 400 })
+  }
 
   const fileType = file.name.split('.').pop()?.toLowerCase()
   if (!['pdf', 'docx', 'doc', 'txt'].includes(fileType)) {
     return NextResponse.json({ error: 'Supported formats: PDF, DOCX, DOC, TXT' }, { status: 400 })
   }
 
-  const start = Date.now()
   try {
     let text = ''
     const buffer = Buffer.from(await file.arrayBuffer())
 
     if (fileType === 'pdf') {
-      const { PDFParse } = await import('pdf-parse')
-      const parser = new PDFParse({ data: buffer })
-      const parsed = await parser.getText()
-      text = parsed.text
+      text = await extractPdfText(buffer)
     } else if (fileType === 'docx' || fileType === 'doc') {
       const mammoth = await import('mammoth')
       const result = await mammoth.extractRawText({ buffer })
@@ -43,7 +52,10 @@ export async function POST(req) {
     }
 
     if (!text || text.trim().length < 20) {
-      return NextResponse.json({ error: 'Could not extract enough text from the file' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Could not extract enough text from the file. The file may be empty, image-only, or corrupted — try pasting your resume text instead.' },
+        { status: 400 }
+      )
     }
 
     // Try Gemini for structured parsing, fall back to raw text if it fails
@@ -69,28 +81,31 @@ export async function POST(req) {
       await supabase.from('ai_generation_logs').insert({
         user_id: user.id,
         action_type: 'parse',
-        input_summary: `File: ${file.name} (${text.length} chars)`,
-        output_summary: JSON.stringify(resumeData).slice(0, 500),
+        input_prompt: `File: ${file.name} (${text.length} chars)`,
+        output_content: resumeData,
         model_used: model,
-        duration_ms: Date.now() - start,
         status: 'success',
       })
     } catch { /* non-critical */ }
 
     return NextResponse.json({ resumeData })
   } catch (err) {
-    console.error('[resume/parse] Error:', err.message)
+    // Log the real error server-side only — never forward internal exception
+    // messages (library names, stack details, etc.) to the client.
+    console.error('[resume/parse] Error:', err)
     try {
       await supabase.from('ai_generation_logs').insert({
         user_id: user.id,
         action_type: 'parse',
-        input_summary: `File: ${file.name}`,
+        input_prompt: `File: ${file.name}`,
         model_used: 'unknown',
-        duration_ms: Date.now() - start,
         status: 'error',
         error_message: err.message?.slice(0, 500),
       })
     } catch { /* non-critical */ }
-    return NextResponse.json({ error: err.message || 'Failed to parse resume file' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Could not read this file. Please try a different file or paste your resume text instead.' },
+      { status: 500 }
+    )
   }
 }

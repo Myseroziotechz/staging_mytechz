@@ -7,10 +7,14 @@ export async function GET(request) {
   const { searchParams, origin } = new URL(request.url)
 
   const code = searchParams.get('code')
-  const error = searchParams.get('error')
+  // Supabase redirects failed magic-link verifications (expired, already used,
+  // tampered) back to this URL with `error`/`error_code`/`error_description`
+  // instead of `code`. `error_code` (e.g. "otp_expired") is more specific than
+  // the generic `error` (e.g. "access_denied"), so prefer it when present.
+  const errorCode = searchParams.get('error_code') || searchParams.get('error')
 
-  if (error) {
-    return NextResponse.redirect(new URL(`/auth/error?reason=${encodeURIComponent(error)}`, origin))
+  if (errorCode) {
+    return NextResponse.redirect(new URL(`/auth/error?reason=${encodeURIComponent(errorCode)}`, origin))
   }
   if (!code) {
     return NextResponse.redirect(new URL('/login', origin))
