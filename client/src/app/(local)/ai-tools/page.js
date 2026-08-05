@@ -147,7 +147,7 @@ export default function AIToolsPage() {
             <Link
               key={tool.href}
               href={tool.href}
-              className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${tool.gradient} p-8 ${tool.border} border hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+              className={`group relative overflow-hidden rounded-2xl bg-linear-to-br ${tool.gradient} p-8 ${tool.border} border hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
             >
               {tool.badge && (
                 <span className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-slate-200 text-slate-600">

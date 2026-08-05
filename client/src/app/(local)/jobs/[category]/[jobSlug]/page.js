@@ -107,7 +107,7 @@ export default async function JobDetailPage({ params, searchParams }) {
         {/* Header card */}
         <header className="job-glass-panel rounded-3xl p-5 sm:p-7 mb-6">
           <div className="flex items-start gap-4">
-            <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-xl ring-1 ring-white/60">
+            <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-xl ring-1 ring-white/60">
               {compLogo
                 ? /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={compLogo} alt={compName} className="w-full h-full object-cover rounded-2xl" />

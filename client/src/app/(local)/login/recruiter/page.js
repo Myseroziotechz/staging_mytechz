@@ -35,7 +35,7 @@ export default async function RecruiterLoginPage({ searchParams }) {
     if (e?.digest?.startsWith('NEXT_REDIRECT')) throw e
   }
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-violet-50/30 p-3 lg:p-5 overflow-hidden">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-gray-50 via-white to-violet-50/30 p-3 lg:p-5 overflow-hidden">
       <div className="relative w-full max-w-[960px] h-[540px] max-h-[95vh] bg-white rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
         {/* Back button (mobile) */}
         <Link
@@ -50,7 +50,7 @@ export default async function RecruiterLoginPage({ searchParams }) {
 
         <div className="flex h-full">
           {/* Left: Recruiter showcase panel */}
-          <div className="hidden lg:flex lg:w-[48%] flex-col justify-center bg-gradient-to-br from-violet-600 to-indigo-700 p-10 text-white">
+          <div className="hidden lg:flex lg:w-[48%] flex-col justify-center bg-linear-to-br from-violet-600 to-indigo-700 p-10 text-white">
             <div className="space-y-5">
               <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">
                 🏢

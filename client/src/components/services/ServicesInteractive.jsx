@@ -236,7 +236,7 @@ export function HowItWorksStepper() {
   return (
     <div ref={ref} className="relative">
       <div aria-hidden className="hidden md:block absolute top-9 left-[12%] right-[12%] h-0.5 bg-slate-200 rounded-full overflow-hidden">
-        <div className={`h-full bg-gradient-to-r from-blue-600 to-indigo-600 origin-left transition-transform duration-[1400ms] ease-out ${visible ? 'scale-x-100' : 'scale-x-0'}`} />
+        <div className={`h-full bg-linear-to-r from-blue-600 to-indigo-600 origin-left transition-transform duration-[1400ms] ease-out ${visible ? 'scale-x-100' : 'scale-x-0'}`} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative">
@@ -248,7 +248,7 @@ export function HowItWorksStepper() {
               className={`text-center transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
               style={{ transitionDelay: `${i * 150}ms` }}
             >
-              <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-blue-900/20 ring-4 ring-white">
+              <div className="mx-auto w-16 h-16 rounded-2xl bg-linear-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-blue-900/20 ring-4 ring-white">
                 <Icon />
               </div>
               <div className="mt-4 flex items-center justify-center gap-2">

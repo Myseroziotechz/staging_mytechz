@@ -128,7 +128,7 @@ export default function JobCard({
           isMini ? 'w-9 h-9 text-sm' : isCompact ? 'w-11 h-11 text-base' : 'w-12 h-12 sm:w-14 sm:h-14 text-lg',
           showLogoImage
             ? 'bg-white ring-1 ring-slate-200/80'
-            : 'bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white/60',
+            : 'bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white/60',
         ].join(' ')}>
           {showLogoImage
             ? /* eslint-disable-next-line @next/next/no-img-element */

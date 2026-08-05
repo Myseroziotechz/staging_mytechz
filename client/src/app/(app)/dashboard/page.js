@@ -49,7 +49,7 @@ export default async function CandidateDashboardPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Greeting Header */}
       <header className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-lg font-semibold flex items-center justify-center shrink-0 ring-2 ring-white shadow">
+        <div className="w-14 h-14 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 text-white text-lg font-semibold flex items-center justify-center shrink-0 ring-2 ring-white shadow">
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatar} alt={greetingName} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
@@ -75,7 +75,7 @@ export default async function CandidateDashboardPage() {
 
       {/* Profile Completion Banner */}
       {profilePercent < 100 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-gray-900">Complete your profile</h3>
             <p className="text-sm text-gray-600 mt-1">

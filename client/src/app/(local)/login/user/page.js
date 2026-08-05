@@ -36,7 +36,7 @@ export default async function UserLoginPage({ searchParams }) {
     if (e?.digest?.startsWith('NEXT_REDIRECT')) throw e
   }
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-3 lg:p-5 overflow-hidden">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-gray-50 via-white to-blue-50/30 p-3 lg:p-5 overflow-hidden">
       <div className="relative w-full max-w-[960px] h-[540px] max-h-[95vh] bg-white rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
         {/* Back button (mobile) */}
         <Link

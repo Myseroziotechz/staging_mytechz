@@ -81,7 +81,7 @@ export default function EditorPage() {
     try {
       switch (format) {
         case 'pdf': await exportAsPDF(el, `${filename}.pdf`); break
-        case 'docx': await exportAsDOCX(resumeData, `${filename}.docx`); break
+        case 'docx': await exportAsDOCX(resumeData, `${filename}.docx`, template?.default_sections); break
         case 'png': await exportAsPNG(el, `${filename}.png`); break
         case 'jpg': await exportAsJPG(el, `${filename}.jpg`); break
         case 'svg': await exportAsSVG(el, `${filename}.svg`); break

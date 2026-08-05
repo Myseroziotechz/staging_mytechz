@@ -52,7 +52,7 @@ export default async function RecruiterProfilePage() {
     <div className="max-w-2xl mx-auto space-y-6 pb-10">
       {/* Header */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl font-bold flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-white shadow">
+        <div className="w-16 h-16 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 text-white text-xl font-bold flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-white shadow">
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatar} alt={initials} referrerPolicy="no-referrer" className="w-full h-full object-cover" />

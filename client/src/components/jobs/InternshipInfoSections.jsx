@@ -191,7 +191,7 @@ function FeaturesSection() {
 
 function HowToApplySection() {
   return (
-    <section className="relative py-14 sm:py-20 bg-gradient-to-b from-amber-50/50 via-white to-white" aria-labelledby="how-to-apply">
+    <section className="relative py-14 sm:py-20 bg-linear-to-b from-amber-50/50 via-white to-white" aria-labelledby="how-to-apply">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           id="how-to-apply"
@@ -206,12 +206,12 @@ function HowToApplySection() {
               {i < STEPS.length - 1 && (
                 <>
                   {/* Connector to next step: horizontal on desktop, vertical on mobile */}
-                  <div className="hidden lg:block absolute top-7 left-16 right-[-8px] h-px bg-gradient-to-r from-amber-300 to-amber-200" aria-hidden="true" />
+                  <div className="hidden lg:block absolute top-7 left-16 right-[-8px] h-px bg-linear-to-r from-amber-300 to-amber-200" aria-hidden="true" />
                   <div className="sm:hidden absolute left-7 top-16 bottom-[-14px] w-px bg-amber-200" aria-hidden="true" />
                 </>
               )}
               <div className="relative flex sm:block gap-4">
-                <div className="relative z-10 shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/25 flex items-center justify-center sm:mb-4">
+                <div className="relative z-10 shrink-0 w-14 h-14 rounded-2xl bg-linear-to-br from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/25 flex items-center justify-center sm:mb-4">
                   {s.icon}
                   <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border border-amber-200 text-amber-700 text-[10px] font-bold flex items-center justify-center">
                     {i + 1}

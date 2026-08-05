@@ -156,7 +156,7 @@ function DropdownMenu({ items, isOpen }) {
       }`}
     >
       <div className="bg-white/90 backdrop-blur-2xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/60 p-2 min-w-[260px]">
-        <div className="absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent rounded-full" />
+        <div className="absolute inset-x-2 top-0 h-px bg-linear-to-r from-transparent via-white/80 to-transparent rounded-full" />
         {items.map((item, idx) => (
           <Link
             key={item.href}
@@ -216,7 +216,7 @@ function ProfileDropdown({ user, userRole, onSignOut }) {
         className="flex items-center gap-2 rounded-full p-0.5 pr-2 bg-white/40 hover:bg-white/60 border border-white/60 shadow-sm transition-all"
         aria-label="Open profile menu"
       >
-        <span className="relative w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-semibold flex items-center justify-center ring-2 ring-white/70">
+        <span className="relative w-9 h-9 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 text-white text-xs font-semibold flex items-center justify-center ring-2 ring-white/70">
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -249,11 +249,11 @@ function ProfileDropdown({ user, userRole, onSignOut }) {
         }`}
       >
         <div className="relative bg-white/90 backdrop-blur-2xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/60 p-2 min-w-[280px]">
-          <div className="absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent rounded-full" />
+          <div className="absolute inset-x-2 top-0 h-px bg-linear-to-r from-transparent via-white/80 to-transparent rounded-full" />
 
           {/* User header with role badge */}
-          <div className="flex items-center gap-3 px-3 py-3 mb-1 rounded-xl bg-gradient-to-br from-blue-50/60 to-indigo-50/60">
-            <span className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-3 px-3 py-3 mb-1 rounded-xl bg-linear-to-br from-blue-50/60 to-indigo-50/60">
+            <span className="w-10 h-10 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold flex items-center justify-center shrink-0">
               {avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatar} alt={fullName} referrerPolicy="no-referrer" className="w-full h-full object-cover" onError={() => setImgError(true)} />

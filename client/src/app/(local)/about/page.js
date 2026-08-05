@@ -287,7 +287,7 @@ export default function AboutPage() {
 
         {/* CTA */}
         <div className="mt-20">
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 to-indigo-800 rounded-3xl p-10 sm:p-14 text-center shadow-2xl shadow-blue-900/20">
+          <div className="relative overflow-hidden bg-linear-to-br from-blue-700 to-indigo-800 rounded-3xl p-10 sm:p-14 text-center shadow-2xl shadow-blue-900/20">
             <div className="pointer-events-none absolute -top-20 -right-10 w-72 h-72 bg-indigo-400/30 rounded-full blur-3xl" />
             <div className="pointer-events-none absolute -bottom-20 -left-10 w-72 h-72 bg-blue-400/30 rounded-full blur-3xl" />
             <div className="relative">

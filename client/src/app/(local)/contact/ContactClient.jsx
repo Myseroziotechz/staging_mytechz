@@ -96,7 +96,7 @@ export default function ContactClient({ linkedinUrl }) {
 
           {/* Right — form card */}
           <div className="hero-fade-up-d2 relative">
-            <div className="absolute -inset-2 bg-gradient-to-br from-amber-300/30 via-blue-300/20 to-indigo-300/30 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
+            <div className="absolute -inset-2 bg-linear-to-br from-amber-300/30 via-blue-300/20 to-indigo-300/30 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
             <form
               onSubmit={handleSubmit}
               className="relative bg-white/90 backdrop-blur rounded-2xl shadow-xl shadow-blue-900/10 border border-slate-100 p-6 sm:p-8 space-y-5"
@@ -164,7 +164,7 @@ export default function ContactClient({ linkedinUrl }) {
                     </>
                   )}
                 </span>
-                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/25 to-transparent" />
               </button>
 
               {status.state === 'success' && (

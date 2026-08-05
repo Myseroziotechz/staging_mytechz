@@ -245,7 +245,7 @@ export default function FloatingAIChat() {
           onClick={() => setOpen(true)}
           aria-label="Open AI chat assistant"
           className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[60] flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center
-                     rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white
+                     rounded-full bg-linear-to-br from-blue-600 to-indigo-700 text-white
                      shadow-lg shadow-blue-700/30 transition hover:scale-105 hover:shadow-xl
                      ring-2 ring-white"
         >
@@ -261,7 +261,7 @@ export default function FloatingAIChat() {
                      border border-slate-200 bg-white shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-700 to-indigo-700 px-4 py-3 text-white">
+          <div className="flex items-center justify-between border-b bg-linear-to-r from-blue-700 to-indigo-700 px-4 py-3 text-white">
             <div className="flex items-center gap-2">
               {ICON.sparkleSm}
               <div>

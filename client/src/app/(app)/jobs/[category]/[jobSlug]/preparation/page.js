@@ -78,7 +78,7 @@ export default async function JobPreparationPage({ params }) {
         {/* Hero */}
         <header className="job-glass-panel rounded-3xl p-6 sm:p-8 mb-6">
           <div className="flex items-start gap-3 mb-3">
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 via-blue-600 to-amber-500 text-white shadow-md shadow-blue-700/20">
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-linear-to-br from-indigo-600 via-blue-600 to-amber-500 text-white shadow-md shadow-blue-700/20">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 5.8L20 10l-5.6 2.2L12 18l-2.4-5.8L4 10l5.6-2.2L12 2z"/></svg>
             </span>
             <div className="min-w-0">

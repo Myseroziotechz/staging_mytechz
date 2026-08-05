@@ -57,7 +57,7 @@ const TILES = [
     title: 'AI Featured',
     blurb: 'Ranked against your resume and ambitions, not keywords.',
     accent: 'from-indigo-100 via-blue-100 to-amber-100 border-indigo-200 hover:shadow-indigo-900/20',
-    iconBg: 'bg-gradient-to-br from-indigo-600 via-blue-600 to-amber-500',
+    iconBg: 'bg-linear-to-br from-indigo-600 via-blue-600 to-amber-500',
     icon: (<path strokeLinecap="round" strokeLinejoin="round" d="M12 2l2.4 5.8L20 10l-5.6 2.2L12 18l-2.4-5.8L4 10l5.6-2.2L12 2z" />),
     badge: 'Personalized',
   },
@@ -151,7 +151,7 @@ export default function JobsLandingPage() {
           <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
             {TILES.map(t => (
               <Link key={t.id} href={t.href}
-                className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${t.accent} p-7 sm:p-8 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
+                className={`group relative overflow-hidden rounded-2xl bg-linear-to-br ${t.accent} p-7 sm:p-8 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
                 <div className="relative z-10">
                   <div className={`w-14 h-14 ${t.iconBg} rounded-xl flex items-center justify-center mb-5 shadow-lg`}>
                     <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
@@ -170,7 +170,7 @@ export default function JobsLandingPage() {
           </div>
 
           {/* Smart Job Search CTA */}
-          <div className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
+          <div className="mt-12 bg-linear-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
             <h2 className="text-xl sm:text-2xl font-bold mb-2">Want jobs matched to your profile?</h2>
             <p className="text-blue-100 text-sm mb-5">Our AI job matching engine ranks jobs by your actual fit — not just keyword overlap. Coming soon.</p>
             <Link href="/ai-tools/smart-job-search" className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-50 transition-all shadow-md">

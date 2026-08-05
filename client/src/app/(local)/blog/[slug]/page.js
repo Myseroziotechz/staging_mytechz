@@ -107,7 +107,7 @@ function ContentBlock({ block }) {
       )
     case 'tip':
       return (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-5 mb-4">
+        <div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-5 mb-4">
           <p className="text-slate-700 text-sm mb-3">{block.text}</p>
           <Link
             href={block.link}
@@ -208,7 +208,7 @@ export default async function BlogPostPage({ params }) {
           )}
 
           {/* CTA */}
-          <div className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
+          <div className="mt-12 bg-linear-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
             <h2 className="text-xl sm:text-2xl font-bold mb-2">
               Build Your Perfect Resume Now
             </h2>

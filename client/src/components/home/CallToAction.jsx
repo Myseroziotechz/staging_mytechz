@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function CallToAction() {
   return (
-    <section className="relative py-16 sm:py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100 overflow-hidden">
+    <section className="relative py-16 sm:py-20 bg-linear-to-br from-blue-50 via-indigo-50 to-slate-100 overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
           Ready to Start Your Career Journey?

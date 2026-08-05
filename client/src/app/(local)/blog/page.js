@@ -172,7 +172,7 @@ export default function BlogPage() {
           </div>
 
           {/* CTA */}
-          <div className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
+          <div className="mt-12 bg-linear-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-center text-white">
             <h2 className="text-xl sm:text-2xl font-bold mb-2">Build Your Resume Now — It&apos;s Free</h2>
             <p className="text-blue-100 text-sm mb-5">ATS-optimized templates designed for Indian freshers and professionals. No sign-up needed.</p>
             <Link href="/ai-tools/resume-builder" className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-50 transition-all shadow-md">
