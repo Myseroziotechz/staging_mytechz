@@ -11,13 +11,28 @@ const TABS = [
 export default function ResumeInput({ onAnalyze, loading = false }) {
   const [tab, setTab] = useState('upload')
   const [file, setFile] = useState(null)
+  const [fileError, setFileError] = useState('')
   const [resumeText, setResumeText] = useState('')
   const [jobDescription, setJobDescription] = useState('')
   const [targetRole, setTargetRole] = useState('')
+  const [touched, setTouched] = useState(false)
 
-  const canSubmit = !loading && (tab === 'upload' ? !!file : resumeText.trim().length > 20)
+  const hasResume = tab === 'upload' ? !!file : resumeText.trim().length > 20
+  const hasContext = !!jobDescription.trim() || !!targetRole.trim()
+  const canSubmit = !loading && hasResume && hasContext
+
+  function handleFileSelected(selected) {
+    setFileError('')
+    setFile(selected)
+  }
+
+  function handleFileError(message) {
+    setFile(null)
+    setFileError(message)
+  }
 
   function handleSubmit() {
+    setTouched(true)
     if (!canSubmit) return
     onAnalyze({
       mode: tab,
@@ -47,7 +62,7 @@ export default function ResumeInput({ onAnalyze, loading = false }) {
 
       {/* File upload or text input */}
       {tab === 'upload' ? (
-        <FileUpload onFileSelected={setFile} disabled={loading} />
+        <FileUpload onFileSelected={handleFileSelected} onError={handleFileError} disabled={loading} />
       ) : (
         <textarea
           value={resumeText}
@@ -58,12 +73,20 @@ export default function ResumeInput({ onAnalyze, loading = false }) {
           className="w-full border border-gray-200 rounded-xl p-4 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y disabled:opacity-50"
         />
       )}
+      {fileError && (
+        <p className="text-xs font-medium text-red-600">{fileError}</p>
+      )}
+      {touched && !hasResume && (
+        <p className="text-xs font-medium text-red-600">
+          {tab === 'upload' ? 'Please upload a resume file.' : 'Please paste at least 20 characters of resume text.'}
+        </p>
+      )}
 
-      {/* Optional fields */}
+      {/* Job Description / Target Role — at least one is required */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-            Job Description <span className="text-gray-400 font-normal normal-case">(optional)</span>
+            Job Description
           </label>
           <textarea
             value={jobDescription}
@@ -76,7 +99,7 @@ export default function ResumeInput({ onAnalyze, loading = false }) {
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-            Target Role <span className="text-gray-400 font-normal normal-case">(optional)</span>
+            Target Role
           </label>
           <input
             type="text"
@@ -87,15 +110,21 @@ export default function ResumeInput({ onAnalyze, loading = false }) {
             className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
           />
           <p className="mt-2 text-[11px] text-gray-400">
-            If no job description is provided, we&apos;ll use role-based keywords for analysis.
+            Provide a job description, a target role, or both — we&apos;ll tailor the analysis accordingly.
           </p>
         </div>
       </div>
+      {touched && !hasContext && (
+        <p className="text-xs font-medium text-red-600">
+          Please provide a job description or a target role.
+        </p>
+      )}
 
-      {/* Submit */}
+      {/* Submit — stays clickable (except while loading) so a click always
+          surfaces which required field is missing, instead of doing nothing. */}
       <button
         onClick={handleSubmit}
-        disabled={!canSubmit}
+        disabled={loading}
         className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (

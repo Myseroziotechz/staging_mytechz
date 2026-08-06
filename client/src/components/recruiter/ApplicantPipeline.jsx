@@ -67,7 +67,7 @@ function ApplicantCard({ applicant, onOpen }) {
       className="w-full text-left bg-white rounded-xl border border-slate-200 p-3 shadow-sm hover:shadow-md hover:border-blue-300 transition"
     >
       <div className="flex items-start gap-2">
-        <div className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 text-xs font-bold flex items-center justify-center">
+        <div className="shrink-0 w-9 h-9 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 text-xs font-bold flex items-center justify-center">
           {initials(name)}
         </div>
         <div className="min-w-0 flex-1">
@@ -158,7 +158,7 @@ function ApplicantDrawer({ applicant, onClose, onUpdated }) {
       >
         <header className="px-5 py-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 text-sm font-bold flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 text-sm font-bold flex items-center justify-center">
               {initials(name)}
             </div>
             <div className="min-w-0">

@@ -3,11 +3,13 @@ import Link from 'next/link'
 import { getJobBySlug, getSimilarJobs } from '@/lib/jobs/queries'
 import {
   formatSalary, formatLocation, formatExperience, formatPostedAgo,
-  formatDeadline, jobTypeLabel, workModeLabel, companyInitials,
+  formatDeadline, jobTypeLabel, workModeLabel, companyInitials, jobUrl,
 } from '@/lib/jobs/format'
+import { fetchSavedJobUrls } from '@/lib/jobs/savedJobs'
 import JobJsonLd from '@/components/jobs/JobJsonLd'
 import JobAssistantPanel from '@/components/jobs/JobAssistantPanel'
 import JobCard from '@/components/jobs/JobCard'
+import SaveJobButton from '@/components/jobs/SaveJobButton'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
 
@@ -58,7 +60,11 @@ export default async function JobDetailPage({ params, searchParams }) {
   const job = await getJobBySlug(category, jobSlug)
   if (!job) notFound()
 
-  const similar = await getSimilarJobs(job.id, job.category, job.skills || [], 6)
+  const [similar, savedJobUrls] = await Promise.all([
+    getSimilarJobs(job.id, job.category, job.skills || [], 6),
+    fetchSavedJobUrls(),
+  ])
+  const savedUrlSet = new Set(savedJobUrls)
 
   const isApplied = sp.applied === '1'
   const salary    = formatSalary(job)
@@ -101,7 +107,7 @@ export default async function JobDetailPage({ params, searchParams }) {
         {/* Header card */}
         <header className="job-glass-panel rounded-3xl p-5 sm:p-7 mb-6">
           <div className="flex items-start gap-4">
-            <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-xl ring-1 ring-white/60">
+            <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-xl ring-1 ring-white/60">
               {compLogo
                 ? /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={compLogo} alt={compName} className="w-full h-full object-cover rounded-2xl" />
@@ -164,6 +170,13 @@ export default async function JobDetailPage({ params, searchParams }) {
                 Visit website
               </a>
             )}
+
+            <SaveJobButton
+              jobUrl={jobUrl(job)}
+              jobTitle={job.title}
+              companyName={compName}
+              initialSaved={savedUrlSet.has(jobUrl(job))}
+            />
 
             <JobAssistantPanel job={job} />
           </div>
@@ -277,7 +290,7 @@ export default async function JobDetailPage({ params, searchParams }) {
           <section className="mt-10">
             <h2 className="text-xl font-bold text-slate-900 mb-4">Similar jobs</h2>
             <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {similar.map(j => <JobCard key={j.id} job={j} variant="compact" />)}
+              {similar.map(j => <JobCard key={j.id} job={j} variant="compact" initialSaved={savedUrlSet.has(jobUrl(j))} />)}
             </div>
           </section>
         )}

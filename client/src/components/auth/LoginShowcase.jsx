@@ -117,7 +117,7 @@ export default function LoginShowcase() {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800" />
+      <div className="absolute inset-0 bg-linear-to-br from-blue-600 via-blue-700 to-indigo-800" />
 
       {/* Glass back button */}
       <Link

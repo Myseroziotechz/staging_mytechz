@@ -309,7 +309,7 @@ export default function AppNavbar({
             className="flex items-center gap-2 sm:gap-2.5 rounded-xl px-2 sm:px-2.5 py-1.5 hover:bg-slate-100 transition-colors"
             aria-label="Profile menu"
           >
-            <span className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-semibold flex items-center justify-center ring-2 ring-slate-200 shrink-0">
+            <span className="w-8 h-8 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 text-white text-xs font-semibold flex items-center justify-center ring-2 ring-slate-200 shrink-0">
               {avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatar} alt={fullName} referrerPolicy="no-referrer" className="w-full h-full object-cover" onError={() => setImgError(true)} />

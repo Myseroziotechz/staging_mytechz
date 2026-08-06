@@ -272,7 +272,7 @@ export default function ServicesPage() {
             </Link>
           </div>
 
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 to-indigo-800 rounded-3xl p-8 sm:p-10 shadow-2xl shadow-blue-900/20">
+          <div className="relative overflow-hidden bg-linear-to-br from-blue-700 to-indigo-800 rounded-3xl p-8 sm:p-10 shadow-2xl shadow-blue-900/20">
             <div className="pointer-events-none absolute -top-16 -right-10 w-60 h-60 bg-amber-400/30 rounded-full blur-3xl" />
             <div className="relative">
               <h2 className="text-2xl sm:text-3xl font-bold text-white">For hiring partners</h2>

@@ -26,7 +26,18 @@ export async function POST(request) {
     }
   )
 
-  await supabase.auth.signOut()
+  // Optional `{ scope: 'global' }` body signs out every session for this
+  // user (all devices), not just this browser. No body / non-JSON body (the
+  // existing Navbar callers) keeps the original local-only behaviour.
+  let scope = 'local'
+  try {
+    const body = await request.json()
+    if (body?.scope === 'global') scope = 'global'
+  } catch {
+    // No body sent — default to local.
+  }
+
+  await supabase.auth.signOut({ scope })
 
   const response = NextResponse.redirect(new URL('/', request.url), { status: 303 })
   // Clear all MyTechZ cookies

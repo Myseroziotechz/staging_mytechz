@@ -9,7 +9,15 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }) {
+  const sp = await searchParams
+  // Forwarded to /login/user and /login/recruiter so a returnTo set by
+  // middleware (e.g. /login?returnTo=/profile) survives the role picker
+  // instead of being dropped — otherwise a user bounced here from a
+  // protected route would land on the generic dashboard after signing in
+  // instead of back on the page they actually asked for.
+  const query = sp?.returnTo ? `?returnTo=${encodeURIComponent(sp.returnTo)}` : ''
+
   // Redirect already-authenticated users to their dashboard
   try {
     const supabase = await createClient()
@@ -32,7 +40,7 @@ export default async function LoginPage() {
     // Otherwise ignore auth errors and show login page
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 via-white to-blue-50/30 p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
@@ -59,7 +67,7 @@ export default async function LoginPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Job Seeker */}
           <Link
-            href="/login/user"
+            href={`/login/user${query}`}
             className="group flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-blue-500 hover:shadow-md transition-all duration-200 text-center"
           >
             <span className="text-4xl">🎯</span>
@@ -78,7 +86,7 @@ export default async function LoginPage() {
 
           {/* Recruiter */}
           <Link
-            href="/login/recruiter"
+            href={`/login/recruiter${query}`}
             className="group flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-violet-500 hover:shadow-md transition-all duration-200 text-center"
           >
             <span className="text-4xl">🏢</span>

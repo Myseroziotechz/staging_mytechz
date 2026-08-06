@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 
-export default function FileUpload({ onFileSelected, accept = '.pdf,.docx,.doc,.txt', disabled = false }) {
+export default function FileUpload({ onFileSelected, onError, accept = '.pdf,.docx,.doc,.txt', disabled = false }) {
   const [dragActive, setDragActive] = useState(false)
   const [fileName, setFileName] = useState('')
   const inputRef = useRef(null)
@@ -32,10 +32,23 @@ export default function FileUpload({ onFileSelected, accept = '.pdf,.docx,.doc,.
     }
   }
 
+  function reportError(message) {
+    setFileName('')
+    if (onError) onError(message)
+    else alert(message)
+  }
+
   function handleFile(file) {
     const maxSize = 5 * 1024 * 1024 // 5MB
+    const allowedExt = accept.split(',').map((e) => e.trim().replace(/^\./, '').toLowerCase())
+    const ext = file.name.split('.').pop()?.toLowerCase()
+
+    if (!ext || !allowedExt.includes(ext)) {
+      reportError(`Unsupported file type. Accepted formats: ${accept.replace(/\./g, '').toUpperCase()}`)
+      return
+    }
     if (file.size > maxSize) {
-      alert('File size must be under 5MB')
+      reportError('File size must be under 5MB')
       return
     }
     setFileName(file.name)

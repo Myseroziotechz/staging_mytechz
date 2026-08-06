@@ -6,7 +6,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
 import SortDropdown from './SortDropdown'
 import FacetedFiltersPanel from './FacetedFiltersPanel'
-import { formatStipend, govMeta, parseInternshipMeta } from '@/lib/jobs/format'
+import { formatStipend, govMeta, parseInternshipMeta, jobUrl } from '@/lib/jobs/format'
 import { loadMoreJobsAction } from '@/lib/jobs/client-actions'
 
 const PER_PAGE = 12
@@ -47,7 +47,7 @@ const PRIVATE_CLEAR_KEYS = ['departments', 'work_modes', 'cities', 'industries',
  *   }
  *   initialJobs, initialFilters, initialError
  */
-export default function JobsListingPage({ pageConfig, initialJobs, initialFilters, initialError, facets }) {
+export default function JobsListingPage({ pageConfig, initialJobs, initialFilters, initialError, facets, savedJobUrls = [] }) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
@@ -61,12 +61,18 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
   const [loadPage, setLoadPage]   = useState(2)
   const [hasMore, setHasMore]     = useState(initialJobs.length >= PER_PAGE)
   const [loadingMore, setLoadingMore] = useState(false)
+  const [savedUrls, setSavedUrls] = useState(savedJobUrls)
+  const savedUrlSet = useMemo(() => new Set(savedUrls), [savedUrls])
 
   useEffect(() => {
     setAllJobs(initialJobs)
     setLoadPage(2)
     setHasMore(initialJobs.length >= PER_PAGE)
   }, [initialJobs])
+
+  useEffect(() => {
+    setSavedUrls(savedJobUrls)
+  }, [savedJobUrls])
 
   // Deep-link support for "#filter-*" anchors (used by the homepage's floating
   // filter chips): the panel renders twice (desktop sidebar + mobile bottom
@@ -93,7 +99,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
 
   const handleLoadMore = async () => {
     setLoadingMore(true)
-    const { jobs, hasMore: more } = await loadMoreJobsAction({
+    const { jobs, hasMore: more, savedJobUrls: refreshedSaved } = await loadMoreJobsAction({
       ...filters,
       category: pageConfig.id,
       exclude_internships: pageConfig.id === 'private',
@@ -104,6 +110,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
     setLoadPage(p => p + 1)
     setHasMore(more)
     setLoadingMore(false)
+    if (refreshedSaved) setSavedUrls(refreshedSaved)
   }
 
   const updateUrl = (next) => {
@@ -234,7 +241,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
               <EmptyState pageConfig={pageConfig} />
             ) : (
               <>
-                <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 gap-5">
                   {allJobs.map(job => (
                     <JobCard
                       key={job.id}
@@ -242,6 +249,7 @@ export default function JobsListingPage({ pageConfig, initialJobs, initialFilter
                       accent={pageConfig.accentColor}
                       primaryAmount={pageConfig.id === 'internship' ? formatStipend(job) : null}
                       cardExtras={renderExtras(pageConfig.id, job)}
+                      initialSaved={savedUrlSet.has(jobUrl(job))}
                     />
                   ))}
                 </div>
@@ -426,7 +434,7 @@ function EmptyState({ pageConfig }) {
 
 export function JobsLoadingGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       {Array.from({ length: 6 }).map((_, i) => <JobCardSkeleton key={i} />)}
     </div>
   )

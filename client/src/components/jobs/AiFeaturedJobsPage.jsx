@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import JobCard, { JobCardSkeleton } from './JobCard'
+import { jobUrl } from '@/lib/jobs/format'
 
 const PRESETS = [
   { label: 'Roles I match 80%+',          fields: { match_min: 80 } },
@@ -22,11 +23,12 @@ function setOrDelete(params, key, value) {
  * No faceted sidebar; instead a chat-style prompt + preset chips drive filtering.
  * Match scores are surfaced as the primary signal on every card.
  */
-export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initialError, isAuthed = false, hasResume = false }) {
+export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initialError, isAuthed = false, hasResume = false, savedJobUrls = [] }) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
+  const savedUrlSet = useMemo(() => new Set(savedJobUrls), [savedJobUrls])
 
   const [filters, setFilters] = useState(initialFilters)
   const [prompt, setPrompt]   = useState(initialFilters.prompt || '')
@@ -69,7 +71,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
   return (
     <main className="relative min-h-screen overflow-hidden">
       {/* Distinct background — darker, more "AI" feel */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-950" />
+      <div className="absolute inset-0 bg-linear-to-br from-slate-950 via-indigo-950 to-blue-950" />
       <div className="absolute inset-0 opacity-40" style={{
         backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(99,102,241,0.35), transparent 40%), radial-gradient(circle at 80% 60%, rgba(245,158,11,0.25), transparent 40%), radial-gradient(circle at 50% 100%, rgba(59,130,246,0.3), transparent 50%)',
       }} />
@@ -86,7 +88,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
             AI Featured
           </span>
           <h1 className="mt-2 text-3xl sm:text-5xl font-bold text-white leading-tight">
-            Jobs that fit <span className="bg-gradient-to-r from-amber-300 via-orange-300 to-rose-300 bg-clip-text text-transparent">you</span>.
+            Jobs that fit <span className="bg-linear-to-r from-amber-300 via-orange-300 to-rose-300 bg-clip-text text-transparent">you</span>.
           </h1>
           <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl">
             Skip the noise. We rank jobs against your resume, skills and ambitions — not against keywords.
@@ -106,7 +108,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
               className="flex-1 bg-transparent text-white placeholder-slate-400 focus:outline-none resize-none py-1"
             />
           </div>
-          <button type="submit" className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 text-sm font-bold hover:brightness-110 transition active:scale-[0.98]">
+          <button type="submit" className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-linear-to-r from-amber-400 to-orange-400 text-slate-950 text-sm font-bold hover:brightness-110 transition active:scale-[0.98]">
             Match me
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 12h14"/></svg>
           </button>
@@ -126,7 +128,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
 
         {/* Resume CTA when no resume / not authed */}
         {(!isAuthed || !hasResume) && (
-          <div className="mb-6 rounded-2xl bg-gradient-to-r from-amber-400/15 to-rose-400/15 border border-amber-300/30 p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="mb-6 rounded-2xl bg-linear-to-r from-amber-400/15 to-rose-400/15 border border-amber-300/30 p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="shrink-0 w-12 h-12 rounded-xl bg-amber-400/20 text-amber-200 flex items-center justify-center">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m-8 5h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
             </div>
@@ -161,13 +163,14 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
             </div>
           </div>
         ) : (
-          <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {initialJobs.map((job, i) => (
+          <div className="job-card-stagger grid grid-cols-1 md:grid-cols-2 gap-5">
+            {initialJobs.map((job) => (
               <JobCard
                 key={job.id}
                 job={job}
                 accent="amber"
-                matchScore={job._match_score ?? Math.max(60, 95 - i * 4)}
+                matchScore={job._match_score}
+                initialSaved={savedUrlSet.has(jobUrl(job))}
               />
             ))}
           </div>
@@ -179,7 +182,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
 
 export function AiLoadingGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       {Array.from({ length: 6 }).map((_, i) => <JobCardSkeleton key={i} />)}
     </div>
   )

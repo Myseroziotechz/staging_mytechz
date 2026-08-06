@@ -18,9 +18,9 @@ export default function HomeSection({
   children,
 }) {
   const toneClass =
-    tone === 'dark'    ? 'bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-950 text-white' :
-    tone === 'accent'  ? 'bg-gradient-to-br from-blue-50 via-indigo-50 to-amber-50' :
-    tone === 'brand'   ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white' :
+    tone === 'dark'    ? 'bg-linear-to-br from-slate-950 via-indigo-950 to-blue-950 text-white' :
+    tone === 'accent'  ? 'bg-linear-to-br from-blue-50 via-indigo-50 to-amber-50' :
+    tone === 'brand'   ? 'bg-linear-to-r from-blue-600 to-indigo-700 text-white' :
     tone === 'surface' ? 'bg-white/60 backdrop-blur-sm' :
                          '' // light = transparent
 

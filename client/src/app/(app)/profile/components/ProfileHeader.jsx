@@ -18,7 +18,7 @@ export default function ProfileHeader({ profile, email, avatar }) {
 
   return (
     <header className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xl font-bold flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-white shadow">
+      <div className="w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-white text-xl font-bold flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-white shadow">
         {avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

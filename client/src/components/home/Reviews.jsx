@@ -28,7 +28,7 @@ function Stars({ n }) {
 function Avatar({ name }) {
   const initials = name.split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase()
   return (
-    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center ring-1 ring-white">
+    <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center ring-1 ring-white">
       {initials}
     </div>
   )

@@ -34,7 +34,7 @@ export default function ChatJobCard({ job, rank, onClick }) {
       <div className="flex items-start gap-2.5">
         <div
           className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-bold
-                     bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 text-xs"
+                     bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 text-xs"
         >
           {company.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element

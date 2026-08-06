@@ -4,12 +4,16 @@ import { useId } from 'react'
 import { MONTHS, getYearOptions } from '../../lib/constants'
 
 const BASE_INPUT =
-  'w-full rounded-lg border px-3 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50'
+  'w-full rounded-lg border px-3 py-2 text-sm text-gray-900 placeholder-gray-400 placeholder:font-normal transition-colors focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50'
+// Typed values render bolder than the placeholder so entered data is easy to
+// scan at a glance — kept off SelectInput below since a <select>'s displayed
+// text has no separate "placeholder" state to contrast against.
+const VALUE_WEIGHT = 'font-semibold'
 const OK = 'border-gray-300 focus:ring-blue-500 focus:border-transparent'
 const BAD = 'border-red-300 bg-red-50/40 focus:ring-red-500 focus:border-transparent'
 
-function inputClass(hasError) {
-  return `${BASE_INPUT} ${hasError ? BAD : OK}`
+function inputClass(hasError, bold = false) {
+  return `${BASE_INPUT} ${bold ? VALUE_WEIGHT : ''} ${hasError ? BAD : OK}`
 }
 
 /** Label + optional required marker + hint + error message wrapper. */
@@ -37,7 +41,7 @@ export function TextInput({ label, required, hint, error, type = 'text', ...prop
         id={id}
         type={type}
         aria-invalid={error ? 'true' : undefined}
-        className={inputClass(error)}
+        className={inputClass(error, true)}
         {...props}
         value={props.value ?? ''}
       />
@@ -55,7 +59,7 @@ export function TextArea({ label, required, hint, error, rows = 3, maxLength, va
         rows={rows}
         maxLength={maxLength}
         aria-invalid={error ? 'true' : undefined}
-        className={`${inputClass(error)} resize-y`}
+        className={`${inputClass(error, true)} resize-y`}
         value={value ?? ''}
         {...props}
       />

@@ -45,7 +45,7 @@ export default function FooterWordmark() {
           MyTechz
         </p>
         <p
-          className={`wordmark-fill ${textClasses} text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-indigo-500 transition-opacity duration-500 ease-out motion-reduce:transition-none`}
+          className={`wordmark-fill ${textClasses} text-transparent bg-clip-text bg-linear-to-r from-blue-500 via-cyan-400 to-indigo-500 transition-opacity duration-500 ease-out motion-reduce:transition-none`}
           style={{
             opacity: hovered ? 1 : 0,
             WebkitMaskImage: revealMask,
