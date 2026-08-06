@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   formatSalary, formatLocation, formatExperience, formatPostedAgo,
   formatDeadline, jobTypeLabel, workModeLabel, jobUrl, companyInitials,
 } from '@/lib/jobs/format'
+import { useSaveToggle } from '@/lib/hooks/useSaveToggle'
 
 const ICON = {
   bookmark: (filled) => (
@@ -56,18 +58,28 @@ function MetaPill({ icon, children }) {
 export default function JobCard({
   job,
   variant = 'default',         // 'default' | 'compact' | 'featured' | 'recruiter' | 'admin' | 'mini'
-  isSaved = false,
   isApplied = false,
   matchScore = null,           // 0-100
   cardExtras = null,           // node injected below the meta row (per-category extras)
   primaryAmount = null,        // override the salary line text (e.g. stipend for internships)
   accent = null,               // 'blue' | 'emerald' | 'amber' — adds a left ring
-  onSaveToggle,
+  initialSaved = false,        // server-computed: is this job already in the user's saved_jobs?
   onApprove,
   onReject,
   onEdit,
   onClose,
 }) {
+  const [logoErrored, setLogoErrored] = useState(false)
+
+  // Hooks must run unconditionally, so this is called even for variants
+  // (admin/recruiter/mini) that never render the button below.
+  const { saved, pending: savePending, error: saveError, toggle: toggleSave } = useSaveToggle({
+    jobUrl: job ? jobUrl(job) : '',
+    jobTitle: job?.title || '',
+    companyName: job?.company?.name || job?.company_name || '',
+    initialSaved,
+  })
+
   if (!job) return null
 
   const href     = jobUrl(job)
@@ -89,32 +101,44 @@ export default function JobCard({
   const isMini    = variant === 'mini'
   const isCompact = variant === 'compact' || isMini
   const isFeatured = variant === 'featured' || job.is_featured
+  // Admin/recruiter variants manage job postings, not a candidate's own
+  // saved list — bookmarking doesn't make sense there, so the icon is
+  // scoped to the browsing/candidate-facing variants.
+  const showSaveButton = !isMini && variant !== 'admin' && variant !== 'recruiter'
 
-  const padding = isMini ? 'p-3' : isCompact ? 'p-4' : 'p-5 sm:p-6'
+  const padding = isMini ? 'p-3' : isCompact ? 'p-4' : 'p-6 sm:p-7'
   const radius  = isMini ? 'rounded-xl' : 'rounded-2xl'
+  const showLogoImage = compLogo && !logoErrored
 
   return (
     <article
       className={[
         'job-card group relative h-full',
         radius, padding,
-        'flex flex-col gap-3',
+        'flex flex-col gap-4',
         isFeatured ? 'ring-2 ring-amber-300/60' : accentRing,
       ].join(' ')}
     >
       {/* shimmer/gradient layers handled in CSS via ::before/::after */}
 
       {/* Top: logo + title + bookmark */}
-      <header className="relative z-[2] flex items-start gap-3">
+      <header className="relative z-[2] flex items-start gap-3.5">
         <div className={[
-          'shrink-0 rounded-xl flex items-center justify-center font-bold',
-          isMini ? 'w-9 h-9 text-sm' : 'w-11 h-11 sm:w-12 sm:h-12 text-base',
-          'bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white/60',
+          'shrink-0 rounded-xl overflow-hidden flex items-center justify-center font-bold',
+          isMini ? 'w-9 h-9 text-sm' : isCompact ? 'w-11 h-11 text-base' : 'w-12 h-12 sm:w-14 sm:h-14 text-lg',
+          showLogoImage
+            ? 'bg-white ring-1 ring-slate-200/80'
+            : 'bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white/60',
         ].join(' ')}>
-          {compLogo
+          {showLogoImage
             ? /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={compLogo} alt={compName} className="w-full h-full object-cover rounded-xl" />
-            : <span>{companyInitials(compName)}</span>}
+              <img
+                src={compLogo}
+                alt={compName}
+                className="w-full h-full object-contain p-1.5"
+                onError={() => setLogoErrored(true)}
+              />
+            : <span aria-hidden="true">{companyInitials(compName)}</span>}
         </div>
 
         <div className="min-w-0 flex-1">
@@ -122,18 +146,18 @@ export default function JobCard({
             href={href}
             className={[
               'block font-semibold text-slate-900 hover:text-blue-700 transition-colors leading-snug',
-              isMini ? 'text-sm line-clamp-1' : isCompact ? 'text-base line-clamp-2' : 'text-base sm:text-lg line-clamp-2',
+              isMini ? 'text-sm line-clamp-1' : isCompact ? 'text-base line-clamp-2' : 'text-lg sm:text-xl line-clamp-2',
             ].join(' ')}
           >
             {job.title}
           </Link>
           <div className={[
-            'mt-0.5 flex items-center gap-1.5 text-slate-500',
+            'mt-1 flex items-center gap-1.5 text-slate-500',
             isMini ? 'text-[11px]' : 'text-xs sm:text-sm',
           ].join(' ')}>
-            <span className="truncate">{compName}</span>
+            <span className="truncate font-medium text-slate-600">{compName}</span>
             {company.is_verified && (
-              <span title="Verified employer" className="inline-flex">
+              <span title="Verified employer" className="inline-flex shrink-0">
                 <svg className="w-3.5 h-3.5 text-blue-600" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2l2.5 2 3.2-.4 1 3 2.7 1.6-1.5 2.8.6 3.1-3 .8-1.7 2.7-2.8-1.5-3 .8-1.7-2.7-3-.8.6-3.1L1.3 8.2 4 6.6l1-3 3.2.4L10 2z"/></svg>
               </span>
             )}
@@ -141,18 +165,31 @@ export default function JobCard({
           </div>
         </div>
 
-        {!isMini && onSaveToggle && (
-          <button
-            type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSaveToggle(job) }}
-            aria-label={isSaved ? 'Remove from saved' : 'Save job'}
-            className={[
-              'shrink-0 p-1.5 rounded-lg transition',
-              isSaved ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-50',
-            ].join(' ')}
-          >
-            {ICON.bookmark(isSaved)}
-          </button>
+        {showSaveButton && (
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave() }}
+              disabled={savePending}
+              aria-label={saved ? 'Remove from saved jobs' : 'Save job'}
+              aria-pressed={saved}
+              title={saved ? 'Remove from saved jobs' : 'Save job'}
+              className={[
+                'p-1.5 rounded-lg transition disabled:opacity-50 disabled:cursor-wait',
+                saved ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-50',
+              ].join(' ')}
+            >
+              {ICON.bookmark(saved)}
+            </button>
+            {saveError && (
+              <div
+                role="alert"
+                className="absolute right-0 top-full mt-1 z-10 w-max max-w-[180px] text-[11px] font-medium text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-2 py-1 shadow-sm"
+              >
+                {saveError}
+              </div>
+            )}
+          </div>
         )}
       </header>
 
@@ -161,47 +198,35 @@ export default function JobCard({
         <div className="relative z-[2] flex flex-wrap items-center gap-1.5">
           {job.status === 'pending_approval' && (
             variant === 'recruiter'
-              ? <Link href={`/recruiter/preview/${job.id}`} className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition" title="Click to preview — awaiting admin approval">
+              ? <Link href={`/recruiter/preview/${job.id}`} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition" title="Click to preview — awaiting admin approval">
                   Pending review ↗
                 </Link>
-              : <span title="Awaiting admin approval — not yet on public listings" className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+              : <span title="Awaiting admin approval — not yet on public listings" className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
                   Pending review
                 </span>
           )}
           {job.status === 'closed' && (
-            <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+            <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
               Closed
             </span>
           )}
           {isFeatured && (
-            <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Featured</span>
+            <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Featured</span>
           )}
           {isNew && deadline?.expired !== true && job.status !== 'pending_approval' && (
-            <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">New</span>
+            <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">New</span>
           )}
         </div>
       )}
 
       {/* Meta row */}
       {!isMini && (
-        <div className="relative z-[2] flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div className="relative z-[2] flex flex-wrap items-center gap-x-4 gap-y-2">
           <MetaPill icon={ICON.briefcase}>{jobTypeLabel(job.job_type)}</MetaPill>
           <MetaPill icon={ICON.home}>{workModeLabel(job.work_mode)}</MetaPill>
           <MetaPill icon={ICON.clock}>{exp}</MetaPill>
           {job.openings > 1 && (
             <MetaPill icon={ICON.pin}>{job.openings} posts</MetaPill>
-          )}
-        </div>
-      )}
-
-      {/* Skills */}
-      {!isMini && Array.isArray(job.skills) && job.skills.length > 0 && (
-        <div className="relative z-[2] flex flex-wrap gap-1.5">
-          {job.skills.slice(0, isCompact ? 3 : 5).map((s) => (
-            <span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100/80 text-slate-600 border border-slate-200/60">{s}</span>
-          ))}
-          {job.skills.length > (isCompact ? 3 : 5) && (
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-50 text-slate-500">+{job.skills.length - (isCompact ? 3 : 5)} more</span>
           )}
         </div>
       )}
@@ -231,7 +256,7 @@ export default function JobCard({
 
       {/* Actions */}
       {!isMini && (
-        <div className="relative z-[2] mt-auto pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="relative z-[2] mt-auto pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             {variant === 'admin' ? (
               <>
@@ -291,12 +316,12 @@ export default function JobCard({
 }
 
 export function JobCardSkeleton({ variant = 'default' }) {
-  const padding = variant === 'mini' ? 'p-3' : variant === 'compact' ? 'p-4' : 'p-5 sm:p-6'
+  const padding = variant === 'mini' ? 'p-3' : variant === 'compact' ? 'p-4' : 'p-6 sm:p-7'
   return (
-    <div className={`job-card ${padding} rounded-2xl flex flex-col gap-3`}>
-      <div className="flex gap-3">
-        <div className="w-12 h-12 rounded-xl job-card-skeleton" />
-        <div className="flex-1 space-y-2">
+    <div className={`job-card ${padding} rounded-2xl flex flex-col gap-4`}>
+      <div className="flex gap-3.5">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl job-card-skeleton" />
+        <div className="flex-1 space-y-2 pt-1">
           <div className="h-4 w-3/4 rounded job-card-skeleton" />
           <div className="h-3 w-1/2 rounded job-card-skeleton" />
         </div>
@@ -306,10 +331,9 @@ export function JobCardSkeleton({ variant = 'default' }) {
         <div className="h-3 w-16 rounded job-card-skeleton" />
         <div className="h-3 w-16 rounded job-card-skeleton" />
       </div>
-      <div className="flex gap-2">
-        <div className="h-5 w-14 rounded-full job-card-skeleton" />
-        <div className="h-5 w-14 rounded-full job-card-skeleton" />
-        <div className="h-5 w-14 rounded-full job-card-skeleton" />
+      <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+        <div className="h-7 w-24 rounded-lg job-card-skeleton" />
+        <div className="h-4 w-20 rounded job-card-skeleton" />
       </div>
     </div>
   )

@@ -10,6 +10,9 @@ const ERROR_MESSAGES = {
   session_expired: 'Your session has expired. Please sign in again.',
   no_session: 'No active session found. Please sign in.',
   role_error: 'We could not determine your account role. Please try again.',
+  otp_expired: 'This login link has expired or has already been used. Please request a new one.',
+  access_denied: 'This login link is invalid or has already been used. Please request a new one.',
+  invalid_request: 'This login link is invalid. Please request a new one.',
 }
 
 export default async function AuthErrorPage({ searchParams }) {

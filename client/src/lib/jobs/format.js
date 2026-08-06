@@ -1,6 +1,6 @@
 export function formatSalary(job) {
   if (!job) return null
-  if (job.is_salary_disclosed === false) return 'Not disclosed'
+  if (job.is_salary_disclosed === false) return null
   const { salary_min, salary_max, salary_currency = 'INR', salary_period = 'year' } = job
   if (!salary_min && !salary_max) return null
   const sym = salary_currency === 'INR' ? '₹' : salary_currency + ' '
@@ -91,7 +91,7 @@ export function companyInitials(name = '') {
 // Stipend formatter for internships — same numbers as salary, but always per-month + "Stipend".
 export function formatStipend(job) {
   if (!job) return null
-  if (job.is_salary_disclosed === false) return 'Unpaid / not disclosed'
+  if (job.is_salary_disclosed === false) return null
   const min = job.salary_min, max = job.salary_max
   if (!min && !max) return null
   // If salary_period is 'year', convert to monthly for display.

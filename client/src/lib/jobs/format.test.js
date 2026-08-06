@@ -14,8 +14,8 @@ describe('formatStipend', () => {
     expect(formatStipend({ salary_min: 240000, salary_max: null, salary_period: 'year', salary_currency: 'INR' })).toBe('₹20K / mo')
   })
 
-  it('respects is_salary_disclosed = false', () => {
-    expect(formatStipend({ is_salary_disclosed: false, salary_min: 10000 })).toBe('Unpaid / not disclosed')
+  it('returns null when salary is undisclosed, instead of a placeholder string', () => {
+    expect(formatStipend({ is_salary_disclosed: false, salary_min: 10000 })).toBeNull()
   })
 })
 

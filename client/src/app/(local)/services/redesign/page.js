@@ -144,7 +144,7 @@ export default function ServicesRedesignPage() {
       <JsonLd />
 
       {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-amber-50">
+      <div className="relative overflow-hidden bg-linear-to-br from-blue-50 via-indigo-50 to-amber-50">
         <div aria-hidden className="hero-blob absolute -top-24 -left-16 w-72 h-72 bg-blue-300/25 rounded-full blur-3xl" />
         <div aria-hidden className="hero-blob-delay absolute top-10 -right-20 w-80 h-80 bg-indigo-300/25 rounded-full blur-3xl" />
         <div aria-hidden className="hero-blob-slow absolute bottom-0 left-1/3 w-64 h-64 bg-amber-300/25 rounded-full blur-3xl" />
@@ -206,7 +206,7 @@ export default function ServicesRedesignPage() {
           </div>
 
           {/* Featured tile — AI matching */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8 sm:p-10 shadow-2xl shadow-blue-900/20 mb-5">
+          <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-600 to-indigo-700 p-8 sm:p-10 shadow-2xl shadow-blue-900/20 mb-5">
             <div aria-hidden className="pointer-events-none absolute -top-16 -right-10 w-60 h-60 bg-amber-400/25 rounded-full blur-3xl" />
             <div className="relative grid md:grid-cols-2 gap-8 items-center">
               <div>
@@ -314,7 +314,7 @@ export default function ServicesRedesignPage() {
                 </div>
                 <p className="text-sm text-slate-700 leading-relaxed">&ldquo;{r.quote}&rdquo;</p>
                 <div className="mt-4 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-sm">
+                  <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-sm">
                     {r.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}
                   </div>
                   <div className="min-w-0">
@@ -338,7 +338,7 @@ export default function ServicesRedesignPage() {
         </div>
 
         {/* Final CTA */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-8 sm:p-14 text-center shadow-2xl shadow-blue-900/20">
+        <div className="relative overflow-hidden bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-8 sm:p-14 text-center shadow-2xl shadow-blue-900/20">
           <div aria-hidden className="pointer-events-none absolute -top-20 -right-10 w-72 h-72 bg-amber-400/20 rounded-full blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl" />
           <div className="relative">

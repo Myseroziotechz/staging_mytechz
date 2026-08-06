@@ -191,7 +191,7 @@ export default function AboutPage() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="group bg-white/90 backdrop-blur rounded-2xl border border-slate-100 p-5 text-center shadow-sm shadow-blue-900/5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 hover:border-amber-200"
+              className="group bg-white/90 backdrop-blur rounded-2xl border border-slate-100 p-5 text-center shadow-sm shadow-blue-900/5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 hover:border-blue-200"
             >
               <div className="text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
                 {s.value}
@@ -217,7 +217,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="hero-fade-up-d3 relative bg-white/90 backdrop-blur rounded-2xl border border-slate-100 p-8 shadow-lg shadow-blue-900/5">
-            <div className="w-12 h-12 rounded-xl bg-amber-50 text-blue-700 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-4">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -244,10 +244,10 @@ export default function AboutPage() {
             {values.map((v, i) => (
               <div
                 key={v.title}
-                className={`group bg-white/90 backdrop-blur rounded-2xl border border-slate-100 p-6 shadow-sm shadow-blue-900/5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 hover:border-amber-200 hero-fade-up-d${(i % 4) + 1}`}
+                className={`group bg-white/90 backdrop-blur rounded-2xl border border-slate-100 p-6 shadow-sm shadow-blue-900/5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 hover:border-blue-200 hero-fade-up-d${(i % 4) + 1}`}
               >
                 <div className="flex items-start gap-4">
-                  <span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:bg-amber-100 group-hover:text-blue-700 transition-colors">
+                  <span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:bg-blue-100 group-hover:text-blue-700 transition-colors">
                     {v.icon}
                   </span>
                   <div>
@@ -287,8 +287,8 @@ export default function AboutPage() {
 
         {/* CTA */}
         <div className="mt-20">
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 to-indigo-800 rounded-3xl p-10 sm:p-14 text-center shadow-2xl shadow-blue-900/20">
-            <div className="pointer-events-none absolute -top-20 -right-10 w-72 h-72 bg-amber-400/30 rounded-full blur-3xl" />
+          <div className="relative overflow-hidden bg-linear-to-br from-blue-700 to-indigo-800 rounded-3xl p-10 sm:p-14 text-center shadow-2xl shadow-blue-900/20">
+            <div className="pointer-events-none absolute -top-20 -right-10 w-72 h-72 bg-indigo-400/30 rounded-full blur-3xl" />
             <div className="pointer-events-none absolute -bottom-20 -left-10 w-72 h-72 bg-blue-400/30 rounded-full blur-3xl" />
             <div className="relative">
               <h2 className="text-3xl sm:text-4xl font-bold text-white">
@@ -300,7 +300,7 @@ export default function AboutPage() {
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   href="/jobs"
-                  className="group inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-6 py-3 rounded-xl shadow-lg transition-all hover:-translate-y-0.5"
+                  className="group inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all hover:-translate-y-0.5"
                 >
                   Explore Jobs
                   <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">

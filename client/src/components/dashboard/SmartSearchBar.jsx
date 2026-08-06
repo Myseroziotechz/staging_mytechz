@@ -79,7 +79,7 @@ export default function SmartSearchBar({ placeholder = 'Search for jobs, tools, 
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-2xl">
+    <div ref={containerRef} className="relative w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl">
       <div className="relative">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">

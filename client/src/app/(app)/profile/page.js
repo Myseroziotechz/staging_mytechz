@@ -12,7 +12,7 @@ export const metadata = {
 export default async function ProfilePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/login?returnTo=/profile')
 
   // maybeSingle, not single: a user whose profile row hasn't been created yet
   // should still see the page (with empty sections) rather than a thrown error.

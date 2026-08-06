@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import TemplatePreviewThumb from './TemplatePreviewThumb'
+import ResumeTemplatePreview from './ResumeTemplatePreview'
 
 const CATEGORY_COLORS = {
   general: 'bg-slate-100 text-slate-700',
@@ -16,10 +16,10 @@ export default function TemplateCard({ template, showUseButton = true }) {
 
   return (
     <div className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-blue-300 hover:shadow-md transition-all">
-      {/* Live rendered preview thumbnail */}
-      <div className="aspect-[3/4] bg-white relative overflow-hidden">
+      {/* Live rendered preview thumbnail — true A4 aspect ratio */}
+      <div className="aspect-210/297 bg-white relative overflow-hidden">
         {html_css_template ? (
-          <TemplatePreviewThumb htmlTemplate={html_css_template} />
+          <ResumeTemplatePreview htmlTemplate={html_css_template} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">

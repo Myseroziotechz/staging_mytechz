@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import TemplateDetailPreview from '@/components/resume-builder/TemplateDetailPreview'
+import ResumeTemplatePreview from '@/components/resume-builder/ResumeTemplatePreview'
 
 const SITE = 'https://mytechz.com'
 
@@ -77,10 +77,10 @@ export default async function TemplateDetailPage({ params }) {
         </nav>
 
         <div className="grid lg:grid-cols-[1fr_400px] gap-8 py-8 pb-16">
-          {/* Preview — client component with proper rendering */}
+          {/* Preview — client component with proper rendering, true A4 aspect ratio */}
           <div>
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <TemplateDetailPreview htmlTemplate={template.html_css_template} />
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden aspect-210/297 max-h-[85vh] mx-auto">
+              <ResumeTemplatePreview htmlTemplate={template.html_css_template} />
             </div>
           </div>
 

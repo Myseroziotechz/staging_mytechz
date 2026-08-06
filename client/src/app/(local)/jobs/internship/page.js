@@ -4,6 +4,7 @@ import JobsListingPage, { JobsLoadingGrid } from '@/components/jobs/JobsListingP
 import InternshipInfoSections from '@/components/jobs/InternshipInfoSections'
 import { getJobs } from '@/lib/jobs/queries'
 import { getInternshipJobFacets } from '@/lib/jobs/facets'
+import { fetchSavedJobUrls } from '@/lib/jobs/savedJobs'
 
 const YEAR = new Date().getFullYear()
 
@@ -57,9 +58,10 @@ function parseFilters(sp) {
 export default async function InternshipsPage({ searchParams }) {
   const sp = await searchParams
   const filters = parseFilters(sp)
-  const [{ jobs, error }, facets] = await Promise.all([
+  const [{ jobs, error }, facets, savedJobUrls] = await Promise.all([
     getJobs({ ...filters, job_type: 'internship' }),
     getInternshipJobFacets(),
+    fetchSavedJobUrls(),
   ])
 
   const breadcrumbJsonLd = {
@@ -76,7 +78,7 @@ export default async function InternshipsPage({ searchParams }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <Suspense fallback={<JobsLoadingGrid />}>
-        <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} facets={facets} />
+        <JobsListingPage pageConfig={PAGE_CONFIG} initialJobs={jobs} initialFilters={filters} initialError={error} facets={facets} savedJobUrls={savedJobUrls} />
       </Suspense>
       <InternshipInfoSections />
     </>

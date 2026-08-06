@@ -3,25 +3,26 @@
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/browser'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
-import MagicLinkSent from '@/components/auth/MagicLinkSent'
 import LegalModal from '@/components/auth/LegalModal'
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // defaultRole: 'candidate' | 'recruiter' — when set, locks the role and hides the role selector
 export default function LoginForm({ defaultRole = null }) {
   const supabase = createClient()
   const searchParams = useSearchParams()
 
-  const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [error, setError] = useState(null)
   // 'candidate' | 'recruiter' — admin is never user-selectable
   const [intendedRole, setIntendedRole] = useState(defaultRole ?? 'candidate')
   // null | 'terms' | 'privacy'
   const [legalModal, setLegalModal] = useState(null)
+
+  const [email, setEmail] = useState('')
+  const [magicLinkLoading, setMagicLinkLoading] = useState(false)
+  const [magicLinkSentTo, setMagicLinkSentTo] = useState(null)
 
   const returnTo = searchParams.get('returnTo') || '/'
   const urlError = searchParams.get('error')
@@ -62,39 +63,10 @@ export default function LoginForm({ defaultRole = null }) {
     } catch { /* ignore */ }
   }
 
-  // Magic Link (Email OTP)
-  const handleMagicLink = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    saveIntentToStorage()
-
-    try {
-      const res = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          intendedRole,
-          redirectTo: buildCallbackUrl(),
-        }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || 'Failed to send magic link')
-      }
-
-      setMagicLinkSent(true)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // Google OAuth
   const handleGoogleLogin = async () => {
+    setError(null)
+    setLoading(true)
     saveIntentToStorage()
     // Set the intended role via a server-side HttpOnly cookie. Client-side
     // document.cookie is unreliable through the cross-domain OAuth redirect
@@ -109,18 +81,54 @@ export default function LoginForm({ defaultRole = null }) {
     } catch {
       // If the API call fails, the document.cookie fallback is still set.
     }
-    await supabase.auth.signInWithOAuth({
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: buildCallbackUrl(),
       },
     })
+
+    // On success the browser navigates away to Google immediately, so this
+    // only ever runs when signInWithOAuth failed before the redirect fired
+    // (e.g. Supabase project misconfigured, network error).
+    if (oauthError) {
+      setError(oauthError.message || 'Could not start Google sign-in. Please try again.')
+      setLoading(false)
+    }
   }
 
-  if (magicLinkSent) {
-    return (
-      <MagicLinkSent email={email} onBack={() => setMagicLinkSent(false)} />
-    )
+  // Email Magic Link
+  const handleMagicLink = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setMagicLinkSentTo(null)
+
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail || !EMAIL_RE.test(trimmedEmail)) {
+      setError('Please enter a valid email address.')
+      return
+    }
+
+    setMagicLinkLoading(true)
+    try {
+      const res = await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail, intendedRole, returnTo }),
+      })
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        setError(data?.error || 'We could not send the login link. Please try again.')
+      } else {
+        setMagicLinkSentTo(trimmedEmail)
+      }
+    } catch {
+      setError('Server unavailable. Please check your connection and try again.')
+    } finally {
+      setMagicLinkLoading(false)
+    }
   }
 
   const isRecruiter = intendedRole === 'recruiter'
@@ -226,41 +234,50 @@ export default function LoginForm({ defaultRole = null }) {
         </div>
       )}
 
-      {/* Google OAuth */}
-      <GoogleSignInButton onClick={handleGoogleLogin} />
+      {/* Email Magic Link */}
+      {magicLinkSentTo ? (
+        <div className="p-2.5 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200 space-y-1.5">
+          <p>Check your inbox. We&apos;ve sent a secure login link to <strong>{magicLinkSentTo}</strong>.</p>
+          <button
+            type="button"
+            onClick={() => setMagicLinkSentTo(null)}
+            className="text-xs font-semibold underline text-green-700 hover:text-green-800 cursor-pointer"
+          >
+            Use a different email
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleMagicLink} className="space-y-2" noValidate>
+          <label htmlFor="login-email" className="sr-only">Email address</label>
+          <input
+            id="login-email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={magicLinkLoading || loading}
+            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+          <button
+            type="submit"
+            disabled={magicLinkLoading || loading}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {magicLinkLoading ? 'Sending...' : 'Send Magic Link'}
+          </button>
+        </form>
+      )}
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-xs">
-          <span className="px-3 bg-white text-gray-400">or continue with email</span>
-        </div>
+      <div className="flex items-center gap-3 py-0.5">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="text-xs text-gray-400 font-medium">or</span>
+        <div className="flex-1 h-px bg-gray-200" />
       </div>
 
-      {/* Email Magic Link Form */}
-      <form onSubmit={handleMagicLink} className="space-y-2.5">
-        <Input
-          type="email"
-          placeholder={isRecruiter ? 'Enter your work email' : 'Enter your email'}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Button
-          type="submit"
-          disabled={loading}
-          className={`w-full ${isRecruiter ? '!bg-violet-600 hover:!bg-violet-700 active:!bg-violet-800' : ''}`}
-          size="md"
-        >
-          {loading
-            ? 'Sending...'
-            : isRecruiter
-              ? 'Send Recruiter Magic Link'
-              : 'Send Magic Link'}
-        </Button>
-      </form>
+      {/* Google OAuth */}
+      <GoogleSignInButton onClick={handleGoogleLogin} disabled={loading || magicLinkLoading} />
 
       {/* Error */}
       {error && (

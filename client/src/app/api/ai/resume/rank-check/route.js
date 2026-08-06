@@ -25,72 +25,102 @@ export async function POST(req) {
 
   const { resumeText, resumeData, jobDescription, targetRole } = body
   if (!resumeText && !resumeData) {
-    return NextResponse.json({ error: 'resumeText or resumeData is required' }, { status: 400 })
+    return NextResponse.json({ error: 'A resume file or pasted resume text is required' }, { status: 400 })
+  }
+  if (!jobDescription?.trim() && !targetRole?.trim()) {
+    return NextResponse.json({ error: 'Provide a job description or a target role to analyse against' }, { status: 400 })
   }
 
   // Build plain text from resumeData if only structured data provided
   const plainText = resumeText || buildPlainText(resumeData)
+  if (!plainText || plainText.trim().length < 20) {
+    return NextResponse.json({ error: 'Resume text is too short to analyse' }, { status: 400 })
+  }
 
-  const start = Date.now()
+  try {
+    // Always run local engine for categoryScores + warnings + new fields
+    const localResult = analyzeResumeATS({
+      resumeText: plainText,
+      jobDescription: jobDescription || '',
+      targetRole: targetRole || '',
+    })
 
-  // Always run local engine for categoryScores + warnings + new fields
-  const localResult = analyzeResumeATS({
-    resumeText: plainText,
-    jobDescription: jobDescription || '',
-    targetRole: targetRole || '',
-  })
+    // Try Gemini for enhanced analysis
+    let geminiResult = null
+    if (isGeminiConfigured()) {
+      try {
+        const dataForGemini = resumeData || { rawText: plainText }
+        geminiResult = await suggestKeywords(dataForGemini, jobDescription || '', targetRole || '')
+      } catch (err) {
+        // Gemini failed — fall back to local engine silently
+        console.error('[rank-check] Gemini failed, using local fallback:', err.message)
+      }
+    }
 
-  // Try Gemini for enhanced analysis
-  let geminiResult = null
-  if (isGeminiConfigured()) {
+    // Merge results — ensure consistent structure for both paths
+    let result
+    if (geminiResult && typeof geminiResult.atsScore === 'number') {
+      // Gemini succeeded — merge Gemini insights with local category scores + warnings
+      result = {
+        source: 'gemini',
+        atsScore: geminiResult.atsScore,
+        categoryScores: localResult.categoryScores,
+        keywords: localResult.keywords, // includes hardSkills, softSkills from local engine
+        keywordFrequency: localResult.keywordFrequency,
+        missingKeywords: (geminiResult.missingKeywords || []).map((kw, i) => {
+          if (typeof kw === 'string') {
+            return { keyword: kw, section: 'skills', skillType: 'hard', suggestion: `Add "${kw}" to your resume`, priority: i < 5 ? 'high' : 'medium' }
+          }
+          return { ...kw, skillType: kw.skillType || 'hard', priority: kw.priority || (i < 5 ? 'high' : 'medium') }
+        }),
+        suggestedAdditions: geminiResult.suggestedAdditions || localResult.suggestedAdditions,
+        formattingChecklist: localResult.formattingChecklist,
+        tips: geminiResult.tips || localResult.tips,
+        warnings: localResult.warnings,
+      }
+    } else {
+      // Local engine only — already has consistent structure
+      result = localResult
+    }
+
+    // Log to ai_generation_logs — non-critical, must never fail the request.
+    // output_content is jsonb: store structured data (not a stringified blob)
+    // so rank-history can read it back reliably instead of regex-parsing text.
     try {
-      const dataForGemini = resumeData || { rawText: plainText }
-      geminiResult = await suggestKeywords(dataForGemini, jobDescription || '', targetRole || '')
-    } catch (err) {
-      // Gemini failed — fall back to local engine silently
-      console.error('[rank-check] Gemini failed, using local fallback:', err.message)
-    }
+      await supabase.from('ai_generation_logs').insert({
+        user_id: user.id,
+        resume_id: null,
+        action_type: 'rank_check',
+        input_prompt: `Role: ${targetRole || 'general'}, JD: ${jobDescription ? 'yes' : 'no'}`,
+        output_content: {
+          atsScore: result.atsScore,
+          source: result.source,
+          targetRole: targetRole || null,
+          jobDescription: jobDescription ? jobDescription.slice(0, 500) : null,
+        },
+        model_used: result.source === 'gemini' ? 'gemini-2.0-flash' : 'local-engine',
+        status: 'success',
+      })
+    } catch { /* non-critical */ }
+
+    return NextResponse.json({ result })
+  } catch (err) {
+    // Log the real error server-side only — never forward internal exception
+    // messages to the client.
+    console.error('[rank-check] Error:', err)
+    try {
+      await supabase.from('ai_generation_logs').insert({
+        user_id: user.id,
+        resume_id: null,
+        action_type: 'rank_check',
+        input_prompt: `Role: ${targetRole || 'general'}, JD: ${jobDescription ? 'yes' : 'no'}`,
+        model_used: 'unknown',
+        status: 'error',
+        error_message: err.message?.slice(0, 500),
+      })
+    } catch { /* non-critical */ }
+    return NextResponse.json({ error: 'Analysis failed. Please try again in a moment.' }, { status: 500 })
   }
-
-  // Merge results — ensure consistent structure for both paths
-  let result
-  if (geminiResult && typeof geminiResult.atsScore === 'number') {
-    // Gemini succeeded — merge Gemini insights with local category scores + warnings
-    result = {
-      source: 'gemini',
-      atsScore: geminiResult.atsScore,
-      categoryScores: localResult.categoryScores,
-      keywords: localResult.keywords, // includes hardSkills, softSkills from local engine
-      keywordFrequency: localResult.keywordFrequency,
-      missingKeywords: (geminiResult.missingKeywords || []).map((kw, i) => {
-        if (typeof kw === 'string') {
-          return { keyword: kw, section: 'skills', skillType: 'hard', suggestion: `Add "${kw}" to your resume`, priority: i < 5 ? 'high' : 'medium' }
-        }
-        return { ...kw, skillType: kw.skillType || 'hard', priority: kw.priority || (i < 5 ? 'high' : 'medium') }
-      }),
-      suggestedAdditions: geminiResult.suggestedAdditions || localResult.suggestedAdditions,
-      formattingChecklist: localResult.formattingChecklist,
-      tips: geminiResult.tips || localResult.tips,
-      warnings: localResult.warnings,
-    }
-  } else {
-    // Local engine only — already has consistent structure
-    result = localResult
-  }
-
-  // Log to ai_generation_logs
-  await supabase.from('ai_generation_logs').insert({
-    user_id: user.id,
-    resume_id: null,
-    action_type: 'rank_check',
-    input_summary: `Role: ${targetRole || 'general'}, JD: ${jobDescription ? 'yes' : 'no'}, Source: ${result.source}`,
-    output_summary: JSON.stringify({ atsScore: result.atsScore, source: result.source }).slice(0, 500),
-    model_used: result.source === 'gemini' ? 'gemini-2.0-flash' : 'local-engine',
-    duration_ms: Date.now() - start,
-    status: 'success',
-  }).catch(() => {}) // non-critical
-
-  return NextResponse.json({ result })
 }
 
 function buildPlainText(data) {
