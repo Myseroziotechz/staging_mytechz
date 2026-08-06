@@ -14,6 +14,7 @@ export default async function sitemap() {
     { url: `${SITE}/jobs/government`,                lastModified: now, priority: 0.95, changeFrequency: 'hourly'  },
     { url: `${SITE}/jobs/internship`,                lastModified: now, priority: 0.9,  changeFrequency: 'hourly'  },
     { url: `${SITE}/jobs/ai`,                        lastModified: now, priority: 0.85, changeFrequency: 'hourly'  },
+    { url: `${SITE}/jobs/mumbai-jobs`,               lastModified: now, priority: 0.8,  changeFrequency: 'weekly'  },
     // AI tools
     { url: `${SITE}/ai-tools`,                       lastModified: now, priority: 0.85, changeFrequency: 'weekly'  },
     { url: `${SITE}/ai-tools/resume-builder`,        lastModified: now, priority: 0.95, changeFrequency: 'weekly'  },

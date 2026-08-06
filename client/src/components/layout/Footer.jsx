@@ -10,6 +10,7 @@ const linkColumns = [
       { label: 'Private Jobs', href: '/jobs/private' },
       { label: 'Government Jobs', href: '/jobs/government' },
       { label: 'Browse All Jobs', href: '/jobs' },
+      { label: 'Mumbai Jobs', href: '/jobs/mumbai-jobs' },
       { label: 'Internships', href: '/jobs/internship' },
       { label: 'Fresher Jobs', href: '/jobs' },
     ],
