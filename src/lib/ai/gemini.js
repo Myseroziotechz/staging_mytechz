@@ -208,6 +208,66 @@ Return the resume_data JSON that fits this template's structure:
   return safeParseGemini(result, parsedResume)
 }
 
+/**
+ * Generate a full cover letter draft from the sender's profile + job context.
+ */
+export async function generateCoverLetterContent(senderProfile, jobContext = {}, jobDescription = '') {
+  const systemInstruction = `You are an expert cover letter writer. Generate a professional, tailored cover letter based on the candidate's profile and the target role.
+${jobContext.jobTitle ? `Target role: ${jobContext.jobTitle}` : ''}
+${jobContext.companyName ? `Company: ${jobContext.companyName}` : ''}
+${jobDescription ? `Job description:\n${jobDescription}` : ''}
+
+Return JSON with this exact structure:
+{
+  "greeting": "Dear Hiring Manager, (or a name-personalised greeting if a hiring manager name was given)",
+  "opening": "1-2 sentence opening paragraph stating the role and a hook",
+  "body": ["paragraph 1 — relevant experience/skills", "paragraph 2 — a specific achievement or fit with the company"],
+  "closing": "1-2 sentence closing paragraph with a call to action",
+  "signOff": "Sincerely,"
+}
+
+Rules:
+- Write in first person, professional but warm tone
+- Be specific and avoid generic filler ("I am writing to apply for...")
+- Reference the candidate's actual skills/experience from their profile where relevant
+- Keep each body paragraph to 3-5 sentences
+- Do not invent facts about the candidate not present in their profile`
+
+  const result = await geminiChat({
+    prompt: JSON.stringify({ profile: senderProfile, job: jobContext }),
+    systemInstruction,
+    json: true,
+    maxTokens: 2048,
+  })
+
+  return safeParseGemini(result, {})
+}
+
+/**
+ * Rewrite a single cover letter section (opening / a body paragraph / closing) with AI.
+ */
+export async function rewriteCoverLetterSection(sectionType, currentContent, context = '') {
+  const systemInstruction = `You are an expert cover letter writer. Rewrite the given ${sectionType} to be more professional, specific, and compelling.
+${context ? `Context: ${context}` : ''}
+
+Rules:
+- Keep the same general meaning and length but improve phrasing and impact
+- Avoid generic filler and cliches
+- Keep a professional, warm first-person tone
+
+Return JSON: { "text": "improved text" }`
+
+  const result = await geminiChat({
+    prompt: String(currentContent || ''),
+    systemInstruction,
+    json: true,
+    maxTokens: 1024,
+  })
+
+  const parsed = safeParseGemini(result, null)
+  return parsed?.text ?? currentContent
+}
+
 function safeParseGemini(text, fallback) {
   if (!text) return fallback
   try {

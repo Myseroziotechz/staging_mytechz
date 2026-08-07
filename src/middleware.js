@@ -29,6 +29,8 @@ const PROTECTED_PREFIXES = [
   '/ai-tools/resume-builder/create',
   '/ai-tools/resume-builder/editor',
   '/ai-tools/resume-builder/my-resumes',
+  '/ai-tools/cover-letter-builder/editor',
+  '/ai-tools/cover-letter-builder/my-letters',
   '/ai-tools/resume-rank-checker/check',
 ]
 
@@ -131,6 +133,8 @@ export const config = {
     '/ai-tools/resume-builder/create/:path*',
     '/ai-tools/resume-builder/editor/:path*',
     '/ai-tools/resume-builder/my-resumes/:path*',
+    '/ai-tools/cover-letter-builder/editor/:path*',
+    '/ai-tools/cover-letter-builder/my-letters/:path*',
     '/ai-tools/resume-rank-checker/check/:path*',
   ],
 }

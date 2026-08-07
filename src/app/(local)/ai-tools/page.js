@@ -64,6 +64,19 @@ const tools = [
     border: 'border-purple-100',
     iconBg: 'bg-purple-600',
   },
+  {
+    title: 'Cover Letter Builder',
+    href: '/ai-tools/cover-letter-builder',
+    description: 'Write a tailored, professional cover letter in minutes. AI drafts an opening and body from your profile and the job description — free, no watermarks.',
+    icon: (
+      <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+      </svg>
+    ),
+    gradient: 'from-amber-50 to-orange-100',
+    border: 'border-amber-100',
+    iconBg: 'bg-amber-600',
+  },
 ]
 
 function JsonLd() {
@@ -80,13 +93,14 @@ function JsonLd() {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'MyTechZ Free AI Career Tools',
-    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, and smart job search.',
+    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, cover letter builder, and smart job search.',
     url: `${SITE}/ai-tools`,
-    numberOfItems: 3,
+    numberOfItems: 4,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Free Resume Builder', url: `${SITE}/ai-tools/resume-builder`, description: 'Build ATS-friendly resumes with AI — 100% free, no watermarks.' },
       { '@type': 'ListItem', position: 2, name: 'Resume Analyzer', url: `${SITE}/ai-tools/resume-analyzer`, description: 'Get instant ATS match score and keyword recommendations for your resume.' },
       { '@type': 'ListItem', position: 3, name: 'Smart Job Search', url: `${SITE}/ai-tools/smart-job-search`, description: 'AI matches you with jobs ranked by fit score, not just keywords.' },
+      { '@type': 'ListItem', position: 4, name: 'Cover Letter Builder', url: `${SITE}/ai-tools/cover-letter-builder`, description: 'Write a tailored, professional cover letter in minutes — free, no watermarks.' },
     ],
   }
 

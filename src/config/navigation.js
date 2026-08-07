@@ -33,6 +33,8 @@ export const APP_NAV = [
     children: [
       { label: 'Resume Builder',      href: '/ai-tools/resume-builder/templates', icon: 'document' },
       { label: 'My Resumes',          href: '/ai-tools/resume-builder/my-resumes', icon: 'document' },
+      { label: 'Cover Letter Builder', href: '/ai-tools/cover-letter-builder/templates', icon: 'document' },
+      { label: 'My Cover Letters',    href: '/ai-tools/cover-letter-builder/my-letters', icon: 'document' },
       { label: 'Resume Rank Checker', href: '/ai-tools/resume-rank-checker/check', icon: 'search' },
       { label: 'Smart Job Search',    href: '/ai-tools/smart-job-search',    icon: 'list' },
     ],
