@@ -46,3 +46,6 @@ media/
 
 
 # package-lock.json — do NOT ignore, Vercel needs it for correct installs
+
+# testing
+/coverage

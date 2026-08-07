@@ -1,0 +1,15 @@
+# AI bot policy for MyTechz
+# Allow general-purpose AI crawlers to index public job postings.
+# Do not crawl authenticated areas.
+
+User-Agent: *
+Allow: /
+Allow: /jobs
+Disallow: /admin
+Disallow: /recruiter
+Disallow: /api
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /my-applications
+Disallow: /saved-jobs
+Disallow: /settings
