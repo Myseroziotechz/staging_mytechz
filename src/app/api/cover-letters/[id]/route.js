@@ -67,7 +67,7 @@ export async function PUT(req, { params }) {
     .eq('id', id)
     .eq('user_id', user.id)
     .select('id, title, updated_at')
-    .single()
+    .maybeSingle()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!data) return NextResponse.json({ error: 'Cover letter not found' }, { status: 404 })
