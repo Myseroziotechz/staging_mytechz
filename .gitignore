@@ -10,6 +10,7 @@ env/
 dist/
 build/
 staticfiles/
+.next/
 
 # Python leftovers
 __pycache__/
