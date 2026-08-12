@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
 import { templateAutofill, parseResumeWithGemini, isGeminiConfigured } from '@/lib/ai/gemini'
-import { extractPdfText } from '@/lib/ai/pdf-text'
+import { validateResumeFile, extractResumeText } from '@/lib/ai/resume-text'
 
 // POST /api/ai/resume/autofill — template-aware auto-fill from uploaded resume
 export async function POST(req) {
@@ -24,7 +24,8 @@ export async function POST(req) {
   const file = formData.get('file')
   const templateId = formData.get('templateId')
 
-  if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+  const fileError = validateResumeFile(file)
+  if (fileError) return NextResponse.json({ error: fileError }, { status: 400 })
   if (!templateId) return NextResponse.json({ error: 'templateId is required' }, { status: 400 })
 
   // Fetch template
@@ -38,20 +39,7 @@ export async function POST(req) {
 
   const start = Date.now()
   try {
-    // Extract text from file
-    const fileType = file.name.split('.').pop()?.toLowerCase()
-    const buffer = Buffer.from(await file.arrayBuffer())
-    let text = ''
-
-    if (fileType === 'pdf') {
-      text = await extractPdfText(buffer)
-    } else if (fileType === 'docx' || fileType === 'doc') {
-      const mammoth = await import('mammoth')
-      const result = await mammoth.extractRawText({ buffer })
-      text = result.value
-    } else {
-      text = buffer.toString('utf-8')
-    }
+    const text = await extractResumeText(file)
 
     if (!text || text.trim().length < 20) {
       return NextResponse.json({ error: 'Could not extract enough text from the file' }, { status: 400 })

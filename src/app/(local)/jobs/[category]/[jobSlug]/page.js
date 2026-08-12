@@ -6,10 +6,12 @@ import {
   formatDeadline, jobTypeLabel, workModeLabel, companyInitials, jobUrl,
 } from '@/lib/jobs/format'
 import { fetchSavedJobUrls } from '@/lib/jobs/savedJobs'
+import { buildMatchForJob } from '@/lib/ai/match/build-match-for-job'
 import JobJsonLd from '@/components/jobs/JobJsonLd'
 import JobAssistantPanel from '@/components/jobs/JobAssistantPanel'
 import JobCard from '@/components/jobs/JobCard'
 import SaveJobButton from '@/components/jobs/SaveJobButton'
+import MatchSummaryBlock from '@/components/smart-job-search/MatchSummaryBlock'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
 
@@ -60,9 +62,10 @@ export default async function JobDetailPage({ params, searchParams }) {
   const job = await getJobBySlug(category, jobSlug)
   if (!job) notFound()
 
-  const [similar, savedJobUrls] = await Promise.all([
+  const [similar, savedJobUrls, match] = await Promise.all([
     getSimilarJobs(job.id, job.category, job.skills || [], 6),
     fetchSavedJobUrls(),
+    buildMatchForJob(job),
   ])
   const savedUrlSet = new Set(savedJobUrls)
 
@@ -189,6 +192,13 @@ export default async function JobDetailPage({ params, searchParams }) {
               <div className="job-glass-panel rounded-2xl p-5 sm:p-6">
                 <h2 className="text-sm font-semibold text-blue-700 mb-2">At a glance</h2>
                 <p className="text-slate-800 leading-relaxed">{job.summary}</p>
+              </div>
+            )}
+
+            {match && (
+              <div className="job-glass-panel rounded-2xl p-5 sm:p-6">
+                <h2 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wide">AI Match Summary</h2>
+                <MatchSummaryBlock match={match} />
               </div>
             )}
 

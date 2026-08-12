@@ -41,7 +41,7 @@ const ACTION_VERBS = new Set([
   'transformed','unified','upgraded','utilized','validated',
 ])
 
-const ROLE_KEYWORDS_MAP = {
+export const ROLE_KEYWORDS_MAP = {
   'software engineer': [
     'javascript','typescript','python','java','react','node','sql','git','api',
     'rest','agile','ci/cd','docker','kubernetes','aws','testing','unit test',
@@ -105,7 +105,7 @@ const ROLE_KEYWORDS_MAP = {
 }
 
 // Role aliases → canonical role name
-const ROLE_ALIASES = {
+export const ROLE_ALIASES = {
   'sde': 'software engineer', 'swe': 'software engineer', 'developer': 'software engineer',
   'full stack': 'software engineer', 'fullstack': 'software engineer',
   'front end': 'frontend developer', 'front-end': 'frontend developer', 'ui developer': 'frontend developer',
@@ -120,7 +120,7 @@ const ROLE_ALIASES = {
 }
 
 // Soft skills — commonly expected but not technical
-const SOFT_SKILLS = new Set([
+export const SOFT_SKILLS = new Set([
   'communication','leadership','teamwork','problem solving','problem-solving',
   'collaboration','critical thinking','time management','adaptability','creativity',
   'attention to detail','interpersonal','negotiation','presentation',
@@ -230,7 +230,7 @@ function extractKeywordsWithFrequency(text) {
   return freqMap
 }
 
-function resolveRole(targetRole) {
+export function resolveRole(targetRole) {
   if (!targetRole) return null
   const lower = targetRole.toLowerCase().trim()
   if (ROLE_KEYWORDS_MAP[lower]) return lower
@@ -292,7 +292,7 @@ function detectKeywordSection(keyword, resumeText) {
 /**
  * Classify a keyword as hard skill or soft skill.
  */
-function classifySkillType(keyword) {
+export function classifySkillType(keyword) {
   return SOFT_SKILLS.has(keyword.toLowerCase()) ? 'soft' : 'hard'
 }
 

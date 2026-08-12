@@ -194,7 +194,7 @@ export default function ResumeAnalyzerPage() {
               <svg className="w-3.5 h-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1L12 2z" />
               </svg>
-              Coming Soon — Free ATS Score Checker
+              Live Now — Free ATS Score Checker
             </span>
 
             <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 leading-[1.1] tracking-tight mb-5">
@@ -208,10 +208,10 @@ export default function ResumeAnalyzerPage() {
 
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                href="/login"
+                href="/ai-tools/resume-rank-checker/check"
                 className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold px-7 py-3 rounded-xl shadow-lg shadow-violet-600/25 transition-all hover:-translate-y-0.5"
               >
-                Get Early Access — Free
+                Analyze My Resume — Free
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -238,7 +238,7 @@ export default function ResumeAnalyzerPage() {
           </div>
         </section>
 
-        {/* Coming Soon Banner */}
+        {/* Available Now Banner */}
         <section className="py-10 border-t border-slate-100">
           <div className="bg-linear-to-br from-violet-50 via-indigo-50 to-white rounded-3xl border border-violet-100 p-8 sm:p-12 text-center">
             <div className="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
@@ -246,15 +246,15 @@ export default function ResumeAnalyzerPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Resume Analyzer is launching soon</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Resume Analyzer is live — check your score now</h2>
             <p className="text-slate-500 max-w-lg mx-auto mb-6">
-              Our ATS scoring engine is being trained and fine-tuned. Sign up to be among the first to use it — free from day one.
+              Upload your resume, paste a job description, and get your ATS match score, missing keywords, and improvement suggestions in seconds — completely free.
             </p>
             <Link
-              href="/login"
+              href="/ai-tools/resume-rank-checker/check"
               className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-all shadow-md"
             >
-              Notify Me When It Launches
+              Analyze My Resume Now
             </Link>
           </div>
         </section>
@@ -295,8 +295,8 @@ export default function ResumeAnalyzerPage() {
 
         {/* FAQ — AEO */}
         <section className="py-14 border-t border-slate-100">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">Resume Analyzer — Common Questions</h2>
-          <div className="space-y-5 max-w-3xl">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 text-center">Resume Analyzer — Common Questions</h2>
+          <div className="space-y-5 max-w-5xl mx-auto">
             {FAQ.map(({ q, a }) => (
               <div key={q} className="bg-white rounded-xl border border-slate-200 p-6">
                 <h3 className="font-bold text-slate-900 mb-2">{q}</h3>

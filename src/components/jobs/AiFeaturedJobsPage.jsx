@@ -169,7 +169,7 @@ export default function AiFeaturedJobsPage({ initialJobs, initialFilters, initia
                 key={job.id}
                 job={job}
                 accent="amber"
-                matchScore={job._match_score}
+                matchScore={job._matchScore}
                 initialSaved={savedUrlSet.has(jobUrl(job))}
               />
             ))}
