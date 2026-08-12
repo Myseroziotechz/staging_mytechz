@@ -1,1 +1,0 @@
-- [MyTechz Supabase project ref](project_supabase_ref.md) — only use ref `aiycgmrubisaxknbeaov`; never use Supabase-GS MCP tools for this project
