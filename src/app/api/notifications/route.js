@@ -1,0 +1,22 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+
+export async function GET() {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ notifications: [] })
+
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('id, title, body, link, is_read, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    if (error) return NextResponse.json({ notifications: [], error: 'Failed to load notifications' }, { status: 500 })
+    return NextResponse.json({ notifications: data ?? [] })
+  } catch {
+    return NextResponse.json({ notifications: [], error: 'Failed to load notifications' }, { status: 500 })
+  }
+}
