@@ -62,7 +62,19 @@ export async function POST(request) {
     })
 
     if (error) {
-      console.error('[api/auth/magic-link] signInWithOtp failed:', error.status, error.message)
+      // For a 5xx from Supabase Auth (which is exactly what an SMTP/email-
+      // sending failure surfaces as), @supabase/auth-js's handleError()
+      // deliberately does NOT parse the response body at all — it throws a
+      // generic AuthRetryableFetchError with error.code left undefined and
+      // error.message reduced to a stringified Response object, before ever
+      // reading the real `error_code`/`msg` (e.g. "unexpected_failure" /
+      // "Error sending confirmation email"). So error.status is the only
+      // reliable signal for this failure class here — matching on
+      // error.message/.code for a 5xx would silently never fire. Confirmed
+      // against this project's live Supabase auth logs (get_logs → auth):
+      // a real "535 Username and Password not accepted" Gmail SMTP-auth
+      // rejection surfaces to this code as status 500 with no other detail.
+      console.error('[api/auth/magic-link] signInWithOtp failed:', error.status, error.name, error.code, error.message)
 
       if (error.status === 429 || /security purposes|seconds/i.test(error.message || '')) {
         return NextResponse.json(
@@ -74,6 +86,16 @@ export async function POST(request) {
         return NextResponse.json(
           { error: "Email sign-in isn't available right now. Please use Continue with Google instead." },
           { status: 503 }
+        )
+      }
+      // Supabase's auth server itself failed (most likely its configured
+      // SMTP relay rejected the send) rather than rejecting the request as
+      // invalid. The user has a real, immediate alternative — surface that
+      // instead of a dead end.
+      if (error.status >= 500) {
+        return NextResponse.json(
+          { error: "We're having trouble sending emails right now. Please use Continue with Google instead, or try again shortly." },
+          { status: 502 }
         )
       }
       return NextResponse.json(

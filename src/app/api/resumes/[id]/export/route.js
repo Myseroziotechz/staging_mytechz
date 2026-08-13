@@ -27,16 +27,19 @@ export async function POST(req, { params }) {
     .eq('id', id)
     .eq('user_id', user.id)
 
-  // Log the export action
-  await supabase
-    .from('ai_generation_logs')
-    .insert({
-      user_id: user.id,
-      resume_id: id,
-      action_type: 'export',
-      export_format: format,
-      status: 'success',
-    })
+  // Log the export action. Wrapped separately and non-fatal — a logging
+  // failure shouldn't turn a successful export into a 500 for the user.
+  try {
+    await supabase
+      .from('ai_generation_logs')
+      .insert({
+        user_id: user.id,
+        resume_id: id,
+        action_type: 'export',
+        input_prompt: `Format: ${format}`,
+        status: 'success',
+      })
+  } catch { /* non-critical */ }
 
   return NextResponse.json({ success: true })
 }

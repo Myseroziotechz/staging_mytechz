@@ -1,7 +1,12 @@
 import 'server-only'
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY
-const MODEL = 'gemini-2.0-flash'
+// 'gemini-2.0-flash' (the previous pinned snapshot) has been fully retired by
+// Google (confirmed via a direct API call — 404 "no longer available"), which
+// silently broke every Gemini-backed feature in this app. Using the
+// '-latest' alias instead of another pinned dated snapshot so this doesn't
+// silently recur the next time Google sunsets a specific version.
+export const MODEL = 'gemini-flash-latest'
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 
 export function isGeminiConfigured() {
@@ -248,12 +253,14 @@ Rules:
  */
 export async function rewriteCoverLetterSection(sectionType, currentContent, context = '') {
   const systemInstruction = `You are an expert cover letter writer. Rewrite the given ${sectionType} to be more professional, specific, and compelling.
-${context ? `Context: ${context}` : ''}
+${context ? `Context about the role/company this letter is for — use it to keep the rewrite relevant and consistent, but do not invent facts beyond what's given:\n${context}` : ''}
 
 Rules:
-- Keep the same general meaning and length but improve phrasing and impact
+- Keep the same general meaning and length but improve phrasing, clarity, and impact
+- Improve grammar, tone, sentence structure, vocabulary, and conciseness
 - Avoid generic filler and cliches
 - Keep a professional, warm first-person tone
+- Do NOT invent specific work experience, skills, achievements, metrics, employers, projects, or qualifications that aren't already present in the original text — only rephrase and sharpen what's there
 
 Return JSON: { "text": "improved text" }`
 

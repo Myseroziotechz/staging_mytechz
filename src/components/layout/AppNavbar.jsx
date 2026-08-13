@@ -18,6 +18,7 @@ function NotificationsDropdown() {
   const [open,          setOpen]          = useState(false)
   const [notifications, setNotifications] = useState([])
   const [loading,       setLoading]       = useState(false)
+  const [error,         setError]         = useState(false)
   const ref = useRef(null)
 
   // Close on outside click
@@ -29,16 +30,24 @@ function NotificationsDropdown() {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  // Fetch when opened
-  useEffect(() => {
-    if (!open) return
-    setLoading(true)
-    fetch('/api/notifications')
-      .then((r) => r.ok ? r.json() : { notifications: [] })
+  const loadNotifications = useCallback((showSpinner) => {
+    if (showSpinner) setLoading(true)
+    return fetch('/api/notifications')
+      .then((r) => {
+        if (!r.ok) { setError(true); return { notifications: [] } }
+        setError(false)
+        return r.json()
+      })
       .then((d) => setNotifications(d.notifications ?? []))
-      .catch(() => setNotifications([]))
-      .finally(() => setLoading(false))
-  }, [open])
+      .catch(() => { setError(true); setNotifications([]) })
+      .finally(() => { if (showSpinner) setLoading(false) })
+  }, [])
+
+  // Fetch once on mount (silently) so the unread badge is correct before the
+  // dropdown has ever been opened, not just after — refetch (with a spinner)
+  // every time it's opened, for freshness.
+  useEffect(() => { loadNotifications(false) }, [loadNotifications])
+  useEffect(() => { if (open) loadNotifications(true) }, [open, loadNotifications])
 
   const markRead = useCallback(async (id) => {
     setNotifications((prev) =>
@@ -109,6 +118,19 @@ function NotificationsDropdown() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-10 gap-2 text-slate-400">
+              <svg className="w-8 h-8 text-rose-300" fill="none" stroke="currentColor" strokeWidth={1.4} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-xs font-medium">Couldn't load notifications</p>
+              <button
+                onClick={() => loadNotifications(true)}
+                className="text-[11px] font-semibold text-blue-600 hover:text-blue-700"
+              >
+                Try again
+              </button>
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 gap-2 text-slate-400">

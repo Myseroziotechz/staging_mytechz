@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
-import { parseResumeWithGemini, isGeminiConfigured } from '@/lib/ai/gemini'
+import { parseResumeWithGemini, isGeminiConfigured, MODEL } from '@/lib/ai/gemini'
 import { validateResumeFile, extractResumeText } from '@/lib/ai/resume-text'
 
 // POST /api/ai/resume/parse — upload file text → extract structured data
@@ -44,7 +44,7 @@ export async function POST(req) {
     if (isGeminiConfigured()) {
       try {
         resumeData = await parseResumeWithGemini(text.slice(0, 8000))
-        model = 'gemini-2.0-flash'
+        model = MODEL
       } catch (geminiErr) {
         console.error('[resume/parse] Gemini failed, returning raw text:', geminiErr.message)
         // Fall through — return raw text below

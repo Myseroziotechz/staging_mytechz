@@ -6,6 +6,7 @@ import CoverLetterForm from '@/components/cover-letter-builder/CoverLetterForm'
 import CoverLetterPreview from '@/components/cover-letter-builder/CoverLetterPreview'
 import CoverLetterExportDropdown from '@/components/cover-letter-builder/CoverLetterExportDropdown'
 import { exportAsPDF } from '@/lib/cover-letter/export'
+import { buildExportFilenameBase } from '@/lib/filename'
 
 export default function CoverLetterEditorPage() {
   const { id } = useParams()
@@ -142,7 +143,11 @@ export default function CoverLetterEditorPage() {
     const el = previewRef.current
     if (!el && format !== 'docx') return
 
-    const nameForFile = (senderInfo?.fullName || title || 'cover-letter').replace(/[^a-zA-Z0-9]/g, '_')
+    const nameForFile = buildExportFilenameBase({
+      userName: senderInfo?.fullName,
+      fallbackTitle: title,
+      kind: 'cover_letter',
+    })
 
     try {
       if (format === 'pdf') {

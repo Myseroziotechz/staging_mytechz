@@ -59,7 +59,7 @@ export default function CoverLetterForm({
                 <RecipientSection data={recipientInfo} onChange={onRecipientChange} />
               )}
               {section.key === 'letter' && (
-                <LetterContentSection data={letterContent} onChange={onLetterChange} coverLetterId={coverLetterId} />
+                <LetterContentSection data={letterContent} onChange={onLetterChange} recipientInfo={recipientInfo} coverLetterId={coverLetterId} />
               )}
               {section.key === 'job' && (
                 <JobContextSection

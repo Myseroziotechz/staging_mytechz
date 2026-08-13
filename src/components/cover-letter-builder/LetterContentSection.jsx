@@ -16,13 +16,13 @@ function FieldInput({ label, value, onChange, placeholder = '' }) {
   )
 }
 
-function TextAreaField({ label, value, onChange, placeholder = '', rows = 3, aiSectionType }) {
+function TextAreaField({ label, value, onChange, placeholder = '', rows = 3, aiSectionType, aiContext }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
         <label className="text-xs font-medium text-slate-600">{label}</label>
         {aiSectionType && (
-          <CoverLetterAIRewriteButton sectionType={aiSectionType} content={value} onRewritten={onChange} />
+          <CoverLetterAIRewriteButton sectionType={aiSectionType} content={value} context={aiContext} onRewritten={onChange} />
         )}
       </div>
       <textarea
@@ -36,8 +36,30 @@ function TextAreaField({ label, value, onChange, placeholder = '', rows = 3, aiS
   )
 }
 
-export default function LetterContentSection({ data = {}, onChange }) {
+/**
+ * Builds the short context string sent alongside a section's raw text to
+ * /api/ai/cover-letter/rewrite, so the rewrite is grounded in what job/company
+ * this letter is actually for instead of blindly rewriting text in isolation.
+ * Kept compact (title/company/skills + a short JD excerpt) rather than the
+ * full letter/job description, per "don't send unnecessary information."
+ */
+function buildAiContext(recipientInfo = {}, letterContent = {}) {
+  const parts = []
+  if (recipientInfo.jobTitle || recipientInfo.companyName) {
+    parts.push(`Applying for: ${[recipientInfo.jobTitle, recipientInfo.companyName].filter(Boolean).join(' at ')}`)
+  }
+  if (letterContent.keySkills?.length) {
+    parts.push(`Key skills to highlight: ${letterContent.keySkills.join(', ')}`)
+  }
+  if (letterContent.jobDescription?.trim()) {
+    parts.push(`Job description excerpt: ${letterContent.jobDescription.trim().slice(0, 600)}`)
+  }
+  return parts.join('\n')
+}
+
+export default function LetterContentSection({ data = {}, onChange, recipientInfo = {} }) {
   const body = data.body?.length ? data.body : ['']
+  const aiContext = buildAiContext(recipientInfo, data)
 
   const update = (key, val) => onChange({ ...data, [key]: val })
 
@@ -74,6 +96,7 @@ export default function LetterContentSection({ data = {}, onChange }) {
         onChange={(v) => update('opening', v)}
         placeholder="State the role you're applying for and a brief hook..."
         aiSectionType="opening"
+        aiContext={aiContext}
       />
 
       <div>
@@ -99,6 +122,7 @@ export default function LetterContentSection({ data = {}, onChange }) {
                   <CoverLetterAIRewriteButton
                     sectionType="body"
                     content={para}
+                    context={aiContext}
                     onRewritten={(v) => updateParagraph(idx, v)}
                   />
                   <button
@@ -154,6 +178,7 @@ export default function LetterContentSection({ data = {}, onChange }) {
         onChange={(v) => update('closing', v)}
         placeholder="Thank the reader and include a call to action..."
         aiSectionType="closing"
+        aiContext={aiContext}
       />
 
       <FieldInput label="Sign-off" value={data.signOff} onChange={(v) => update('signOff', v)} placeholder="Sincerely," />

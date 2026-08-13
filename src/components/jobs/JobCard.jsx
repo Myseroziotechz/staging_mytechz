@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import {
   formatSalary, formatLocation, formatExperience, formatPostedAgo,
-  formatDeadline, jobTypeLabel, workModeLabel, jobUrl, companyInitials,
+  formatDeadline, jobTypeLabel, workModeLabel, jobUrl,
 } from '@/lib/jobs/format'
 import { useSaveToggle } from '@/lib/hooks/useSaveToggle'
+import CompanyLogo from './CompanyLogo'
 
 const ICON = {
   bookmark: (filled) => (
@@ -69,8 +69,6 @@ export default function JobCard({
   onEdit,
   onClose,
 }) {
-  const [logoErrored, setLogoErrored] = useState(false)
-
   // Hooks must run unconditionally, so this is called even for variants
   // (admin/recruiter/mini) that never render the button below.
   const { saved, pending: savePending, error: saveError, toggle: toggleSave } = useSaveToggle({
@@ -108,7 +106,6 @@ export default function JobCard({
 
   const padding = isMini ? 'p-3' : isCompact ? 'p-4' : 'p-6 sm:p-7'
   const radius  = isMini ? 'rounded-xl' : 'rounded-2xl'
-  const showLogoImage = compLogo && !logoErrored
 
   return (
     <article
@@ -123,23 +120,11 @@ export default function JobCard({
 
       {/* Top: logo + title + bookmark */}
       <header className="relative z-2 flex items-start gap-3.5">
-        <div className={[
-          'shrink-0 rounded-xl overflow-hidden flex items-center justify-center font-bold',
-          isMini ? 'w-9 h-9 text-sm' : isCompact ? 'w-11 h-11 text-base' : 'w-12 h-12 sm:w-14 sm:h-14 text-lg',
-          showLogoImage
-            ? 'bg-white ring-1 ring-slate-200/80'
-            : 'bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white/60',
-        ].join(' ')}>
-          {showLogoImage
-            ? /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={compLogo}
-                alt={compName}
-                className="w-full h-full object-contain p-1.5"
-                onError={() => setLogoErrored(true)}
-              />
-            : <span aria-hidden="true">{companyInitials(compName)}</span>}
-        </div>
+        <CompanyLogo
+          logoUrl={compLogo}
+          name={compName}
+          size={isMini ? 'mini' : isCompact ? 'compact' : 'default'}
+        />
 
         <div className="min-w-0 flex-1">
           <Link

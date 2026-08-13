@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
-import { parseResumeWithGemini, isGeminiConfigured } from '@/lib/ai/gemini'
+import { parseResumeWithGemini, isGeminiConfigured, MODEL } from '@/lib/ai/gemini'
 import { validateResumeFile, extractResumeText } from '@/lib/ai/resume-text'
 import { listSection, insertSectionRow, getSkills, setSkills } from '@/app/(app)/profile/lib/profile-repository'
 import { MONTHS } from '@/app/(app)/profile/lib/constants'
@@ -69,7 +69,7 @@ export async function POST(req) {
         action_type: 'sync_profile',
         input_prompt: `File: ${file.name} (${text.length} chars)`,
         output_content: synced,
-        model_used: 'gemini-2.0-flash',
+        model_used: MODEL,
         status: 'success',
       })
     } catch { /* non-critical */ }
@@ -82,7 +82,7 @@ export async function POST(req) {
         user_id: user.id,
         action_type: 'sync_profile',
         input_prompt: `File: ${file.name}`,
-        model_used: 'gemini-2.0-flash',
+        model_used: MODEL,
         status: 'error',
         error_message: err.message?.slice(0, 500),
       })
