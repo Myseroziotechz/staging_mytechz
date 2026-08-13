@@ -16,24 +16,23 @@ export async function buildUserContext(supabase, userId) {
     pastSearches: [],
   }
 
-  // 1. profile
+  // 1. profile (primary source — resumes table below is currently dead/unpopulated)
   try {
     const { data } = await supabase
       .from('user_profiles')
-      .select('full_name, role, phone, city, state, country')
+      .select('full_name, role, phone, location, skills')
       .eq('id', userId)
       .maybeSingle()
     if (data) {
       ctx.name = data.full_name || null
       ctx.role = data.role || null
-      ctx.location =
-        [data.city, data.state].filter(Boolean).join(', ') ||
-        data.country ||
-        null
+      ctx.location = data.location || null
+      if (Array.isArray(data.skills) && data.skills.length)
+        ctx.skills = data.skills.slice(0, 15)
     }
   } catch {}
 
-  // 2. resume (latest, primary if a flag exists)
+  // 2. resume (secondary/merge source, in case this table is populated later)
   try {
     const { data } = await supabase
       .from('resumes')
@@ -46,8 +45,8 @@ export async function buildUserContext(supabase, userId) {
       .limit(1)
     const r = data?.[0]
     if (r) {
-      if (Array.isArray(r.parsed_skills))
-        ctx.skills = r.parsed_skills.slice(0, 15)
+      if (Array.isArray(r.parsed_skills) && r.parsed_skills.length)
+        ctx.skills = Array.from(new Set([...ctx.skills, ...r.parsed_skills])).slice(0, 15)
       if (r.total_experience_years != null)
         ctx.experienceYears = Number(r.total_experience_years)
       if (!ctx.location && r.parsed_location) ctx.location = r.parsed_location

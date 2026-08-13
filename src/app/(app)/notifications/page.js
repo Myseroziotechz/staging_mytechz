@@ -6,15 +6,23 @@ import Link from 'next/link'
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([])
   const [loading,       setLoading]       = useState(true)
+  const [error,         setError]         = useState(false)
   const [filter,        setFilter]        = useState('all') // 'all' | 'unread'
 
-  useEffect(() => {
-    fetch('/api/notifications')
-      .then((r) => r.ok ? r.json() : { notifications: [] })
+  const loadNotifications = useCallback(() => {
+    setLoading(true)
+    return fetch('/api/notifications')
+      .then((r) => {
+        if (!r.ok) { setError(true); return { notifications: [] } }
+        setError(false)
+        return r.json()
+      })
       .then((d) => setNotifications(d.notifications ?? []))
-      .catch(() => setNotifications([]))
+      .catch(() => { setError(true); setNotifications([]) })
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => { loadNotifications() }, [loadNotifications])
 
   const markRead = useCallback(async (id) => {
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, is_read: true } : n))
@@ -103,6 +111,19 @@ export default function NotificationsPage() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+            <svg className="w-10 h-10 text-rose-300" fill="none" stroke="currentColor" strokeWidth={1.4} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm font-medium">Couldn't load notifications</p>
+            <button
+              onClick={loadNotifications}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              Try again
+            </button>
           </div>
         ) : visible.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">

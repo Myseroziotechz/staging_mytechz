@@ -4,10 +4,8 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
-import { parseResumeWithGemini, isGeminiConfigured } from '@/lib/ai/gemini'
-import { extractPdfText } from '@/lib/ai/pdf-text'
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB — matches the client-side FileUpload limit
+import { parseResumeWithGemini, isGeminiConfigured, MODEL } from '@/lib/ai/gemini'
+import { validateResumeFile, extractResumeText } from '@/lib/ai/resume-text'
 
 // POST /api/ai/resume/parse — upload file text → extract structured data
 export async function POST(req) {
@@ -26,30 +24,11 @@ export async function POST(req) {
   }
 
   const file = formData.get('file')
-  if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
-
-  if (file.size > MAX_FILE_SIZE) {
-    return NextResponse.json({ error: 'File size must be under 5MB' }, { status: 400 })
-  }
-
-  const fileType = file.name.split('.').pop()?.toLowerCase()
-  if (!['pdf', 'docx', 'doc', 'txt'].includes(fileType)) {
-    return NextResponse.json({ error: 'Supported formats: PDF, DOCX, DOC, TXT' }, { status: 400 })
-  }
+  const fileError = validateResumeFile(file)
+  if (fileError) return NextResponse.json({ error: fileError }, { status: 400 })
 
   try {
-    let text = ''
-    const buffer = Buffer.from(await file.arrayBuffer())
-
-    if (fileType === 'pdf') {
-      text = await extractPdfText(buffer)
-    } else if (fileType === 'docx' || fileType === 'doc') {
-      const mammoth = await import('mammoth')
-      const result = await mammoth.extractRawText({ buffer })
-      text = result.value
-    } else {
-      text = buffer.toString('utf-8')
-    }
+    const text = await extractResumeText(file)
 
     if (!text || text.trim().length < 20) {
       return NextResponse.json(
@@ -65,7 +44,7 @@ export async function POST(req) {
     if (isGeminiConfigured()) {
       try {
         resumeData = await parseResumeWithGemini(text.slice(0, 8000))
-        model = 'gemini-2.0-flash'
+        model = MODEL
       } catch (geminiErr) {
         console.error('[resume/parse] Gemini failed, returning raw text:', geminiErr.message)
         // Fall through — return raw text below

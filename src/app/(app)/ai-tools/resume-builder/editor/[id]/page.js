@@ -6,6 +6,7 @@ import ResumeForm from '@/components/resume-builder/ResumeForm'
 import ResumePreview from '@/components/resume-builder/ResumePreview'
 import ExportDropdown from '@/components/resume-builder/ExportDropdown'
 import { exportAsPDF, exportAsDOCX, exportAsPNG, exportAsJPG, exportAsSVG } from '@/lib/resume/export'
+import { buildExportFilenameBase } from '@/lib/filename'
 
 export default function EditorPage() {
   const { id } = useParams()
@@ -75,8 +76,11 @@ export default function EditorPage() {
     const el = previewRef.current
     if (!el && format !== 'docx') return
 
-    const title = resume?.title || 'resume'
-    const filename = `${title.replace(/[^a-zA-Z0-9]/g, '_')}`
+    const filename = buildExportFilenameBase({
+      userName: resumeData?.contact?.fullName,
+      fallbackTitle: resume?.title,
+      kind: 'resume',
+    })
 
     try {
       switch (format) {

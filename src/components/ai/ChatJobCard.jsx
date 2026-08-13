@@ -7,8 +7,8 @@ import {
   jobTypeLabel,
   workModeLabel,
   jobUrl,
-  companyInitials,
 } from '@/lib/jobs/format'
+import CompanyLogo from '@/components/jobs/CompanyLogo'
 
 export default function ChatJobCard({ job, rank, onClick }) {
   if (!job) return null
@@ -32,21 +32,7 @@ export default function ChatJobCard({ job, rank, onClick }) {
       </span>
 
       <div className="flex items-start gap-2.5">
-        <div
-          className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-bold
-                     bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 text-xs"
-        >
-          {company.logo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={company.logo_url}
-              alt={compName}
-              className="w-full h-full object-cover rounded-lg"
-            />
-          ) : (
-            <span>{companyInitials(compName)}</span>
-          )}
-        </div>
+        <CompanyLogo logoUrl={company.logo_url} name={compName} size="chat" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-slate-900 line-clamp-2 leading-snug">
             {job.title}

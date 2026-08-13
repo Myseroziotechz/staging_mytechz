@@ -3,6 +3,9 @@ import { Suspense } from 'react'
 import AiFeaturedJobsPage, { AiLoadingGrid } from '@/components/jobs/AiFeaturedJobsPage'
 import { getJobs } from '@/lib/jobs/queries'
 import { createClient } from '@/lib/supabase/server'
+import { buildUserContext } from '@/lib/ai/context'
+import { scoreJob, reasonFor } from '@/lib/ai/score'
+import { extractFiltersHeuristic } from '@/lib/ai/filters'
 
 export const metadata = {
   title: 'AI-Matched Jobs India 2026 — Personalised Tech Job Recommendations (Free)',
@@ -38,7 +41,7 @@ export default async function AiFeaturedPage({ searchParams }) {
   const filters = parseFilters(sp)
 
   // Auth + resume check (so the page shows the right CTA)
-  let isAuthed = false, hasResume = false, savedJobUrls = []
+  let isAuthed = false, hasResume = false, savedJobUrls = [], ctx = null
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -48,19 +51,36 @@ export default async function AiFeaturedPage({ searchParams }) {
       hasResume = !!resume
       const { data: saved } = await supabase.from('saved_jobs').select('job_url').eq('user_id', user.id)
       savedJobUrls = (saved || []).map((row) => row.job_url)
+      ctx = await buildUserContext(supabase, user.id)
     }
   } catch { /* table may not exist yet */ }
 
+  const canScore = !!(ctx && Array.isArray(ctx.skills) && ctx.skills.length > 0)
+  const heur = filters.prompt ? extractFiltersHeuristic(filters.prompt) : {}
+
   const queryFilters = {
     sort: 'newest',
-    per_page: 12,
-    ...(filters.category ? { category: filters.category } : {}),
-    ...(filters.job_type ? { job_type: filters.job_type } : {}),
-    ...(filters.work_mode ? { work_mode: filters.work_mode } : {}),
-    q: filters.prompt || '',
+    per_page: canScore ? 48 : 12,
+    ...(filters.category  || heur.category  ? { category:  filters.category  || heur.category  } : {}),
+    ...(filters.job_type  || heur.job_type  ? { job_type:  filters.job_type  || heur.job_type  } : {}),
+    ...(filters.work_mode || heur.work_mode ? { work_mode: filters.work_mode || heur.work_mode } : {}),
+    ...(heur.exp_max    != null ? { exp_max: heur.exp_max }    : {}),
+    ...(heur.salary_min != null ? { sal_min: heur.salary_min } : {}),
   }
 
-  const { jobs, error } = await getJobs(queryFilters)
+  const { jobs: rawJobs, error } = await getJobs(queryFilters)
+
+  let jobs = rawJobs
+  if (canScore) {
+    const minParsed = Number(filters.match_min)
+    const minThreshold = Number.isFinite(minParsed) && minParsed > 0 ? minParsed : null
+
+    const scored = rawJobs
+      .map((j) => ({ ...j, _matchScore: Math.round(scoreJob(j, ctx) * 100), _reason: reasonFor(j, ctx) }))
+      .sort((a, b) => b._matchScore - a._matchScore)
+
+    jobs = (minThreshold != null ? scored.filter((j) => j._matchScore >= minThreshold) : scored).slice(0, 12)
+  }
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',

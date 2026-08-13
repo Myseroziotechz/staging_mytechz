@@ -14,9 +14,9 @@ export async function GET() {
       .order('created_at', { ascending: false })
       .limit(20)
 
-    if (error) return NextResponse.json({ notifications: [] })
+    if (error) return NextResponse.json({ notifications: [], error: 'Failed to load notifications' }, { status: 500 })
     return NextResponse.json({ notifications: data ?? [] })
   } catch {
-    return NextResponse.json({ notifications: [] })
+    return NextResponse.json({ notifications: [], error: 'Failed to load notifications' }, { status: 500 })
   }
 }

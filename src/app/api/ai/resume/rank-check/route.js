@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
-import { suggestKeywords, isGeminiConfigured } from '@/lib/ai/gemini'
+import { suggestKeywords, isGeminiConfigured, MODEL } from '@/lib/ai/gemini'
 import { analyzeResumeATS } from '@/lib/ai/ats-rule-engine'
 
 // POST /api/ai/resume/rank-check — ATS score analysis
@@ -98,7 +98,7 @@ export async function POST(req) {
           targetRole: targetRole || null,
           jobDescription: jobDescription ? jobDescription.slice(0, 500) : null,
         },
-        model_used: result.source === 'gemini' ? 'gemini-2.0-flash' : 'local-engine',
+        model_used: result.source === 'gemini' ? MODEL : 'local-engine',
         status: 'success',
       })
     } catch { /* non-critical */ }

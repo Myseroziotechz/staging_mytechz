@@ -20,7 +20,7 @@ import { ok, fail, requireUser, readJson, fromDbError } from '../_lib/handlers'
 
 const EDITABLE = [
   'full_name', 'phone', 'location', 'headline', 'about',
-  'linkedin_url', 'github_url', 'portfolio_url',
+  'linkedin_url', 'github_url', 'portfolio_url', 'total_experience_years',
 ]
 
 const COLUMN_ALIAS = { about: 'profile_summary' }
@@ -28,7 +28,7 @@ const dbColumn = (key) => COLUMN_ALIAS[key] ?? key
 
 const SELECT =
   'id, full_name, phone, location, headline, about:profile_summary, ' +
-  'linkedin_url, github_url, portfolio_url, avatar_url, email, role, created_at, updated_at'
+  'linkedin_url, github_url, portfolio_url, total_experience_years, avatar_url, email, role, created_at, updated_at'
 
 export async function GET() {
   const { supabase, user, response } = await requireUser()
@@ -77,7 +77,15 @@ export async function PUT(request) {
   // Empty optional strings are stored as NULL so they read back as "not set".
   const payload = { updated_at: new Date().toISOString() }
   for (const [key, value] of Object.entries(values)) {
-    payload[dbColumn(key)] = key === 'full_name' ? value : value || null
+    if (key === 'full_name') {
+      payload[dbColumn(key)] = value
+    } else if (key === 'total_experience_years') {
+      // Numeric column — `0 || null` would wrongly null out "0 years", so
+      // this is handled separately from the generic string-optional path.
+      payload[dbColumn(key)] = value === '' || value == null ? null : Number(value)
+    } else {
+      payload[dbColumn(key)] = value || null
+    }
   }
 
   try {
@@ -111,6 +119,7 @@ export async function DELETE() {
         linkedin_url: null,
         github_url: null,
         portfolio_url: null,
+        total_experience_years: null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)

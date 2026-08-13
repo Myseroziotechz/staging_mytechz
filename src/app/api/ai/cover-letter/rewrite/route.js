@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/ai/rate-limit'
-import { rewriteCoverLetterSection, isGeminiConfigured } from '@/lib/ai/gemini'
+import { rewriteCoverLetterSection, isGeminiConfigured, MODEL } from '@/lib/ai/gemini'
 
 // POST /api/ai/cover-letter/rewrite — rewrite one section (opening / a body
 // paragraph / closing) with AI.
@@ -35,31 +35,37 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Content is too long (max 4000 characters).' }, { status: 400 })
   }
 
-  const start = Date.now()
   try {
     const rewritten = await rewriteCoverLetterSection(sectionType, content, context || '')
 
-    await supabase.from('ai_generation_logs').insert({
-      user_id: user.id,
-      action_type: 'cover_letter_rewrite',
-      input_prompt: content.slice(0, 500),
-      output_content: { text: rewritten },
-      model_used: 'gemini-2.0-flash',
-      duration_ms: Date.now() - start,
-      status: 'success',
-    })
+    try {
+      await supabase.from('ai_generation_logs').insert({
+        user_id: user.id,
+        action_type: 'cover_letter_rewrite',
+        input_prompt: content.slice(0, 500),
+        output_content: { text: rewritten },
+        model_used: MODEL,
+        status: 'success',
+      })
+    } catch { /* non-critical */ }
 
     return NextResponse.json({ rewritten })
   } catch (err) {
-    await supabase.from('ai_generation_logs').insert({
-      user_id: user.id,
-      action_type: 'cover_letter_rewrite',
-      input_prompt: content.slice(0, 500),
-      model_used: 'gemini-2.0-flash',
-      duration_ms: Date.now() - start,
-      status: 'error',
-      error_message: err.message?.slice(0, 500),
-    })
+    // Was previously invisible: this log insert used `duration_ms`, a column
+    // that doesn't exist on ai_generation_logs, so every past failure here
+    // silently failed to log — there was no way to see the real error short
+    // of reproducing the exact Gemini request by hand.
+    console.error('[api/ai/cover-letter/rewrite] rewriteCoverLetterSection failed:', err.message)
+    try {
+      await supabase.from('ai_generation_logs').insert({
+        user_id: user.id,
+        action_type: 'cover_letter_rewrite',
+        input_prompt: content.slice(0, 500),
+        model_used: MODEL,
+        status: 'error',
+        error_message: err.message?.slice(0, 500),
+      })
+    } catch { /* non-critical */ }
     return NextResponse.json({ error: 'Failed to rewrite section' }, { status: 500 })
   }
 }

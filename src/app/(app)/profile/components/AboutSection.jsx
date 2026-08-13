@@ -16,7 +16,7 @@ const ICON = (
 
 const FIELDS = [
   'full_name', 'headline', 'about', 'phone', 'location',
-  'linkedin_url', 'github_url', 'portfolio_url',
+  'linkedin_url', 'github_url', 'portfolio_url', 'total_experience_years',
 ]
 
 function toForm(profile) {
@@ -199,6 +199,19 @@ export default function AboutSection({ userId, initialProfile }) {
           </div>
 
           <TextInput
+            label="Years of Experience"
+            type="number"
+            min="0"
+            max="50"
+            step="0.5"
+            hint="(used to match you with jobs at the right level)"
+            placeholder="e.g. 0 for fresher, 2.5 for 2.5 years"
+            value={form.total_experience_years}
+            error={fieldErrors.total_experience_years}
+            onChange={(e) => setField('total_experience_years', e.target.value)}
+          />
+
+          <TextInput
             label="LinkedIn URL"
             type="url"
             placeholder="https://linkedin.com/in/your-profile"
@@ -249,6 +262,14 @@ export default function AboutSection({ userId, initialProfile }) {
           <dl className="space-y-2 pt-1">
             <DetailRow label="Phone" value={profile?.phone} />
             <DetailRow label="City" value={profile?.location} />
+            <DetailRow
+              label="Experience"
+              value={
+                profile?.total_experience_years != null
+                  ? `${profile.total_experience_years} ${Number(profile.total_experience_years) === 1 ? 'year' : 'years'}`
+                  : null
+              }
+            />
             <DetailRow label="LinkedIn" value={profile?.linkedin_url} href={profile?.linkedin_url} />
             <DetailRow label="GitHub" value={profile?.github_url} href={profile?.github_url} />
             <DetailRow label="Portfolio" value={profile?.portfolio_url} href={profile?.portfolio_url} />

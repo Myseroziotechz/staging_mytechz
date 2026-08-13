@@ -1,5 +1,6 @@
 import { getAllActiveJobsForSitemap } from '@/lib/jobs/queries'
 import { blogPosts } from '@/data/blog-posts'
+import { LPA_TIERS, lpaSlug } from '@/lib/salary-calculator/lpaTiers'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
 
@@ -19,6 +20,7 @@ export default async function sitemap() {
     { url: `${SITE}/ai-tools/resume-builder`,        lastModified: now, priority: 0.95, changeFrequency: 'weekly'  },
     { url: `${SITE}/ai-tools/resume-builder/templates`, lastModified: now, priority: 0.9, changeFrequency: 'weekly' },
     { url: `${SITE}/ai-tools/resume-rank-checker`,  lastModified: now, priority: 0.8,  changeFrequency: 'weekly'  },
+    { url: `${SITE}/ai-tools/salary-calculator`,    lastModified: now, priority: 0.9,  changeFrequency: 'monthly' },
     // Blog
     { url: `${SITE}/blog`,                            lastModified: now, priority: 0.7,  changeFrequency: 'weekly'  },
     // Informational pages
@@ -45,5 +47,13 @@ export default async function sitemap() {
     changeFrequency: 'daily',
   }))
 
-  return [...staticPages, ...blogUrls, ...jobUrls]
+  // Pre-filled LPA salary landing pages
+  const lpaUrls = LPA_TIERS.map((lpa) => ({
+    url: `${SITE}/ai-tools/salary-calculator/${lpaSlug(lpa)}`,
+    lastModified: now,
+    priority: 0.85,
+    changeFrequency: 'monthly',
+  }))
+
+  return [...staticPages, ...blogUrls, ...jobUrls, ...lpaUrls]
 }

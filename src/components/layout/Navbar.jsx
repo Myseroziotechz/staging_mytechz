@@ -60,6 +60,8 @@ const navItems = [
       { label: 'Free Resume Builder',  href: '/ai-tools/resume-builder',  description: 'ATS-ready resumes — free, no watermarks' },
       { label: 'Resume Analyzer',      href: '/ai-tools/resume-analyzer', description: 'Instant ATS score & keyword gap analysis' },
       { label: 'Smart Job Search',     href: '/ai-tools/smart-job-search', description: 'AI-powered job matching for you' },
+      { label: 'Cover Letter',         href: '/ai-tools/cover-letter-builder', description: 'Tailored cover letters — free, no watermarks' },
+      { label: 'Salary Calculator',    href: '/ai-tools/salary-calculator', description: 'CTC to in-hand, old vs new regime compared' },
     ],
   },
   { label: 'Services', href: '/services/redesign' },

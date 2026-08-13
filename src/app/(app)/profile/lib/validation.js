@@ -233,6 +233,13 @@ export function validateAbout(values) {
     }
   }
 
+  if (!isBlank(values.total_experience_years)) {
+    const years = Number(values.total_experience_years)
+    if (Number.isNaN(years) || years < 0 || years > 50) {
+      errors.total_experience_years = 'Enter a number of years between 0 and 50.'
+    }
+  }
+
   if (!isValidUrl(values.linkedin_url, { requireHost: 'linkedin.com' })) {
     errors.linkedin_url = 'Enter a valid LinkedIn URL.'
   }

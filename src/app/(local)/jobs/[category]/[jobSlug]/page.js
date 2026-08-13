@@ -3,13 +3,16 @@ import Link from 'next/link'
 import { getJobBySlug, getSimilarJobs } from '@/lib/jobs/queries'
 import {
   formatSalary, formatLocation, formatExperience, formatPostedAgo,
-  formatDeadline, jobTypeLabel, workModeLabel, companyInitials, jobUrl,
+  formatDeadline, jobTypeLabel, workModeLabel, jobUrl,
 } from '@/lib/jobs/format'
 import { fetchSavedJobUrls } from '@/lib/jobs/savedJobs'
+import { buildMatchForJob } from '@/lib/ai/match/build-match-for-job'
 import JobJsonLd from '@/components/jobs/JobJsonLd'
 import JobAssistantPanel from '@/components/jobs/JobAssistantPanel'
 import JobCard from '@/components/jobs/JobCard'
 import SaveJobButton from '@/components/jobs/SaveJobButton'
+import CompanyLogo from '@/components/jobs/CompanyLogo'
+import MatchSummaryBlock from '@/components/smart-job-search/MatchSummaryBlock'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://mytechz.com'
 
@@ -60,9 +63,10 @@ export default async function JobDetailPage({ params, searchParams }) {
   const job = await getJobBySlug(category, jobSlug)
   if (!job) notFound()
 
-  const [similar, savedJobUrls] = await Promise.all([
+  const [similar, savedJobUrls, match] = await Promise.all([
     getSimilarJobs(job.id, job.category, job.skills || [], 6),
     fetchSavedJobUrls(),
+    buildMatchForJob(job),
   ])
   const savedUrlSet = new Set(savedJobUrls)
 
@@ -107,12 +111,7 @@ export default async function JobDetailPage({ params, searchParams }) {
         {/* Header card */}
         <header className="job-glass-panel rounded-3xl p-5 sm:p-7 mb-6">
           <div className="flex items-start gap-4">
-            <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold flex items-center justify-center text-xl ring-1 ring-white/60">
-              {compLogo
-                ? /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={compLogo} alt={compName} className="w-full h-full object-cover rounded-2xl" />
-                : <span>{companyInitials(compName)}</span>}
-            </div>
+            <CompanyLogo logoUrl={compLogo} name={compName} size="detail" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">{job.title}</h1>
@@ -189,6 +188,13 @@ export default async function JobDetailPage({ params, searchParams }) {
               <div className="job-glass-panel rounded-2xl p-5 sm:p-6">
                 <h2 className="text-sm font-semibold text-blue-700 mb-2">At a glance</h2>
                 <p className="text-slate-800 leading-relaxed">{job.summary}</p>
+              </div>
+            )}
+
+            {match && (
+              <div className="job-glass-panel rounded-2xl p-5 sm:p-6">
+                <h2 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wide">AI Match Summary</h2>
+                <MatchSummaryBlock match={match} />
               </div>
             )}
 

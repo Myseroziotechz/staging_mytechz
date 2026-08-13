@@ -40,7 +40,6 @@ const tools = [
     title: 'Resume Analyzer',
     href: '/ai-tools/resume-analyzer',
     description: 'Get an instant ATS match score for your resume against any job description. See missing keywords, weak sections, and exactly what to fix — free.',
-    badge: 'Coming Soon',
     icon: (
       <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -54,7 +53,6 @@ const tools = [
     title: 'Smart Job Search',
     href: '/ai-tools/smart-job-search',
     description: 'Let AI match you with the best job opportunities based on your skills, experience, and career goals — ranked by fit score, not just keywords.',
-    badge: 'Coming Soon',
     icon: (
       <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -77,6 +75,19 @@ const tools = [
     border: 'border-amber-100',
     iconBg: 'bg-amber-600',
   },
+  {
+    title: 'Salary Calculator',
+    href: '/ai-tools/salary-calculator',
+    description: 'Calculate your in-hand salary from CTC instantly. Compare old vs new tax regime and see your full salary breakup — free, no login required.',
+    icon: (
+      <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    gradient: 'from-green-50 to-emerald-100',
+    border: 'border-green-100',
+    iconBg: 'bg-green-600',
+  },
 ]
 
 function JsonLd() {
@@ -93,14 +104,15 @@ function JsonLd() {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'MyTechZ Free AI Career Tools',
-    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, cover letter builder, and smart job search.',
+    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, cover letter builder, smart job search, and salary calculator.',
     url: `${SITE}/ai-tools`,
-    numberOfItems: 4,
+    numberOfItems: 5,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Free Resume Builder', url: `${SITE}/ai-tools/resume-builder`, description: 'Build ATS-friendly resumes with AI — 100% free, no watermarks.' },
       { '@type': 'ListItem', position: 2, name: 'Resume Analyzer', url: `${SITE}/ai-tools/resume-analyzer`, description: 'Get instant ATS match score and keyword recommendations for your resume.' },
       { '@type': 'ListItem', position: 3, name: 'Smart Job Search', url: `${SITE}/ai-tools/smart-job-search`, description: 'AI matches you with jobs ranked by fit score, not just keywords.' },
       { '@type': 'ListItem', position: 4, name: 'Cover Letter Builder', url: `${SITE}/ai-tools/cover-letter-builder`, description: 'Write a tailored, professional cover letter in minutes — free, no watermarks.' },
+      { '@type': 'ListItem', position: 5, name: 'Salary Calculator', url: `${SITE}/ai-tools/salary-calculator`, description: 'Calculate your in-hand salary from CTC and compare old vs new tax regime — free.' },
     ],
   }
 
