@@ -56,6 +56,11 @@ const nextConfig = {
       { source: '/ats-score',                destination: '/ai-tools/resume-rank-checker', permanent: true },
       { source: '/resume-ats-test',          destination: '/ai-tools/resume-rank-checker', permanent: true },
       { source: '/resume-analysis',          destination: '/ai-tools/resume-rank-checker', permanent: true },
+      // Salary calculator variants → canonical
+      { source: '/salary-calculator',        destination: '/ai-tools/salary-calculator', permanent: true },
+      { source: '/ctc-calculator',           destination: '/ai-tools/salary-calculator', permanent: true },
+      { source: '/take-home-calculator',     destination: '/ai-tools/salary-calculator', permanent: true },
+      { source: '/in-hand-salary-calculator', destination: '/ai-tools/salary-calculator', permanent: true },
     ]
   },
 }

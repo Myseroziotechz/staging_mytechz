@@ -75,6 +75,19 @@ const tools = [
     border: 'border-amber-100',
     iconBg: 'bg-amber-600',
   },
+  {
+    title: 'Salary Calculator',
+    href: '/ai-tools/salary-calculator',
+    description: 'Calculate your in-hand salary from CTC instantly. Compare old vs new tax regime and see your full salary breakup — free, no login required.',
+    icon: (
+      <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    gradient: 'from-green-50 to-emerald-100',
+    border: 'border-green-100',
+    iconBg: 'bg-green-600',
+  },
 ]
 
 function JsonLd() {
@@ -91,14 +104,15 @@ function JsonLd() {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'MyTechZ Free AI Career Tools',
-    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, cover letter builder, and smart job search.',
+    description: 'Free AI-powered career tools for Indian job seekers: resume builder, resume analyzer, cover letter builder, smart job search, and salary calculator.',
     url: `${SITE}/ai-tools`,
-    numberOfItems: 4,
+    numberOfItems: 5,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Free Resume Builder', url: `${SITE}/ai-tools/resume-builder`, description: 'Build ATS-friendly resumes with AI — 100% free, no watermarks.' },
       { '@type': 'ListItem', position: 2, name: 'Resume Analyzer', url: `${SITE}/ai-tools/resume-analyzer`, description: 'Get instant ATS match score and keyword recommendations for your resume.' },
       { '@type': 'ListItem', position: 3, name: 'Smart Job Search', url: `${SITE}/ai-tools/smart-job-search`, description: 'AI matches you with jobs ranked by fit score, not just keywords.' },
       { '@type': 'ListItem', position: 4, name: 'Cover Letter Builder', url: `${SITE}/ai-tools/cover-letter-builder`, description: 'Write a tailored, professional cover letter in minutes — free, no watermarks.' },
+      { '@type': 'ListItem', position: 5, name: 'Salary Calculator', url: `${SITE}/ai-tools/salary-calculator`, description: 'Calculate your in-hand salary from CTC and compare old vs new tax regime — free.' },
     ],
   }
 
